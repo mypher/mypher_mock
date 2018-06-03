@@ -1,0 +1,145 @@
+.talk {
+	border:1px solid #111;
+	overflow-x: scroll; 
+}
+.ttabset {
+	width:100%;
+	float:left;
+}
+.ttabset:after {
+	clear:left;
+}
+.ttabelm {
+	float:left;
+	margin:2px;
+	padding:4px;
+	background-color: #888;
+}
+
+.ttime {
+	font-size:small;
+}
+.tperson {
+	float:left;
+	width:100%;
+	height:40px;
+	vertical-align:middle;
+}
+.tperson:after {
+	clear:left;
+}
+.ticon {
+  width:32px;
+	height:32px;
+	float:left;
+	margin:4px;
+	vertical-align:middle;
+	border:1px solid #111;
+}
+.tname {
+	vertical-align:middle;
+}
+
+.tbtm {
+	float:left;
+	width:100%;
+}
+.tbtm:after {
+	clear:left;
+}
+.tresbtn {
+	width:32px;
+	height:32px;
+	float:left;
+	margin:4px;
+	vertical-align:middle;
+	border:1px solid #111;
+}
+
+.tatnbtn {
+	width:32px;
+	height:32px;
+	float:left;
+	margin:4px;
+	vertical-align:middle;
+	border:1px solid #111
+}
+
+.telm {
+	background-color:#fff0e8;
+	padding-top:12px;
+	padding-bottom:12px;
+	margin-bottom:4px;
+	float:left;
+	width:99%;
+}
+  
+.tback {
+	position:fixed;
+	width:100%;
+	height:100%;
+	top:0;
+	left:0;
+	background-color:#111;
+	filter:alpha(opacity=50);
+	-moz-opacity: 0.5;
+	opacity: 0.5;
+}
+
+.tpopup_outer {
+	position:fixed;
+	top:0;
+	left:0;
+	right:0;
+	bottom:0;
+	padding:20px;
+}
+.tpopup_inner {
+	top:0;
+	left:0;
+	right:0;
+	bottom:0;
+	height:100%;
+	background-color: #fff;
+}
+.ttext {
+	width:90%;
+	height:30px;
+}
+
+/* */ 
+.right {
+	text-align:right;
+}
+
+.clear {
+	clear:both;
+}
+
+input[type="text"]:disabled {
+	background-color:#f8f8f8;
+}
+
+.input-follow {
+	padding-bottom:8px;
+}
+
+.popup {
+	border:1px solid #888;
+	box-shadow: 1px 1px 1px 1px #aaa;
+	border-radius: 4px;
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+}
+
+.popupback {
+	position:fixed;
+	width:100%;
+	height:100%;
+	top:0;
+	left:0;
+	background-color:#111;
+	filter:alpha(opacity=50);
+	-moz-opacity: 0.5;
+	opacity: 0.5;
+}

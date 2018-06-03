@@ -1,0 +1,10 @@
+#task1, #task2 {
+	box-shadow: 2px 2px 4px -2px gray;
+	border:1px solid 444;
+}
+
+.tagclr {
+	background-color:#276d9c !important;
+	color:#fff !important;
+	box-shadow: 1px 1px 1px 1px #aaa;
+}

@@ -1,0 +1,62 @@
+.govrule {
+	padding:12px;
+}
+
+.govrule > div {
+	margin:0px;
+}
+
+.govrule .rulemain {
+	width: 100%;
+	text-align:center;
+}
+
+.govrule .rulemain:after {
+	clear:left;
+}
+
+.govrule .td1 {
+	display: inline-block;
+	vertical-align: middle;
+	padding: 8px;
+}
+/*
+.govrule > .td1 > div {
+	background-color: #fff0c8;
+	display: table;
+	border-radius: 16px;
+	-webkit-border-radius: 16px;
+	-moz-border-radius: 16px;
+	padding:16px;
+	text-align:center;
+	vertical-align:middle;
+}*/
+
+.govrule .td2 {
+	display: inline-block;
+	vertical-align: middle;
+	color:#444;
+}
+
+.govrule .td3 {
+	display: inline-block;
+	vertical-align: middle;
+	padding: 8px;
+}
+
+.govrule .td3:after {
+	clear:left;
+}
+
+.govrule .td3 > div {
+	background-color: #276d9c;
+	color:#fff;
+	border-radius: 16px;
+	-webkit-border-radius: 16px;
+	-moz-border-radius: 16px;
+	display:inline-block;
+	padding:8px;
+	margin:2px;
+	box-shadow: 1px 1px 1px 1px #aaa;
+}
+

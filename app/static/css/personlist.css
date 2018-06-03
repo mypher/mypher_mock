@@ -1,0 +1,23 @@
+.personlist > .person, .personlist > .noone {
+	border-radius: 16px;
+	-webkit-border-radius: 16px;
+	-moz-border-radius: 16px;
+	display:inline-block;
+	padding:8px;
+	margin:2px;
+}
+
+.personlist > .person {
+	background-color:#fac;
+	color:#111;
+	box-shadow: 1px 1px 1px 1px #aaa;
+}
+
+.personlist > .noone {
+	background-color:#dbc;
+	color:#888;
+	box-shadow: 1px 1px 1px 1px #aaa;
+}
+.personlist {
+	text-align:center;
+}

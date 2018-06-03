@@ -1,0 +1,11 @@
+._tk > .area {
+	padding:24px;
+}
+
+._tk > .area > ul {
+	margin:24px 0px 24px 0px;
+}
+
+._tk .votestate {
+	height:100px;
+}
