@@ -6,18 +6,74 @@
 		<meta charset="utf-8">
 		<link rel="stylesheet" href="css/bootstrap.min.css">
 		<link rel="stylesheet" href="css/common.css">
+		<link rel="stylesheet" href="css/govrule.css">
+		<link rel="stylesheet" href="css/tokenrule.css">
+		<link rel="stylesheet" href="css/govrulelist.css">
+		<link rel="stylesheet" href="css/personlist.css">
+		<link rel="stylesheet" href="css/votestate.css">
+		<link rel="stylesheet" href="css/sel_person.css">
+		<link rel="stylesheet" href="css/task.css">
+		<link rel="stylesheet" href="css/list.css">
+		<link rel="stylesheet" href="css/member.css">
+		<link rel="stylesheet" href="css/cipher.css">
+		<link rel="stylesheet" href="css/user.css">
 		<link rel="stylesheet" href="css/samp_cipher.css">
 		<title>test</title>
 	</head>
 	<body>
-		<div class="container"><div>
-			<input type="text">
-			<input type="text">
+		<div class="container">
+			<div class="form-group row">
+				<div class="col-sm-12 input-group">
+					<div class="input-group-prepend">
+						<span class="input-group-text">GROUP ID</span>
+					</div>
+					<input type="text" class="form-control" id="gid">
+				</div>
+			</div>
+			<div class="form-group row">
+				<div class="col-sm-6 input-group">
+					<div class="input-group-prepend">
+						<span class="input-group-text">VER</span>
+					</div>
+					<input type="text" class="form-control" id="ver">
+				</div>
+				<div class="col-sm-6 input-group">
+					<div class="input-group-prepend">
+						<span class="input-group-text">DRAFT</span>
+					</div>
+					<input type="text" class="form-control" id="draft">
+				</div>
+			</div>
+			<div class="form-group row">
+				<div class="col-sm-12 right">
+					<span id="user"></span>
+					<button type="button" class="btn" id="creuser">CREATE USER</button>
+					<button type="button" class="btn" id="login">LOGIN</button>
+					&nbsp;|&nbsp;
+					<button type="button" class="btn" id="add">ADD</button>
+					<button type="button" class="btn" id="ref">REF</button>
+					<button type="button" class="btn" id="edit">EDIT</button>
+				</div>
+			</div>
+			<hr>
+			<div id="cipher"></div>
 		</div>
 		<script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
 		<script type="text/javascript" src="js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="js/sha256.js"></script>
 		<script type="text/javascript" src="js/common.js"></script>
+		<script type="text/javascript" src="js/lang.js"></script>
+		<script type="text/javascript" src="js/govrule.js"></script>
+		<script type="text/javascript" src="js/tokenrule.js"></script>
+		<script type="text/javascript" src="js/govrulelist.js"></script>
+		<script type="text/javascript" src="js/personlist.js"></script>
+		<script type="text/javascript" src="js/votestate.js"></script>
+		<script type="text/javascript" src="js/sel_person.js"></script>
+		<script type="text/javascript" src="js/task.js"></script>
+		<script type="text/javascript" src="js/list.js"></script>
+		<script type="text/javascript" src="js/member.js"></script>
 		<script type="text/javascript" src="js/cipher.js"></script>
+		<script type="text/javascript" src="js/user.js"></script>
 		<script type="text/javascript" src="js/samp_cipher.js"></script>
 	</body>
 </html>

@@ -1,7 +1,9 @@
 _ = {
 	prepare : function() {
-		var govrule1 = new Token($('#token1'));
-		var govrule2 = new Token($('#token2'));
+		var data = {
+			groupid : '1234567890123456789012345678901234567890123456789012345678901234'
+		};
+		var token = new Token($('#token1'), data);
 	}
 };
 

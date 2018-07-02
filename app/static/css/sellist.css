@@ -1,0 +1,76 @@
+.li_area {
+	padding:16px;
+}
+
+.li_list { 
+	margin:0px;
+}
+
+.li_list > .li_head {
+	width:100%;
+	height:4px;
+}
+
+.li_list > .li_head > div {
+	border-top:1px solid #ccc;
+	border-right:1px solid #ccc;
+	border-left:1px solid #ccc;
+}
+
+.li_list > .li_data {
+	border:1px solid #ccc;
+	width:100%;
+	overflow-y:scroll;
+}
+
+.li_list > div > div {
+	margin:0px;
+	overflow:hidden;
+}
+
+.li_list .odd {
+	background-color:#e0f0ff;
+}
+
+.li_list .sel {
+	background-color:#ffff80;
+}
+
+.li_list > div > div > div > div > div {
+	margin:0px -24px 0px 0px;
+	overflow:hidden;
+}
+
+.li_filter {
+	height:40px;
+}
+
+.li_select {
+	height:70px;
+}
+
+.li_select > div {
+	border:1px solid #ccc;
+	width:100%;
+	height:70px;
+	margin:0px 16px 0px 16px;
+	overflow-y:scroll;
+}
+
+.li_select > div:after {
+	clear:both;
+}
+
+.li_select > div > div {
+	float: left;
+	background-color: #fe8;
+	margin: 4px;
+	padding: 8px;
+	border-radius: 10px;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+}
+
+.li_button {
+	height:40px;
+}

@@ -1,10 +1,8 @@
 'use_strict'
 
-let db = require('../db/db');
+let dperson = require('../db/person');
 let cmn = require('./cmn');
 let log = require('../cmn/logger')('api.person');
-let util = require('../cmn/util');
-let sha256 = require('sha256');
 
 module.exports = {
 	/*
@@ -13,15 +11,11 @@ module.exports = {
 	 */
 	list_fast : async name=> {
 		try {
-			return await db.any(
-				'select id, name from person where id like $1 or name like $1 limit 300', 
-				['%' + name + '%']
-			);
+			return await dperson.list_fast(name);
 		} catch (e) {
-			log.error('errored in getGroup : ' + e);
+			log.error('errored in list_fast : ' + e);
 			throw 'system error';
 		}
-		return [];
 	},
 
 	/*
@@ -30,16 +24,57 @@ module.exports = {
 	 */
 	name : async ids => {
 		try {
-			log.info(ids);
-			return await db.any(
-				'select id, name from person where id in ($1:csv)', [ids]
-			);
+			return await dperson.name(ids);
 		} catch (e) {
 			log.error('errored in name : ' + e);
 			throw 'system error';
 		}
-		return [];
-	}
+	},
 
+	/*
+	 * register
+	 */
+	register : async d => {
+		try {
+			if (!cmn.chkTypes([
+				{p:d.name, f:cmn.isEmpty, r:true},
+				{p:d.id, f:cmn.isAlphaNumeric},
+				{p:d.key, f:cmn.isEmpty, r:true}
+			])) {
+				return {code:'INVALID_PARAM'};
+			}
+			if (!cmn.chkStrLen(d.id, 6, 16) || 
+				!cmn.chkStrLen(d.name, 0, 32)) {
+				return {code:'INVALID_PARAM'};
+			}
+
+			let ret = await dperson.isexist(d.id);
+			if (ret) {
+				return {code:'ALREADY_REGISTERED'};
+			}
+			
+			let tm = cmn.d2st(cmn.stdtm());
+			await dperson.register(d.id, d.name, d.key, d.profile, tm);
+			return true;
+		} catch (e) {
+			log.error('errored in name : ' + e);
+			throw 'system error';
+		}
+	},
+
+	/*
+	 * login
+	 */
+	login : async d => {
+		if (await dperson.validate({
+			id : d.id,
+			tm : d.tm,
+			hash : d.hash,
+			islogin : true
+		})) {
+			return true;
+		}
+		return false;
+	}
 
 };

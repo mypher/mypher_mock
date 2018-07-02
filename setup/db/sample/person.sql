@@ -1,99 +1,106 @@
 delete from person where id like 'test%';
-insert into person(id, name, pass, profile) 
+insert into person(id, name, profile, key) 
 values(
-	'test1',
+	'test001',
 	'testname1',
-	'test1',
-	'あいうえお'
+	'あいうえお',
+	'ynbK0+s09Ai9wK7UWWEwQ7DDmlOpLDXFovKWPIhObZ3WXCBlGYxI2ueGPmwURQGVbGoimViCmguNN8a0Vyp1BnmJi57hVyZrckxymCtDjwXKTyD32/jYHKxQSMSN9b5d69cUAJmBHooe+lhXF6pkggIDlJIgeG/oHqZz62mc/Vs='
 );
-insert into person(id, name, pass, profile) 
+insert into person(id, name, profile, key) 
 values(
-	'test2',
+	'test002',
 	'testname2',
-	'test2',
-	'あいうえお'
+	'あいうえお',
+	'ynbK0+s09Ai9wK7UWWEwQ7DDmlOpLDXFovKWPIhObZ3WXCBlGYxI2ueGPmwURQGVbGoimViCmguNN8a0Vyp1BnmJi57hVyZrckxymCtDjwXKTyD32/jYHKxQSMSN9b5d69cUAJmBHooe+lhXF6pkggIDlJIgeG/oHqZz62mc/Vs='
 );
-insert into person(id, name, pass, profile) 
+insert into person(id, name, profile, key) 
 values(
-	'test3',
+	'test003',
 	'testname3',
-	'test3',
-	'あいうえお'
+	'あいうえお',
+	'ynbK0+s09Ai9wK7UWWEwQ7DDmlOpLDXFovKWPIhObZ3WXCBlGYxI2ueGPmwURQGVbGoimViCmguNN8a0Vyp1BnmJi57hVyZrckxymCtDjwXKTyD32/jYHKxQSMSN9b5d69cUAJmBHooe+lhXF6pkggIDlJIgeG/oHqZz62mc/Vs='
 );
-insert into person(id, name, pass, profile) 
+insert into person(id, name, profile, key) 
 values(
-	'test4',
+	'test004',
 	'testname4',
-	'test4',
-	'あいうえお'
+	'あいうえお',
+	'ynbK0+s09Ai9wK7UWWEwQ7DDmlOpLDXFovKWPIhObZ3WXCBlGYxI2ueGPmwURQGVbGoimViCmguNN8a0Vyp1BnmJi57hVyZrckxymCtDjwXKTyD32/jYHKxQSMSN9b5d69cUAJmBHooe+lhXF6pkggIDlJIgeG/oHqZz62mc/Vs='
 );
-insert into person(id, name, pass, profile) 
+insert into person(id, name, profile, key) 
 values(
-	'test5',
+	'test005',
 	'testname5',
-	'test5',
-	'あいうえお'
+	'あいうえお',
+	'ynbK0+s09Ai9wK7UWWEwQ7DDmlOpLDXFovKWPIhObZ3WXCBlGYxI2ueGPmwURQGVbGoimViCmguNN8a0Vyp1BnmJi57hVyZrckxymCtDjwXKTyD32/jYHKxQSMSN9b5d69cUAJmBHooe+lhXF6pkggIDlJIgeG/oHqZz62mc/Vs='
 );
-insert into person(id, name, pass, profile) 
+insert into person(id, name, profile, key) 
 values(
-	'test6',
+	'test006',
 	'testname6',
-	'test6',
-	'あいうえお'
+	'あいうえお',
+	'ynbK0+s09Ai9wK7UWWEwQ7DDmlOpLDXFovKWPIhObZ3WXCBlGYxI2ueGPmwURQGVbGoimViCmguNN8a0Vyp1BnmJi57hVyZrckxymCtDjwXKTyD32/jYHKxQSMSN9b5d69cUAJmBHooe+lhXF6pkggIDlJIgeG/oHqZz62mc/Vs='
 );
-insert into person(id, name, pass, profile) 
+insert into person(id, name, profile, key) 
 values(
-	'test7',
+	'test007',
 	'testname7',
-	'test7',
-	'あいうえお'
+	'あいうえお',
+	'ynbK0+s09Ai9wK7UWWEwQ7DDmlOpLDXFovKWPIhObZ3WXCBlGYxI2ueGPmwURQGVbGoimViCmguNN8a0Vyp1BnmJi57hVyZrckxymCtDjwXKTyD32/jYHKxQSMSN9b5d69cUAJmBHooe+lhXF6pkggIDlJIgeG/oHqZz62mc/Vs='
 );
-insert into person(id, name, pass, profile) 
+insert into person(id, name, profile, key) 
 values(
-	'test8',
+	'test008',
 	'testname8',
-	'test8',
-	'あいうえお'
+	'あいうえお',
+	'ynbK0+s09Ai9wK7UWWEwQ7DDmlOpLDXFovKWPIhObZ3WXCBlGYxI2ueGPmwURQGVbGoimViCmguNN8a0Vyp1BnmJi57hVyZrckxymCtDjwXKTyD32/jYHKxQSMSN9b5d69cUAJmBHooe+lhXF6pkggIDlJIgeG/oHqZz62mc/Vs='
 );
-insert into person(id, name, pass, profile) 
+insert into person(id, name, profile, key) 
 values(
-	'test9',
+	'test009',
 	'testname9',
-	'test9',
-	'あいうえお'
+	'あいうえお',
+	'ynbK0+s09Ai9wK7UWWEwQ7DDmlOpLDXFovKWPIhObZ3WXCBlGYxI2ueGPmwURQGVbGoimViCmguNN8a0Vyp1BnmJi57hVyZrckxymCtDjwXKTyD32/jYHKxQSMSN9b5d69cUAJmBHooe+lhXF6pkggIDlJIgeG/oHqZz62mc/Vs='
 );
-insert into person(id, name, pass, profile) 
+insert into person(id, name, profile, key) 
 values(
-	'test10',
+	'test010',
 	'testname10',
-	'test10',
-	'あいうえお'
+	'あいうえお',
+	'ynbK0+s09Ai9wK7UWWEwQ7DDmlOpLDXFovKWPIhObZ3WXCBlGYxI2ueGPmwURQGVbGoimViCmguNN8a0Vyp1BnmJi57hVyZrckxymCtDjwXKTyD32/jYHKxQSMSN9b5d69cUAJmBHooe+lhXF6pkggIDlJIgeG/oHqZz62mc/Vs='
 );
-insert into person(id, name, pass, profile) 
+insert into person(id, name, profile, key) 
 values(
-	'test11',
+	'test011',
 	'testname11',
-	'test11',
-	'あいうえお'
+	'あいうえお',
+	'ynbK0+s09Ai9wK7UWWEwQ7DDmlOpLDXFovKWPIhObZ3WXCBlGYxI2ueGPmwURQGVbGoimViCmguNN8a0Vyp1BnmJi57hVyZrckxymCtDjwXKTyD32/jYHKxQSMSN9b5d69cUAJmBHooe+lhXF6pkggIDlJIgeG/oHqZz62mc/Vs='
 );
-insert into person(id, name, pass, profile) 
+insert into person(id, name, profile, key) 
 values(
-	'test12',
+	'test012',
 	'testname12',
-	'test12',
-	'あいうえお'
+	'あいうえお',
+	'ynbK0+s09Ai9wK7UWWEwQ7DDmlOpLDXFovKWPIhObZ3WXCBlGYxI2ueGPmwURQGVbGoimViCmguNN8a0Vyp1BnmJi57hVyZrckxymCtDjwXKTyD32/jYHKxQSMSN9b5d69cUAJmBHooe+lhXF6pkggIDlJIgeG/oHqZz62mc/Vs='
 );
-insert into person(id, name, pass, profile) 
+insert into person(id, name, profile, key) 
 values(
-	'test13',
+	'test013',
 	'testname13',
-	'test13',
-	'あいうえお'
+	'あいうえお',
+	'ynbK0+s09Ai9wK7UWWEwQ7DDmlOpLDXFovKWPIhObZ3WXCBlGYxI2ueGPmwURQGVbGoimViCmguNN8a0Vyp1BnmJi57hVyZrckxymCtDjwXKTyD32/jYHKxQSMSN9b5d69cUAJmBHooe+lhXF6pkggIDlJIgeG/oHqZz62mc/Vs='
 );
-insert into person(id, name, pass, profile) 
+insert into person(id, name, profile, key) 
 values(
-	'test14',
+	'test014',
 	'testname14',
-	'test14',
-	'あいうえお'
+	'あいうえお',
+	'ynbK0+s09Ai9wK7UWWEwQ7DDmlOpLDXFovKWPIhObZ3WXCBlGYxI2ueGPmwURQGVbGoimViCmguNN8a0Vyp1BnmJi57hVyZrckxymCtDjwXKTyD32/jYHKxQSMSN9b5d69cUAJmBHooe+lhXF6pkggIDlJIgeG/oHqZz62mc/Vs='
+);
+insert into person(id, name, profile, key) 
+values(
+	'test015',
+	'testname15',
+	'あいうえお',
+	'ynbK0+s09Ai9wK7UWWEwQ7DDmlOpLDXFovKWPIhObZ3WXCBlGYxI2ueGPmwURQGVbGoimViCmguNN8a0Vyp1BnmJi57hVyZrckxymCtDjwXKTyD32/jYHKxQSMSN9b5d69cUAJmBHooe+lhXF6pkggIDlJIgeG/oHqZz62mc/Vs='
 );

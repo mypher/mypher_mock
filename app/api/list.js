@@ -1,20 +1,39 @@
 'use_strict'
 
 let log = require('../cmn/logger')('api.list');
+let dperson = require('../db/person');
 
 module.exports = {
 	cls : {
 		talk : require('./talk'),
 		person  : require('./person'),
-		rule  : require('./rule')
+		rule  : require('./rule'),
+		task : require('./task'),
+		token : require('./token'),
+		cipher : require('./cipher')
 	},
-	call : async function (cn, mn, params) {
+	call : async function (cn, mn, params, auth) {
 		log.debug('api.call:' + cn + ':' + mn);
 		let cls = this.cls[cn];
 		if (cls===undefined||cls[mn]===undefined) {
 			throw 'api not found';
 		}
 		try {
+			if (mn[0]==='_') {
+				if (auth&&dperson.validate({
+					id : auth.id,
+					tm : auth.tm,
+					data : JSON.stringify(params),
+					hash : auth.hash
+				})) {
+					log.info('success to validate');
+				} else {
+					return {
+						code : 'FAILED_TO_AUTH'
+					};
+				}
+				return await cls[mn](auth.id, ...params);
+			}
 			return await cls[mn](...params);
 		} catch (e) {
 			throw e;

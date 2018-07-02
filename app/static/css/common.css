@@ -111,6 +111,10 @@
 .right {
 	text-align:right;
 }
+.center {
+	text-align:center;
+}
+
 
 .clear {
 	clear:both;
@@ -118,6 +122,9 @@
 
 input[type="text"]:disabled {
 	background-color:#f8f8f8;
+}
+textarea:disabled {
+	background-color:#f8f8f8 !important;
 }
 
 .input-follow {
@@ -130,6 +137,9 @@ input[type="text"]:disabled {
 	border-radius: 4px;
 	-webkit-border-radius: 4px;
 	-moz-border-radius: 4px;
+	overflow:scroll;
+	padding:30px;
+	background-color:#fff;
 }
 
 .popupback {
@@ -143,3 +153,8 @@ input[type="text"]:disabled {
 	-moz-opacity: 0.5;
 	opacity: 0.5;
 }
+
+button img {
+	filter: invert(1);
+}
+

@@ -1,0 +1,48 @@
+.govrulelist {
+	padding-right: 15px;
+	padding-left: 15px;
+	background-color:#eee;
+}
+
+.govrulelist .darea {
+	overflow:scroll;
+	height:100%;
+	padding:30px 15px 0px 15px;
+	margin-right:-15px;
+	margin-left:-15px;
+}
+
+.govrulelist .harea {
+	height:30px;
+	z-index:1;
+	position:absolute;
+}
+
+.govrulelist .hd {
+	border-right:1px solid #888;
+	border-bottom:1px solid #888;
+	background-color:#50c0ff;
+}
+
+.govrulelist .col1 {
+	border-right:1px solid #ddd;
+	border-bottom:1px solid #ddd;
+}
+
+.govrulelist .col2 {
+	border-bottom:1px solid #ddd;
+}
+
+.govrulelist .col3 {
+	border-bottom:1px solid #ddd;
+	overflow:hidden;
+	display:inline;
+}
+
+.govrulelist .row{
+	background-color:#fff;
+}
+
+.govrulelist .row:hover{
+	background-color:#ffffe0;
+}

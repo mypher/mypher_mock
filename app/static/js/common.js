@@ -1,3 +1,19 @@
+MODE = {
+	NEW : 1,
+	REF : 2,
+	EDIT : 3,
+	REF2 : 4
+};
+
+NOTIFY = {
+	CANCEL : 0,
+	CREATE : 1,
+	EDIT : 2,
+	COMMIT : 3,
+	LOGIN : 4,
+	APPROVE : 5
+}
+
 Rpc = {
 	SV_URL : '',
 	getId : function() {
@@ -16,6 +32,12 @@ Rpc = {
 			'method':method,
 			'params':param
 		};
+		var m = method.split('.');
+		if (m[1][0]==='_') {
+			if (UserManager.isLogin()) {
+				data.auth = UserManager.getHash({data:JSON.stringify(param)});
+			}
+		}
 		if (failcb===failcb||type(failcb)!=='function') {
 			failcb = function(jqXHR, textStatus, errorThrown) {};
 		}
@@ -65,6 +87,27 @@ var Base64 = {
 		return decodeURIComponent(escape(atob(str)));
 	}
 };
+
+var Validator = {
+	an : /^[abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ_]*$/,
+	ps : /^[abcdefghijklmnopqrstuvwxyz1234567890!"#$%&'\(\)\+\-\*\?]*$/,
+	isAlphaNumeric : function(v) {
+		return (v.match&&v.match(this.an));
+	},
+	isFitToPassword : function(v) {
+		return (v.match&&v.match(this.ps));
+	}
+};
+
+var Crypto = {
+	hash : function(word) {
+		return Sha256.hash(word);
+	},
+	sighash : function(word, phrase) {
+		var ret = Sha256.hash(word+phrase);
+		return Sha256.hash(ret + phrase);
+	}
+}
 
 var UI = {
 	setClass : function(elm, cls) {
@@ -124,22 +167,29 @@ var UI = {
 			position : 'fixed',
 			'z-index' : index
 		}).addClass('popup');
-		$('body').append($('<div>').addClass('popupback').css({
+		var popupback = $('<div>').addClass('popupback').css({
 			'z-index' : index -1
-		}));
+		}).click(function() {
+			UI.closePopup();
+		});
+		$('body').append(popupback);
 		$('body').append(popup);
 		return popup;
 	},
 
 	closePopup : function() {
 		var popup = $('.popup');
-		var popupback = $('.popupback')
+		var popupback = $('.popupback');
 		if (popup.length>0) {
-			popup.remove();
+			$(popup[popup.length-1]).remove();
 		}
 		if (popupback.length>0) {
-			popupback.remove();
+			$(popupback[popupback.length-1]).remove();
 		}
+	},
+	alert : function(msg) {
+		var l = _L(msg);
+		alert(l ? l : msg);
 	}
 };
 
@@ -197,7 +247,9 @@ var Util = {
 			});
 		});
 	}, 
+	wait_default : 2000,
 	promise : function(func, timeout) {
+		if (timeout===undefined) timeout = Util.wait_default;
 		return new Promise(function(resolve, reject) {
 			window.setTimeout(function() {
 				reject('timeout');
@@ -207,5 +259,36 @@ var Util = {
 	},
 	text : function(text) {
 
+	},
+	split : function(v) {
+		if (typeof(v)!=='string') {
+			return [];
+		}
+		var ret = v.split(',');
+		for ( var i in ret ) {
+			ret[i] = ret[i].trim();
+		}
+		return ret;
 	}
 };
+
+
+
+var CHECK = {
+	isNum : function(p) {
+		try {
+			return (NaN!==parseInt(p));
+		} catch(e) {
+			return false;
+		}
+	},
+	isNotEmpty : function(p) {
+		return p&&p.length&&p.length>0;
+	},
+	all : function(p, f) {
+		for ( var i in p ) {
+			if (!f[i](p[i])) return false;
+		}
+		return true;
+	}
+}

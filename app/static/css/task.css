@@ -1,11 +1,16 @@
-._tk > .area {
+.tk_root {
+	background-color:#fff;
+	padding:16px;
+}
+
+.task > .area {
 	padding:24px;
 }
 
-._tk > .area > ul {
+.task > .area > ul {
 	margin:24px 0px 24px 0px;
 }
 
-._tk .votestate {
+.task .votestate {
 	height:100px;
 }

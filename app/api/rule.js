@@ -3,67 +3,92 @@
 let db = require('../db/db');
 let cmn = require('./cmn');
 let log = require('../cmn/logger')('api.rule');
-let util = require('../cmn/util');
 let sha256 = require('sha256');
 
+let dcipher = require('../db/cipher');
+let drule = require('../db/rule');
+
 module.exports = {
+	/*
+	 * _add
+	 * params : d.groupid, d.ver, d.draftno, d.name, d.req, d.auth, sender
+	 */
+	_add  : async (sender, d) => {
+		try {
+			let response = null;
+			await db.tx(async t=>{
+				response = await cmn.isEditable({
+					id : d.groupid,
+					ver : d.ver,
+					draftno : d.draftno,
+					sender : sender
+				}, t);
+				if (response!==true) {
+					return;
+				}
+				if (!cmn.chkTypes([
+					{ p:d.groupid, f:cmn.isKey},
+					{ p:d.ver, f:cmn.isSmallInt},
+					{ p:d.draftno, f:cmn.isSmallInt},
+					{ p:d.name, f:cmn.isEmpty, r:true},
+					{ p:d.req, f:cmn.isSmallInt}
+				])) {
+					response = {code:'INVALID_PARAM'};
+					return;
+				}
+				d.tm = cmn.d2st(cmn.stdtm());
+				d.id = sha256('rule' + d.groupid + d.name + d.tm);
+				await drule.insert(d, t);
+				response = d.id;
+			});
+			return response;
+		} catch (e) {
+			log.error('errored in _add : ' + e);
+			throw 'system error';
+		}
+	}, 
 
 	/*
 	 * get
-	 * param : grp - group id
-	 *         id - rule id
+	 * params : d.groupid, d.ver, d.draftno, d.id
 	 */
-	get : async (grp, id)=> {
+	get : async d=> {
 		let data = {};
 		try {
-			data =  await db.one(
-				'select groupid, id, name, req, auth from rule where groupid = $1 and id = $2', 
-				[grp, id]
-			);
-			if (data.code) {
-				if (data.code===db.NODATA) {
-					return {};
-				} 
-				throw 'data duplicate ' + grp + ',' + id;
-			}
-			return data;
+			return await drule.get(d);
 		} catch (e) {
 			log.error('errored in get : ' + e);
-			throw 'system error';
 		}
-		return {};
+		return {code:'NOT_FOUND'};
 	},
 
 	/*
-	 * add
-	 * param : grp - group id
-	 *         name - name
-	 *         req - required number of approvals
-	 *         auth - list of authorizers
+	 * list
+	 * params : d.groupid, d.ver, d.draftno
 	 */
-	add  : async (grp, name, req, auth) => {
+	list : async d => {
 		try {
-			if (!cmn.chkTypes([
-				{ p:grp, f:cmn.isKey},
-				{ p:name, f:cmn.isEmpty, r:true},
-				{ p:req, f:cmn.isSmallInt}
-			])) {
-				throw 'invalid parameter';
-			}
-			let tm = cmn.d2st(cmn.stdtm());
-			let id = sha256('rule' + grp + name + tm);
-			await db.none(
-				'insert into rule(groupid, id, name, req, auth, tm) values($1, $2, $3, $4, $5, $6)', 
-				[grp, id , name, req, auth, tm]
-			);
-			return id;
+			return await drule.list(d);
 		} catch (e) {
 			log.error('errored in get : ' + e);
 			throw 'system error';
 		}
-		return '';
+	},
 
-	}, 
+	/*
+	 * list_fast 
+	 * params : d.groupid, d.ver, d.draftno, d.name
+	 */
+	list_fast : async d => {
+		try {
+			return await drule.list_fast(d);
+		} catch (e) {
+			log.error('errored in load : ' + e);
+			throw 'system error';
+		}
+	},
+
+
 
 	/*
 	 * update
@@ -75,24 +100,5 @@ module.exports = {
 	 */
 	update  : async (grp, id, name, req, auth) => {
 		return id;
-	/*	try {
-			let tm = cmn.d2st(cmn.stdtm());
-			await db.none(
-				'update rule set req = $1, auth = $2, tm = $3 where groupid = $4 and id = $5', 
-				[req, auth ,tm, auth, tm]
-			);
-			if (data.code) {
-				if (data.code===db.NODATA) {
-					return {};
-				} 
-				throw 'data duplicate ' + grp + ',' + id;
-			}
-			return data;
-		} catch (e) {
-			log.error('errored in get : ' + e);
-			throw 'system error';
-		}
-		return {};*/
-
 	}
 };

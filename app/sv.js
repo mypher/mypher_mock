@@ -18,16 +18,17 @@ module.exports = {
 }
 
 const cont_type = {
-	'html': 'text/html',
-	'htm': 'text/html',
-	'css':  'text/css',
-	'js':   'application/x-javascript',
-	'json': 'application/json',
-	'jpg':  'image/jpeg',
-	'jpeg': 'image/jpeg',
-	'png':  'image/png',
-	'gif':  'image/gif',
-	'svg':  'image/svg+xml'
+	'html': ['text/html', false ],
+	'htm': ['text/html', false ],
+	'css':  ['text/css', false ],
+	'map':  ['application/json map', false ],
+	'js':   ['application/x-javascript', false ],
+	'json': ['application/json', false ],
+	'jpg':  ['image/jpeg', true ],
+	'jpeg': ['image/jpeg', true ],
+	'png':  ['image/png', true ],
+	'gif':  ['image/gif', true ],
+	'svg':  ['image/svg+xml', true ]
 }
 
 function getType(url) {
@@ -36,21 +37,34 @@ function getType(url) {
 	return cont_type[typ] ? typ : '';
 }
 
-function conttype(url) {
-	return cont_type[getType(url)]||'';
+function conttype(typ) {
+	typ = cont_type[typ];
+	return (typ||[''])[0];
 }
 
+function isbin(typ) {
+	typ = cont_type[typ];
+	return (typ||[null,false])[1];
+}
+
+
 function request(req, res) {
-	if (getType(req.url)==='') {
+	let typ = getType(req.url);
+	if (typ==='') {
 		return callApi(req, res);
 	}
-	fs.readFile(__dirname + '/static' + req.url, 'utf-8', function(err, data){
+	let write = (err ,data) => {
 		if (err) {
 			return return404(res);
 		}
-		res.writeHead(200, {'Content-Type' : conttype(req.url)});　
+		res.writeHead(200, {'Content-Type' : conttype(typ)});　
 		res.end(data);
-	});
+	}
+	if (isbin(typ) === true) {
+		fs.readFile(__dirname + '/static' + req.url, write);
+	} else {
+		fs.readFile(__dirname + '/static' + req.url, 'utf-8', write);
+	}
 }
 
 function return404(res, e) {
@@ -93,7 +107,7 @@ function callApi(req, res) {
 			res.end();
 			return;
 		}
-		api.call(method[0], method[1], o.params).then(rslt =>  {
+		api.call(method[0], method[1], o.params, o.auth).then(rslt =>  {
 			res.writeHead(200, {'Content-Type': 'application/json'});
 			res.write(JSON.stringify(
 				{

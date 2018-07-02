@@ -10,6 +10,9 @@ const db = pgp({
 	database: allconf.DBEnv.dbname
 });
 
+module.exports = db;
+
+/*
 module.exports = {
 	NODATA : pgp.queryResult.noData,
 	NOTEMPTY : pgp.queryResult.notEmpty,
@@ -42,4 +45,4 @@ module.exports = {
 	test : async function() {
 		return this.any('select * from person');
 	}
-};
+};*/

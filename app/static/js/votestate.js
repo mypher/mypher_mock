@@ -20,7 +20,7 @@ VoteState.prototype = {
 			if (Array.isArray(self.data.d.list)) {
 				self.denominator = new PersonList(d, self.data.d);
 			} else {
-				self.denominator = new GovRule(d, self.data.d, false);
+				self.denominator = new GovRule(d, self.data.d, false, true);
 			}
 			self.numerator = new PersonList(n, self.data.n);
 		});

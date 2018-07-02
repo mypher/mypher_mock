@@ -1,10 +1,15 @@
 
-function GovRule(div, data, editable) {
+function GovRule(div, data, editable, hidetitle, cb) {
 	this.div = div;
 	this.editable = editable;
+	this.hidetitle = hidetitle;
+	this.data = data;
+	this.cb = cb;
+	if (data.auth&&!Array.isArray(data.auth)) {
+		data.auth = data.auth.split(',');
+	}
 	this.init();
 	if (data&&data.auth) {
-		this.data = data;
 		if (data.auth.length&&data.auth.length>0) {
 			var self = this;
 			Util.name(data.auth).then(function(names) {
@@ -20,25 +25,72 @@ function GovRule(div, data, editable) {
 			this.data.req = 0;
 		}
 	} else {
-		this.data = {
-			groupid : data.groupid,
-			id : data.id,
-			req : 0,
-			auth : {}
-		}
+		this.data = data || {};
+		this.data.req = 0;
+		this.data.auth = {};
 		this.layout();
 	}
 }
 
 
-GovRuleMgr = {
-	make : function(div, data, editable) {
+GovRuleManager = {
+	add : function(div, data, cb) {
+		return Util.promise(function(resolve, reject) {
+			var ctrl = new GovRule(div, data, true, false, function(code) {
+				if (code===NOTIFY.COMMIT) {
+					var data = ctrl.get();
+					data.auth = data.auth.join(',');
+					Rpc.call('rule._add', [data], function(res) {
+						if (res.result.code) {
+							UI.alert(_L(res.result.code));
+							return;
+						}
+						cb(NOTIFY.CREATE, res.result);
+					}, function(err) {
+						UI.alert(err.message);
+					}, function(fail) {
+						UI.alert(fail.message);
+					});
+				} else if (code===NOTIFY.CANCEL) {
+					cb(code);
+				}
+			});
+			resolve(ctrl);
+		});
+	},
+	ref : function(div, data, cb) {
+		return Util.promise(function(resolve, reject) {
+			Rpc.call('rule.get', [{
+					groupid : data.groupid, 
+					ver : data.ver, 
+					draftno : data.draftno,
+					id : data.id
+				}], function(res) {
+				data.req = res.result.req;
+				data.name = res.result.name;
+				data.auth = res.result.auth.split(',');
+				resolve(new GovRule(div, data, false, false, function(code) {
+					cb(code);
+				}));
+			}, function(err) {
+				reject(err.message);
+			}, function(fail) {
+				reject(fail.message);
+			});
+		});
+	},
+	make : function(div, data, editable, hidetitle) {
 		return Util.promise(function(resolve, reject) {
 			if (!data.groupid) {
 				reject('data.groupid not specified');
 			}
 			if (data.id) {
-				Rpc.call('rule.get', [data.groupid, data.id], function(res) {
+				Rpc.call('rule.get', [{
+					groupid : data.groupid, 
+					ver : data.ver,
+					draftno : data.draftno,
+					id : data.id
+				}], function(res) {
 					data.req = res.result.req;
 					data.name = res.result.name;
 					data.auth = res.result.auth.split(',');
@@ -49,13 +101,13 @@ GovRuleMgr = {
 					reject(err.message);
 				});
 			} else {
-				resolve(new GovRule(div, data, editable));
+				resolve(new GovRule(div, data, editable, hidetitle));
 			}
-		}, 2000);
+		});
 	},
 
 	commit : function(gov) {
-		return Util.promise(function(resolve, reject) {
+		/*return Util.promise(function(resolve, reject) {
 			var data = gov.get();
 			var auth = Array.isArray(data.auth) ? data.auth.join(',') : '';
 			Rpc.call('rule.add', [data.groupid, data.name, data.req, auth], function(res) {
@@ -65,7 +117,8 @@ GovRuleMgr = {
 			}, function(fail) {
 				reject(err.message);
 			});
-		}, 2000);
+		});*/
+		alert('!!!');
 	}
 }
 
@@ -100,7 +153,25 @@ GovRule.prototype = {
 			var span = self.div.find('span');
 			var input = self.div.find('input');
 			$(span[0]).text(_L('NAME1'));
-			if (!self.editable) return;
+			var btndiv = self.div.find('.button');
+			if (self.hidetitle) {
+				var div = self.div.find('div');
+				$(div[0]).css('display', 'none')
+				$(btndiv[0]).css('display', 'none');
+			}
+			self.draw();
+			if (!self.editable) {
+				$(input[0]).attr('disabled', true);
+				$(btndiv[0]).css('display', 'none');
+				return;
+			}
+			var btn = $(btndiv[0]).find('button');
+			$(btn[0]).text(_L('COMMIT')).click(function() {
+				self.cb(NOTIFY.COMMIT);
+			});
+			$(btn[1]).text(_L('CANCEL')).click(function() {
+				self.cb(NOTIFY.CANCEL);
+			});
 			$(td[0]).click(function() {
 				var txt = $('<input>', { type:'text', value:self.data.req });
 				txt.css({
@@ -122,7 +193,6 @@ GovRule.prototype = {
 			$(td[2]).click(function() {
 				var selected = [];
 				var auth = UI.popup(400,430);
-				self.div.append(auth);
 				for ( var i in self.data.auth ) {
 					selected.push(i);
 				}
@@ -142,7 +212,6 @@ GovRule.prototype = {
 			$(input[0]).blur(function() {
 				self.data.name = $(this).val();
 			});
-			self.draw();
 		});
 	},
 
@@ -162,7 +231,7 @@ GovRule.prototype = {
 			td.append($('<div>', auth));
 		}
 		if (td.children().length===0) {
-			auth.text = _L('ALL_MEMBER');
+			auth.text = _L('NOT_SET');
 			td.append($('<div>', auth));
 		}
 	},
@@ -171,6 +240,8 @@ GovRule.prototype = {
 		var input = this.div.find('input');
 		var ret = {
 			groupid : this.data.groupid,
+			ver : this.data.ver,
+			draftno : this.data.draftno,
 			id : this.data.id,
 			name : $(input[0]).val(),
 			req : this.data.req,

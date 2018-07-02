@@ -11,10 +11,5 @@ async function term() {
 }
 
 sv.run();
-db.init().then(() => {
-}).catch (e => {
-	log.error('initializing db failed : ' + e);
-	term();
-});
 
 process.on('beforeExit', term).on('SIGINT', term);
