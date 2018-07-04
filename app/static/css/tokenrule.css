@@ -2,3 +2,10 @@
 	background-color:#fff;
 	padding:16px;
 }
+
+.tr_rowlabel {
+	border-bottom: 1px solid #a0d0ff;
+	margin-bottom: 20px;
+	margin-top: 40px;
+	font-weight:bold;
+}

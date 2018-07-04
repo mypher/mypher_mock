@@ -27,11 +27,14 @@ TokenRule.prototype = {
 				$(labels[0]).text(_L('ID'));
 				// title
 				$(labels[2]).text(_L('NAME1'));
+				// type label
+				$(labels[3]).text(_L('TYPE'));
 				// type
 				var root = self.div.find('div[name="tr_type"] > div');
 				var radios = root.find('input');
 				var spans = root.find('span');
-				$(labels[3]).text(_L('TYPE'));
+				labels = self.div.find('div[name="tr_type"] > label');
+				$(labels[0]).text(_L('REWARD_TYPE'));
 				$(spans[0]).text(_L('DIVIDEND'));
 					$(radios[0]).attr({
 					name : 'tr_type',
@@ -43,64 +46,79 @@ TokenRule.prototype = {
 						value : 1
 				});
 				// trigger
-				var trbtn = self.div.find('div[name="tr_trigger"] > div button');
 				root = self.div.find('div[name="tr_trigger"] > div');
-				radios = root.find('input[type="radio"]').change(function() {
-					var inp = self.div.find('div[name="tr_trigger"] > div input[type="text"]');
-					var s1 = ($(this).val()!=='1');
-					var s2 = ($(this).val()!=='2');
-					$(trbtn[0]).attr('disabled', s1);
-					$(trbtn[1]).attr('disabled', s2);
-					$(inp[2]).attr('disabled', s2);
-					if (s1) {
+				labels = self.div.find('div[name="tr_trigger"] > label');
+				$(labels[0]).text(_L('REWARD_REQUIREMENT'));
+				var trbtn = root.find('button');
+				var sel = $(root.find('select')[0]);
+				var selcb = function() {
+					var mask = [
+						[true,  true],
+						[true,  true],
+						[false, true],
+						[true,  false]
+					][sel.val()];
+					var inp = self.div.find('div[name="tr_trigger"] input[type="text"]');
+					$(trbtn[0]).attr('disabled', mask[0]);
+					$(trbtn[1]).attr('disabled', mask[1]);
+					$(inp[2]).attr('disabled', mask[1]);
+					// tasklist
+					if (mask[0]) {
 						$(inp[0]).val('');
 					}
-					if (s2) {
+					// tokenlist
+					if (mask[1]) {
 						$(inp[1]).val('');
 						$(inp[2]).val('');
 					}
-				});
+				};
 				$(trbtn[0]).click(function() {
-					alert(1);
+					var div = UI.popup(600, 600);
+					var ctrl = new TaskList(div, MODE.REF, 
+						self.data.groupid, self.data.ver, self.data.draftno,  
+						function(code, v) {
+							if (code===NOTIFY.SELECT) {
+								var inp = self.div.find('div[name="tr_trigger"] input[type="text"]');
+								UI.closePopup();
+								$(inp[0]).val(v.name).prop('tid', v.id);
+							}
+						}
+					);
 				});
 				$(trbtn[1]).click(function() {
-					alert(1);
+					var div = UI.popup(600, 600);
+					var ctrl = new TokenList(div, MODE.REF, 
+						self.data.groupid, self.data.ver, self.data.draftno,  
+						function(code, v) {
+							if (code===NOTIFY.SELECT) {
+								var inp = self.div.find('div[name="tr_trigger"] input[type="text"]');
+								UI.closePopup();
+								$(inp[1]).val(v.name).prop('tid', v.id);
+							}
+						}
+					);
 				});
-
+				sel.append($('<option>', {value:0}).text(_L('NONE')))
+					.append($('<option>', {value:1}).text(_L('BY_REQUEST_OF_OWNER')))
+					.append($('<option>', {value:2}).text(_L('BY_COMPLETION_OF_TASK')))
+					.append($('<option>', {value:3}).text(_L('BY_NUMBER_OF_OWNED')))
+					.change(selcb);
 				spans = root.find('span');
-				var inp = root.find('input[type="text"]').attr('disabled', true);
-				$(labels[6]).text(_L('TRIGGER_OF_EVENT'));
-				$(spans[0]).text(_L('BY_REQUEST_OF_OWNER'));
-				$(radios[0]).attr({
-					name : 'tr_trigger',
-					value : 0
-				});
-				$(spans[1]).text(_L('BY_COMPLETION_OF_TASK'));
-				$(radios[1]).attr({
-					name : 'tr_trigger',
-					value : 1
-				});
-				$(spans[2]).text(_L('TASK_ID'));
-				$(spans[3]).text(_L('BY_NUMBER_OF_OWNED'));
-				$(radios[2]).attr({
-					name : 'tr_trigger',
-					value : 2
-				});
-				$(spans[4]).text(_L('TOKEN_ID'));
-				$(spans[5]).text(_L('MINIMUM_TOKEN'));
-				$(spans[6]).text(_L('NONE'));
-				$(radios[3]).attr({
-					name : 'tr_trigger',
-					value : 3
-				});
+				$(spans[0]).text(_L('TASK_ID'));
+				$(spans[1]).text(_L('TOKEN_ID'));
+				$(spans[2]).text(_L('MINIMUM_TOKEN'));
+				selcb();
+				// rulelabel
+				root = self.div.find('div[name="tr_rulelabel"]');
+				labels = root.find('label');
+				$(labels[0]).text(_L('TRANSFERED_CONTENT'));
 				// rule
 				root = self.div.find('div[name="tr_rule"]');
 				radios = root.find('input[type="radio"]');
 				spans = root.find('span');
 				labels = root.find('label');
-				$(labels[0]).text(_L('TRANSFERED_CONTENT'));
-				$(labels[1]).text(_L('TARGET_CONTENT'));
-				$(labels[6]).text(_L('QUANTITY'));
+				$(labels[0]).text(_L('TARGET_CONTENT'));
+				$(labels[5]).text(_L('QUANTITY'));
 				$(radios[0]).attr({
 					name : 'tr_rule_target',
 					value : 0
@@ -152,7 +170,7 @@ TokenRule.prototype = {
 			draftno : this.data.draftno,
 			name : $(inp[0]).val(),
 			type : $(this.div.find('input[name^="tr_type"]:checked')).val(),
-			firetype : $(this.div.find('input[name^="tr_trigger"]:checked')).val(),
+			firetype : $(this.div.find('div[name="tr_trigger"] select')[0]).val(),
 			taskid : $(inp[1]).prop('tid'),
 			tokenid : $(inp[2]).prop('tid'),
 			noftoken : $(inp[3]).val(),
@@ -167,25 +185,24 @@ TokenRule.prototype = {
 		this.data = v;
 		var change = function(name, val) {
 			var r = $(self.div.find('input[name^="' + name + '"]'));
-			for ( var i=0; i<r.length; i++) {
-				if ($(r[i]).val()===val) {
-					$(r[i]).prop('checked', true).change();
-					break;
+			try {
+				for ( var i=0; i<r.length; i++) {
+					if (parseInt($(r[i]).val())===parseInt(val)) {
+						$(r[i]).click();
+						break;
+					}
 				}
+			} catch (e) {
+				// nothing
 			}
 		};
-		if (v.type) {
-			change('tr_type', v.type);
+		change('tr_type', v.type);
+		if (v.firetype!==undefined) {
+			var sel = $(this.div.find('div[name="tr_trigger"] select')[0]);
+			sel.val(v.firetype).change();
 		}
-		if (v.trigger) {
-			change('tr_trigger', v.firetype);
-		}
-		if (v.content_target) {
-			change('tr_rule_target', v.rewardtype);
-		}
-		if (v.content_send_type) {
-			change('tr_rule_quantity', v.rcalctype);
-		}
+		change('tr_rule_target', v.rewardtype);
+		change('tr_rule_quantity', v.rcalctype);
 		var trigger = $(this.div.find('input[name^="tr_trigger"]:checked')).val();
 		var inp = this.div.find('input[type="text"]');
 		var label = this.div.find('label');
@@ -216,7 +233,7 @@ TokenRuleManager = {
 				rule1.init({
 					mode : MODE.REF,
 					div : div,
-					data : (res.result.length>0) ? res.result[0] : {},
+					data : (res.result) ? res.result : {},
 					cb : cb ? cb : function(code) {
 						// TODO:¬
 					}

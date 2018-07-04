@@ -198,18 +198,24 @@ Cipher.prototype = {
 						this.common();
 						var list = new TokenList(this.ctrl, MODE.REF, 
 							self.data.id, self.data.ver, self.data.draftno,
-								function(evt, sel) {
-									alert(evt);
+							function(evt, sel) {
+								if (evt===NOTIFY.SELECT) {
+									var div = UI.popup(900, 600);
+									var rule1 = TokenRuleManager.ref(div, sel.groupid, sel.ver, sel.draftno, sel.id);
 								}
+							}
 						);
 					},
 					EDIT : function() {
 						this.common();
 						var list = new TokenList(this.ctrl, MODE.NEW, 
 							self.data.id, self.data.ver, self.data.draftno,
-								function(evt, sel) {
-									alert(evt);
+							function(evt, sel) {
+								if (evt===NOTIFY.SELECT) {
+									var div = UI.popup(900, 600);
+									var rule1 = TokenRuleManager.ref(div, sel.groupid, sel.ver, sel.draftno, sel.id);
 								}
+							}
 						);
 					}
 				})[id[self.mode]]();
@@ -228,18 +234,20 @@ Cipher.prototype = {
 						this.common();
 						var list = new TaskList(this.ctrl, MODE.REF, 
 							self.data.id, self.data.ver, self.data.draftno,
-								function(evt, sel) {
-									alert(evt);
-								}
+							function(evt, sel) {
+								var div = UI.popup(900, 500);
+								var rule1 = TaskManager.ref(div, this.groupid, this.ver, this.draftno, sel.id);
+							}
 						);
 					},
 					EDIT : function() {
 						this.common();
 						var list = new TaskList(this.ctrl, MODE.NEW, 
 							self.data.id, self.data.ver, self.data.draftno,
-								function(evt, sel) {
-									alert(evt);
-								}
+							function(evt, sel) {
+								var div = UI.popup(900, 500);
+								var rule1 = TaskManager.ref(div, this.groupid, this.ver, this.draftno, sel.id);
+							}
 						);
 					}
 				})[id[self.mode]]();
@@ -258,8 +266,17 @@ Cipher.prototype = {
 						this.common();
 						var list = new RuleList(this.ctrl, MODE.REF, 
 							self.data.id, self.data.ver, self.data.draftno,
-								function(evt, sel) {
-									alert(evt);
+								function(code, sel) {
+									if (code===NOTIFY.SELECT) {
+										var div = UI.popup(800, 300);
+										GovRuleManager.make(div, {
+											groupid:self.data.id, 
+											ver:self.data.ver,
+											draftno:self.data.draftno,
+											id:sel.id }, false)
+										.then(function(obj){
+										});
+									}
 								}
 						);
 					},
@@ -267,8 +284,17 @@ Cipher.prototype = {
 						this.common();
 						var list = new RuleList(this.ctrl, MODE.NEW, 
 							self.data.id, self.data.ver, self.data.draftno,
-								function(evt, sel) {
-									alert(evt);
+								function(code, sel) {
+									if (code===NOTIFY.SELECT) {
+										var div = UI.popup(800, 300);
+										GovRuleManager.make(div, {
+											groupid:self.data.id, 
+											ver:self.data.ver,
+											draftno:self.data.draftno,
+											id:sel.id }, false)
+										.then(function(obj){
+										});
+									}
 								}
 						);
 					}

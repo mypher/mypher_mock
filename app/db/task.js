@@ -14,8 +14,8 @@ module.exports = {
 		try {
 			tx = tx ? tx : db;
 			await tx.none(
-				'insert into task(groupid, ver, draftno, id, name, description, ruleid, rewardid, rquantity, tm) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)',
-				[d.groupid, d.ver, d.draftno, d.id, d.name, d.desc, d.ruleid, d.rewardid, d.rquantity, d.tm]
+				'insert into task(groupid, ver, draftno, id, name, parentid, description, ruleid, rewardid, rquantity, tm) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)',
+				[d.groupid, d.ver, d.draftno, d.id, d.name, d.parentid, d.desc, d.ruleid, d.rewardid, d.quantity, d.tm]
 			);
 			await tx.none(
 				'insert into task_state(groupid, ver, draftno, id, pic, tm) values($1, $2, $3, $4, $5, $6)',
@@ -34,10 +34,11 @@ module.exports = {
 	load : async d => {
 		try {
 			return await db.one(
-				'select t.groupid, t.parentid, t.id, t.name, t.description, t.ruleid, r.name rname, r.req, r.auth, ' +
+				'select t.groupid, t.ver, t.draftno, t.parentid, pa.name parentname, t.id, t.name, t.description, t.ruleid, r.name rname, r.req, r.auth, ' +
 				't.rewardid, t.rquantity, ts.pic, p.name pname, ts.pic_approve, ts.review ' +
-				'from (((task t '+
+				'from ((((task t '+
 				'inner join task_state ts on t.groupid = ts.groupid and t.ver = ts.ver and t.draftno = ts.draftno and t.id = ts.id ) ' +
+				'left join task pa on t.groupid = pa.groupid and t.ver = pa.ver and t.draftno = pa.draftno and t.parentid = pa.id ) ' +
 				'left join rule r on t.groupid = r.groupid and t.ver = r.ver and t.draftno = r.draftno and t.ruleid = r.id ) ' +
 				'left join person p on ts.pic = p.id ) ' +
 				'where t.groupid = $1 and t.ver = $2 and t.draftno = $3 and t.id = $4'

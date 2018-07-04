@@ -20,13 +20,13 @@ Task.prototype = {
 				var label = self.div.find('label');
 				$(label[0]).text(_L('ID'));
 				$(label[2]).text(_L('TASK_GROUP'));
-				$(label[4]).text(_L('NAME1'));
-				$(label[5]).text(_L('DESC'));
-				$(label[6]).text(_L('RULE'));
-				$(label[7]).text(_L('REWARD'));
-				$(label[8]).text(_L('PIC'));
-				$(label[9]).text(_L('PIC_APPROVE_STATE'));
-				$(label[10]).text(_L('REVIEW_STATE'));
+				$(label[3]).text(_L('NAME1'));
+				$(label[4]).text(_L('DESC'));
+				$(label[5]).text(_L('RULE'));
+				$(label[6]).text(_L('REWARD'));
+				$(label[7]).text(_L('PIC'));
+				$(label[8]).text(_L('PIC_APPROVE_STATE'));
+				$(label[9]).text(_L('REVIEW_STATE'));
 				
 				var list = [];
 				if (self.mode===MODE.NEW) {
@@ -54,23 +54,48 @@ Task.prototype = {
 				for ( var i in list) {
 					$($('div[name="' + list[i] + '"]')[0]).css('display', 'none');	
 				}
+				// group
+				var btn = self.div.find('div[name="tk_group"] button');
+				$(btn[0]).click(function() {
+					if (self.mode===MODE.REF) return;
+					var div = UI.popup(600, 600);
+					var ctrl = new TaskList(div, MODE.REF,
+						self.data.groupid, self.data.ver, self.data.draftno,
+						function(code, v) {
+							if (code===NOTIFY.SELECT) {
+								UI.closePopup();
+								var inp = self.div.find('div[name="tk_group"] input');
+								$(inp[0]).val(v.name).prop('tid', v.id);
+							}
+						}
+					);
+				});
+
 				// rule 
 				var btn = self.div.find('div[name="tk_rule"] button');
 				$(btn[0]).click(function() {
 					if (self.mode===MODE.REF) return;
-					var div = UI.popup(400, 300);
-					var sel = new GovRuleList(div, self.data.groupid, function(d) {
-						var inp = self.div.find('div[name="tk_rule"] input');
-						$(inp).val(d.name).attr('rid', d.id);
-						UI.closePopup();
-					});
+					var div = UI.popup(600, 600);
+					var ctrl = new RuleList(div, MODE.REF,
+						self.data.groupid, self.data.ver, self.data.draftno,
+						function(code, v) {
+							if (code===NOTIFY.SELECT) {
+								UI.closePopup();
+								var inp = self.div.find('div[name="tk_rule"] input');
+								$(inp[0]).val(v.name).prop('rid', v.id);
+							}
+						}
+					);
 				});
 				$(btn[1]).click(function() {
-					if (self.mode===MODE.REF) return;
-					var div = UI.popup(400, 300);
+					var div = UI.popup(600, 200);
 					var inp = self.div.find('div[name="tk_rule"] input');
-					var rid = $(inp[0]).attr('rid');
-					GovRuleMgr.make(div, {groupid:self.data.groupid, id:rid}, false)
+					var rid = $(inp[0]).prop('rid');
+					GovRuleManager.make(div, {
+						groupid:self.data.groupid, 
+						ver:self.data.ver,
+						draftno:self.data.draftno,
+						id:rid }, false)
 					.then(function(obj){
 						
 					});
@@ -79,13 +104,28 @@ Task.prototype = {
 				var span = self.div.find('div[name="tk_reward"] span');
 				$(span[0]).text(_L('TOKEN_ID'));
 				$(span[1]).text(_L('QUANTITY'));
+				var btn = self.div.find('div[name="tk_reward"] button');
+				$(btn[0]).click(function() {
+					if (self.mode===MODE.REF) return;
+					var div = UI.popup(600, 600);
+					var ctrl = new TokenList(div, MODE.REF,
+						self.data.groupid, self.data.ver, self.data.draftno,
+						function(code, v) {
+							if (code===NOTIFY.SELECT) {
+								UI.closePopup();
+								var inp = self.div.find('div[name="tk_reward"] input');
+								$(inp[0]).val(v.name).prop('tid', v.id);
+							}
+						}
+					);
+				});
 				// PIC
 				var btn = self.div.find('div[name="tk_pic"] button');
 				$(btn[0]).click(function() {
 					if (self.mode===MODE.REF) return;
 					var div = UI.popup(400, 400);
 					var inp = self.div.find('div[name="tk_pic"] input');
-					var id = $(inp[0]).attr('pid');
+					var id = $(inp[0]).prop('pid');
 					var list = [];
 					if (id) {
 						list.push(id);
@@ -94,7 +134,7 @@ Task.prototype = {
 						if (l) {
 							Util.name(sel).then(function(ns) {
 								for ( var i in ns ) {
-									$(inp).val(ns[i]).attr('pid', i);	
+									$(inp).val(ns[i]).prop('pid', i);	
 								} 
 							});
 						}
@@ -113,12 +153,13 @@ Task.prototype = {
 			groupid : this.data.groupid,
 			ver : this.data.ver,
 			draftno : this.data.draftno,
-			name : $(inp[0]).val(),
+			parentid : $(inp[0]).prop('tid'),
+			name : $(inp[1]).val(),
 			desc : $(ta[0]).val(),
-			ruleid : $(inp[1]).attr('rid'),
-			rewardid : $(inp[2]).attr('tid'),
-			quantity : $(inp[3]).val(),
-			pic : $(inp[4]).attr('pid')
+			ruleid : $(inp[2]).prop('rid'),
+			rewardid : $(inp[3]).prop('tid'),
+			quantity : $(inp[4]).val(),
+			pic : $(inp[5]).prop('pid')
 		};
 		return this.data;
 	},
@@ -129,39 +170,17 @@ Task.prototype = {
 		var input = this.div.find('input');
 		var ta = this.div.find('textarea');
 		$(label[1]).text(d.id);
-		$(input[0]).val(d.name);
-		$(input[1]).attr('rid', d.ruleid).val(d.rname);
-		$(input[2]).attr('tid', d.rewardid).val('');
-		$(input[3]).val(d.rquantity);
-		$(input[4]).attr('pid', d.pic).val(d.pname);
+		$(input[0]).prop('tid', d.parentid).val(d.parentname);
+		$(input[1]).val(d.name);
+		$(input[2]).prop('rid', d.ruleid).val(d.rname);
+		$(input[3]).prop('tid', d.rewardid).val('');
+		$(input[4]).val(d.rquantity);
+		$(input[5]).prop('pid', d.pic).val(d.pname);
 		$(ta[0]).text(d.description);
 		// votestate
 		var state = this.div.find('.votestate');
-		d.auth = Util.split(d.auth);
-		var data1 = {
-			n : {
-				class : 'tagclr',
-				list : d.pic_approve
-			},
-			d : {
-				class : 'tagclr',
-				auth : d.auth,
-				req : d.req
-			}
-		};
-		var data2 = {
-			n : {
-				class : 'tagclr',
-				list : d.review
-			},
-			d : {
-				class : 'tagclr',
-				auth : d.auth,
-				req : d.req
-			}
-		}
-		this.vote1 = new VoteState($(state[0]), data1);
-		this.vote2 = new VoteState($(state[1]), data2);
+		this.vote1 = new Member($(state[0]), d.pic_approve, function(){});
+		this.vote2 = new Member($(state[1]), d.review, function(){});
 	}
 };
 
@@ -184,7 +203,7 @@ TaskManager = {
 				task1.init({
 					mode : MODE.REF,
 					div : div,
-					data : res.result.length>0 ? res.result[0] : {},
+					data : res.result ? res.result : {},
 					cb : cb ? cb : function(code) {
 					}
 				});

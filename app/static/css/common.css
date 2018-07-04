@@ -158,3 +158,11 @@ button img {
 	filter: invert(1);
 }
 
+select {
+	color:#fff;
+	background-color#007bff;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+	background: url(../img/arrow01.png) right 50% no-repeat, -webkit-linear-gradient(top, #fff 0%,#ddd 100%);
+}

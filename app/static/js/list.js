@@ -115,6 +115,7 @@ TokenList.prototype = {
 					draftno : self.draftno,
 					name : ''
 				}], function(res) {
+					self.data = res.result;
 					self.list.show(res.result);
 					resolve();
 				}, function(err) {
@@ -138,8 +139,23 @@ TokenList.prototype = {
 				}
 			});
 		} else if (evt===NOTIFY_LIST.SELECT) {
-			var div = UI.popup(900, 600);
-			var rule1 = TokenRuleManager.ref(div, this.groupid, this.ver, this.draftno, sel.id);
+			//var div = UI.popup(900, 600);
+			//var rule1 = TokenRuleManager.ref(div, this.groupid, this.ver, this.draftno, sel.id);
+			this.cb(NOTIFY.SELECT, {
+				groupid : this.groupid,
+				ver : this.ver,
+				draftno : this.draftno,
+				id : sel.id,
+				name : this.getName(sel.id)
+			});
+		}
+	},
+	getName : function(id) {
+		if (this.data===undefined) return '';
+		for ( var i in this.data ) {
+			if (this.data[i].id===id) {
+				return this.data[i].name;
+			}
 		}
 	}
 };
@@ -185,6 +201,7 @@ TaskList.prototype = {
 					draftno : self.draftno,
 					name : ''
 				}], function(res) {
+					self.data = res.result;
 					self.list.show(res.result);
 					resolve();
 				}, function(err) {
@@ -205,8 +222,23 @@ TaskList.prototype = {
 				}
 			});
 		} else if (evt===NOTIFY_LIST.SELECT) {
-			var div = UI.popup(900, 500);
-			var rule1 = TaskManager.ref(div, this.groupid, this.ver, this.draftno, sel.id);
+			//var div = UI.popup(900, 500);
+			//var rule1 = TaskManager.ref(div, this.groupid, this.ver, this.draftno, sel.id);
+			this.cb(NOTIFY.SELECT, {
+				groupid : this.groupid,
+				ver : this.ver,
+				draftno : this.draftno,
+				id : sel.id,
+				name : this.getName(sel.id)
+			});
+		}
+	},
+	getName : function(id) {
+		if (this.data===undefined) return '';
+		for ( var i in this.data ) {
+			if (this.data[i].id===id) {
+				return this.data[i].name;
+			}
 		}
 	}
 };
@@ -253,6 +285,7 @@ RuleList.prototype = {
 					draftno : self.draftno, 
 					name : ''
 				}], function(res) {
+					self.data = res.result;
 					self.list.show(res.result);
 					resolve();
 				}, function(err) {
@@ -277,15 +310,30 @@ RuleList.prototype = {
 				}
 			});
 		} else if (evt===NOTIFY_LIST.SELECT) {
-			var div = UI.popup(700, 300);
-			var rule1 = GovRuleManager.ref(div, {
-					groupid : this.groupid, 
-					ver : this.ver, 
-					draftno : this.draftno, 
-					id : sel.id
-				},  function() {
-				}
-			);
+			//var div = UI.popup(700, 300);
+			//var rule1 = GovRuleManager.ref(div, {
+			//		groupid : this.groupid, 
+			//		ver : this.ver, 
+			//		draftno : this.draftno, 
+			//		id : sel.id
+			//	},  function() {
+			//	}
+			//);
+			this.cb(NOTIFY.SELECT, {
+				groupid : this.groupid,
+				ver : this.ver,
+				draftno : this.draftno,
+				id : sel.id,
+				name : this.getName(sel.id)
+			});
+		}
+	},
+	getName : function(id) {
+		if (this.data===undefined) return '';
+		for ( var i in this.data ) {
+			if (this.data[i].id===id) {
+				return this.data[i].name;
+			}
 		}
 	}
 };

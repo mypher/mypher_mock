@@ -11,7 +11,8 @@ NOTIFY = {
 	EDIT : 2,
 	COMMIT : 3,
 	LOGIN : 4,
-	APPROVE : 5
+	APPROVE : 5,
+	SELECT : 6
 }
 
 Rpc = {

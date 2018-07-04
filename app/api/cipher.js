@@ -62,7 +62,7 @@ module.exports = {
 	 */
 	_commit : async (sender, ini, cur) => {
 		let validate = async function() {
-			let d = await dcipher.one(ini);
+			let d = await dcipher.load(ini);
 			return cmn.validate(d, ini);
 		}
 		try {
@@ -115,7 +115,7 @@ module.exports = {
 		try {
 			let response = {};
 			await db.tx(async t=>{
-				let cur = await dcipher.one(d, t);
+				let cur = await dcipher.load(d, t);
 				cur = cmn.null2Empty(cur);
 				// check if sender can update
 				if (!cmn.isMember(sender, cur.drule_auth)) {

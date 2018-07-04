@@ -58,6 +58,8 @@ var $L = {
 		'LOGIN' : 'ログイン',
 		'REVERT_APPROVE' : '承認取消',
 		'NEW_DRAFT' : '新案作成',
+		'REWARD_TYPE' : '報酬タイプ',
+		'REWARD_REQUIREMENT' : '報酬条件',
 
 		'INVALID_PARAM' : '入力値が正しくありません',
 		'PASS_DIFFER_FROM_CONF' : 'パスワードと確認用パスワードが一致していません。',

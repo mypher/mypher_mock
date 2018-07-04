@@ -12,8 +12,14 @@ Member.prototype = {
 
 	draw : function() {
 		this.div.empty();
+		var found = false;
 		for ( var i in this.list ) {
 			var div = $('<div>', {'id' : i }).addClass('tag').text(this.list[i]);
+			this.div.append(div);
+			found = true;
+		}
+		if (!found) {
+			var div = $('<div>', {'id' : i }).addClass('tag').text(_L('NONE'));
 			this.div.append(div);
 		}
 	},
