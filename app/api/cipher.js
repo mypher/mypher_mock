@@ -16,30 +16,39 @@ module.exports = {
 	 *         drule
 	 */
 	_new : async (sender, d)=> {
-		let tm = cmn.d2st(cmn.stdtm());
-		let id = sha256('cipher' + d.name + tm);
+		let response ={};
 		try {
-			if (!cmn.chkTypes([
-				{p:d.name, f:cmn.isEmpty, r:true},
-				{p:d.drule_req, f:cmn.isSmallInt},
-				{p:d.drule_auth, f:cmn.isEmpty, r:true}
-			])) {
-				return {code:'INVALID_PARAM'};
-			}
-			let ret = await cmn.chkRule(d.drule_req, d.drule_auth);
-			if (!ret) {
-				return {code:'INVALID_PARAM'};
-			}
-			ret = await cmn.chkMember(d.editor);
-			if (!ret) {
-				return {code:'INVALID_PARAM'};
-			}
 			await db.tx(async t=>{
+				let tm = cmn.d2st(cmn.stdtm());
+				let id = sha256('cipher' + d.name + tm);
+				if (!cmn.chkTypes([
+					{p:d.name, f:cmn.isEmpty, r:true},
+					{p:d.drule_req, f:cmn.isSmallInt},
+					{p:d.drule_auth, f:cmn.isEmpty, r:true}
+				])) {
+					response = {code:'INVALID_PARAM'};
+					return;
+				}
+				let ret = await cmn.chkRule(d.drule_req, d.drule_auth);
+				if (!ret) {
+					response = {code:'INVALID_PARAM'};
+					return;
+				}
+				ret = await cmn.chkMember(d.editor);
+				if (!ret) {
+					response = {code:'INVALID_PARAM'};
+					return;
+				}
 				d.id = id;
 				d.tm = tm;
 				await dcipher.insert(d, t);
+				response = id;
+			}).then(function() {
+			}).catch(function(e) {
+				log.error(e);
+				response = {code:'INVALID_PARAM'};
 			});
-			return id;
+			return response;
 		} catch (e) {
 			log.error('errored in _new : ' + e);
 			throw 'system error';
@@ -61,46 +70,50 @@ module.exports = {
 	 * param : sender, ini, cur
 	 */
 	_commit : async (sender, ini, cur) => {
-		let validate = async function() {
-			let d = await dcipher.load(ini);
+		let validate = async function(tx) {
+			let d = await dcipher.load(ini, tx);
 			return cmn.validate(d, ini);
 		}
 		try {
-			// check if sender can update
-			if (!cmn.isMember(sender, cur.editor)) {
-				return {code:'NOT_HAVE_UPDATE_AUTH'};
-			}
-			// check if data is changed while editing
-			let ret = await validate();
-			if (!ret) {
-				return {code:'ALREADY_CHANGED'};
-			}
-			// check the data for updating
-			if (!cmn.chkTypes([
-				{p:cur.name, f:cmn.isEmpty, r:true},
-				{p:cur.drule_req, f:cmn.isSmallInt},
-				{p:cur.drule_auth, f:cmn.isEmpty, r:true}
-			])) {
-				return {code:'INVALID_PARAM'};
-			}
-			ret = await cmn.chkRule(cur.drule_req, cur.drule_auth);
-			if (!ret) {
-				return {code:'INVALID_PARAM'};
-			}
-			ret = await cmn.chkMember(cur.editor);
-			if (!ret) {
-				return {code:'INVALID_PARAM'};
-			}
-			// update
-			ret = null;
+			let response = {};
 			await db.tx(async t=>{
+				// check if data is changed while editing
+				let ret = await validate(t);
+				if (!ret) {
+					resoponse = {code:'ALREADY_CHANGED'};
+					return;
+				}
+				// check if sender can update
+				if (!cmn.isMember(sender, ini.editor)) {
+					resoponse = {code:'NOT_HAVE_UPDATE_AUTH'};
+					return;
+				}
+				// check the data for updating
+				if (!cmn.chkTypes([
+					{p:cur.name, f:cmn.isEmpty, r:true},
+					{p:cur.drule_req, f:cmn.isSmallInt},
+					{p:cur.drule_auth, f:cmn.isEmpty, r:true}
+				])) {
+					response = {code:'INVALID_PARAM'};
+					return;
+				}
+				ret = await cmn.chkRule(cur.drule_req, cur.drule_auth);
+				if (!ret) {
+					response = {code:'INVALID_PARAM'};
+					return;
+				}
+				ret = await cmn.chkMember(cur.editor);
+				if (!ret) {
+					respone = {code:'INVALID_PARAM'};
+					return;
+				}
+				// update
 				await dcipher.update(cur, t);
 			}).then(function() {
-				ret = {};
-			}).catch(function() {
-				ret = {code:'INVALID_PARAM'};
+			}).catch (function() {
+				response = {code:'INVALID_PARAM'};
 			});
-			return ret;
+			return response;
 		} catch (e) {
 			log.error('errored in _commit : ' + e);
 			throw 'system error';

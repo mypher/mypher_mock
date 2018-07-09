@@ -60,6 +60,12 @@ var $L = {
 		'NEW_DRAFT' : '新案作成',
 		'REWARD_TYPE' : '報酬タイプ',
 		'REWARD_REQUIREMENT' : '報酬条件',
+		'PIC_APPROVE' : '担当者を承認',
+		'PIC_APPROVE_REV' : '担当者承認を取消',
+		'REVIEW_APPROVE' : '結果を承認',
+		'REVIEW_APPROVE_REV' : '結果承認を取消',
+		'APPLY1' : '志願',
+		'CANCEL_APPLY1' : '志願取消',
 
 		'INVALID_PARAM' : '入力値が正しくありません',
 		'PASS_DIFFER_FROM_CONF' : 'パスワードと確認用パスワードが一致していません。',
@@ -79,6 +85,12 @@ var $L = {
 		'CANT_USE_FOR_SOURCE' : 'このデータは、コピー元として使用できません。（正式版、または正式版より新しい版の案のみ使用できます。）',
 		'NOT_EXIST' : 'データが存在しません。',
 		'NOT_EDITABLE' : 'このドラフトは編集不可能です。',
+		'ALREADY_APPLIED' : 'すでに候補者が設定されています。',
+		'NOT_SET_TO_PIC' : '担当者に設定されていません',
+		'ALREADY_FULFILL_REQ' : 'すでに承認されています。',
+		'PIC_NOT_SET' : '担当者が設定されていません。',
+		'NOT_CURRENT' : '現行版ではありません。',
+
 		'@' : ''
 	}
 };

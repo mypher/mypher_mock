@@ -29,7 +29,7 @@ module.exports = {
 	},
 	/*
 	 * load
-	 * param : d.id, d.ver, d.draftno
+	 * params : d.id, d.ver, d.draftno
 	 */
 	load : async (d, tx) => {
 		try {
@@ -44,7 +44,7 @@ module.exports = {
 	},
 	/*
 	 * isEditor
-	 * param d.id, d.ver, d.draftno, d.sender, tx
+	 * params : d.id, d.ver, d.draftno, d.sender, tx
 	 */
 	isEditor : async(d, tx) => {
 		try {
@@ -60,8 +60,24 @@ module.exports = {
 		}
 	},
 	/*
+	 * getCurrent
+	 * params : d.id, tx
+	 */
+	getCurrent : async(d, tx) => {
+		try {
+			tx = tx ? tx : db;
+			return await tx.one(
+				'select id, name, purpose, drule_req, drule_auth, approved, ver, draftno, editor, formal from cipher where id = $1 and formal = true order by ver desc limit 1'
+				, [d.id]
+			);
+		} catch (e) {
+			throw e;
+		}
+	
+	},
+	/*
 	 * update
-	 * param
+	 * params : d.name, d.purpose, d.drule_req, d.drule_auth, d.id, d.ver, d.draftno, tx
 	 */
 	update : async (d, tx) => {
 		try {
@@ -88,13 +104,13 @@ module.exports = {
 		try {
 			tx = tx ? tx : db;
 			let cnt = await tx.result(
-				'update cipher set approved=$1, formal=$2 where id=$3 and ver = $4 and draftno = $5',
-				[d.approved, d.formal, d.id, d.ver, d.draftno], 
+				'update cipher set approved=$1, formal=$2 where groupid=$3 and ver=$4 and draftno=$5 and id=$6',
+				[d.approved, d.formal, d.groupid, d.ver, d.draftno, d.id], 
 				r=>r.rowCount
 			);
 			// check number of affected rows
 			if (1!==cnt) {
-				throw 'updated row was not 1';
+				throw 'number of updated rows was not 1';
 			}
 		} catch (e) {
 			log.error('errored in approve : ' + e);

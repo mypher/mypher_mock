@@ -13,11 +13,7 @@ User.prototype = {
 		var self = this;
 		return Util.promise(function(resolve, reject) {
 			self.div.load('parts/user.html', function() {
-				var id = {};
-				id[MODE.NEW] = 'ADD';
-				id[MODE.REF] = 'REF';
-				id[MODE.REF2] = 'REF2';
-				id[MODE.EDIT] = 'EDIT';
+				var id = MODE_LABEL[self.mode];
 				// ID
 				({
 					div : $(self.div.find('div[name="us_id"]')[0]),
@@ -37,7 +33,7 @@ User.prototype = {
 					REF2 : function() {
 						this.common();
 					}
-				})[id[self.mode]]();
+				})[id]();
 				// NAME
 				({
 					div : $(self.div.find('div[name="us_name"]')[0]),
@@ -57,7 +53,7 @@ User.prototype = {
 					REF2 : function() {
 						this.div.css('display', 'none');
 					}
-				})[id[self.mode]]();
+				})[id]();
 				// PASSWORD
 				({
 					div : $(self.div.find('div[name="us_pass"]')[0]),
@@ -77,7 +73,7 @@ User.prototype = {
 					REF2 : function() {
 						this.common();
 					}
-				})[id[self.mode]]();
+				})[id]();
 				// CONFIRM
 				({
 					div : $(self.div.find('div[name="us_conf"]')[0]),
@@ -97,7 +93,7 @@ User.prototype = {
 					REF2 : function() {
 						this.div.css('display', 'none');
 					}
-				})[id[self.mode]]();
+				})[id]();
 				// DESCRIPTION
 				({
 					div : $(self.div.find('div[name="us_desc"]')[0]),
@@ -117,7 +113,7 @@ User.prototype = {
 					REF2 : function() {
 						this.div.css('display', 'none');
 					}
-				})[id[self.mode]]();
+				})[id]();
 				// BUTTON
 				({
 					div : $(self.div.find('div[name="us_button"]')[0]),
@@ -147,7 +143,7 @@ User.prototype = {
 							self.cb(NOTIFY.CANCEL);
 						});
 					}
-				})[id[self.mode]]();
+				})[id]();
 				resolve();
 			});
 		});

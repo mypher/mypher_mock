@@ -21,7 +21,7 @@ CREATE TABLE task_state(
 	ver smallint NOT NULL,
 	draftno smallint NOT NULL,
 	id CHARACTER(64) NOT NULL,
-	pic CHARACTER(64),
+	pic VARCHAR(64),
 	pic_approve VARCHAR(1024),
 	review VARCHAR(1024),
 	tm CHARACTER(14)

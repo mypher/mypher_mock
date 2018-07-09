@@ -15,7 +15,7 @@ module.exports = {
 			tx = tx ? tx : db;
 			await tx.none(
 				'insert into task(groupid, ver, draftno, id, name, parentid, description, ruleid, rewardid, rquantity, tm) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)',
-				[d.groupid, d.ver, d.draftno, d.id, d.name, d.parentid, d.desc, d.ruleid, d.rewardid, d.quantity, d.tm]
+				[d.groupid, d.ver, d.draftno, d.id, d.name, d.parentid, d.description, d.ruleid, d.rewardid, d.quantity, d.tm]
 			);
 			await tx.none(
 				'insert into task_state(groupid, ver, draftno, id, pic, tm) values($1, $2, $3, $4, $5, $6)',
@@ -91,6 +91,157 @@ module.exports = {
 			log.error('errored in copy : ' + e);
 			throw e;
 		}
-	}
+	},
 
+	/*
+	 * approvePic
+	 * params : d.id, d.ver, d.draftno, d.id, d.pic_approve, tx
+	 */
+	approvePic : async (d, tx) => {
+		try {
+			tx = tx ? tx : db;
+			let cnt = await tx.result(
+				'update task_state set pic_approve=$1 where groupid=$2 and ver=$3 and draftno=$4 and id=$5',
+				[d.pic_approve, d.groupid, d.ver, d.draftno, d.id], 
+				r=>r.rowCount
+			);
+			// check number of affected rows
+			if (1!==cnt) {
+				throw 'number of updated rows was not 1';
+			}
+		} catch (e) {
+			log.error('errored in copy : ' + e);
+			throw e;
+		}
+	},
+
+	/*
+	 * approveReview
+	 * params : d.id, d.ver, d.draftno, d.id, d.review, tx
+	 */
+	approveReview : async (d, tx) => {
+		try {
+			tx = tx ? tx : db;
+			let cnt = await tx.result(
+				'update task_state set review=$1 where groupid=$2 and ver=$3 and draftno=$4 and id=$5',
+				[d.review, d.groupid, d.ver, d.draftno, d.id], 
+				r=>r.rowCount
+			);
+			// check number of affected rows
+			if (1!==cnt) {
+				throw 'number of updated rows was not 1';
+			}
+		} catch (e) {
+			log.error('errored in copy : ' + e);
+			throw e;
+		}
+	},
+
+	/*
+	 * update
+	 * params : d.groupid, d.ver, d.draftno, d.id, d.parentid, d.name, d.description, 
+	 *          d.ruleid, d.rewardid, d.quantiry, d.pic, d.pic_approve, d.review, tx
+	 */
+	update : async (d, tx) => {
+		try {
+			tx = tx ? tx : db;
+			let cnt = await tx.result(
+				'update task ' +
+				'set parentid=$1, name=$2, description=$3, ruleid=$4, rewardid=$5, rquantity=$6 ' +
+				'where groupid=$7 and ver=$8 and draftno=$9 and id=$10 ',
+				[d.parentid, d.name, d.description, d.ruleid, d.rewardid, d.qruantity, d.groupid, d.ver, d.draftno, d.id], 
+				r=>r.rowCount
+			);
+			// check number of affected rows
+			if (1!==cnt) {
+				throw 'number of updated rows was not 1';
+			}
+			cnt = await tx.result(
+				'update task_state ' +
+				'set pic=$1, pic_approve=$2, review=$3 ' +
+				'where groupid=$4 and ver=$5 and draftno=$6 and id=$7 ',
+				[d.pic, d.pic_approve, d.review, d.groupid, d.ver, d.draftno, d.id], 
+				r=>r.rowCount
+			);
+			// check number of affected rows
+			if (1!==cnt) {
+				throw 'number of updated rows was not 1';
+			}
+		} catch (e) {
+			log.error('errored in update : ' + e);
+			throw e;
+		}
+	},
+
+	/*
+	 * applyPic
+	 * params : d.pic, d.groupid, d.ver, d.draftno, d.id, tx
+	 */
+	applyPic : async (d, tx) => {
+		try {
+			tx = tx ? tx : db;
+			cnt = await tx.result(
+				'update task_state ' +
+				"set pic=$1, pic_approve='', review='' " +
+				'where groupid=$2 and ver=$3 and draftno=$4 and id=$5 ',
+				[d.pic, d.groupid, d.ver, d.draftno, d.id], 
+				r=>r.rowCount
+			);
+			// check number of affected rows
+			if (1!==cnt) {
+				throw 'number of updated rows was not 1';
+			}
+		} catch (e) {
+			log.error('errored in update : ' + e);
+			throw e;
+		}
+	},
+
+	/*
+	 * approvePic
+	 * params : d.pic_approve, d.groupid, d.ver, d.draftno, d.id, tx
+	 */
+	approvePic : async (d, tx) => {
+		try {
+			tx = tx ? tx : db;
+			cnt = await tx.result(
+				'update task_state ' +
+				'set pic_approve=$1 ' +
+				'where groupid=$2 and ver=$3 and draftno=$4 and id=$5 ',
+				[d.pic_approve, d.groupid, d.ver, d.draftno, d.id], 
+				r=>r.rowCount
+			);
+			// check number of affected rows
+			if (1!==cnt) {
+				throw 'number of updated rows was not 1';
+			}
+		} catch (e) {
+			log.error('errored in update : ' + e);
+			throw e;
+		}
+	},
+
+	/*
+	 * approveReview
+	 * params : d.review, d.groupid, d.ver, d.draftno, d.id, tx
+	 */
+	approveReview : async (d, tx) => {
+		try {
+			tx = tx ? tx : db;
+			cnt = await tx.result(
+				'update task_state ' +
+				'set review=$1 ' +
+				'where groupid=$2 and ver=$3 and draftno=$4 and id=$5 ',
+				[d.review, d.groupid, d.ver, d.draftno, d.id], 
+				r=>r.rowCount
+			);
+			// check number of affected rows
+			if (1!==cnt) {
+				throw 'number of updated rows was not 1';
+			}
+		} catch (e) {
+			log.error('errored in update : ' + e);
+			throw e;
+		}
+	},
 };

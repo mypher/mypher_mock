@@ -179,7 +179,7 @@ module.exports = {
 	},
 
 	nofMember : list => {
-		return list.split(',').length;	
+		return (list==='') ? 0 : list.split(',').length;	
 	},
 
 	getReq : (base, list) => {
@@ -231,6 +231,11 @@ module.exports = {
 			return {code:'NOT_HAVE_UPDATE_AUTH'};
 		}
 		return true;
+	},
+
+	isCurrent : async (d, tx) => {
+		let result = await dcipher.getCurrent(d, tx);
+		return (d.ver===result.ver && d.draftno===result.draftno);
 	}
 	
 };

@@ -22,10 +22,7 @@ Cipher.prototype = {
 				if (status==='error') {
 					reject();
 				}
-				var id = {};
-				id[MODE.NEW] = 'ADD';
-				id[MODE.REF] = 'REF';
-				id[MODE.EDIT] = 'EDIT';
+				var id = MODE_LABEL[self.mode];
 				// ID
 				({
 					div : $($('div[name="cp_id"]')[0]),
@@ -45,7 +42,7 @@ Cipher.prototype = {
 					EDIT : function() {
 						this.common();
 					}
-				})[id[self.mode]]();
+				})[id]();
 				// VERSION
 				({
 					div : $($('div[name="cp_ver"]')[0]),
@@ -65,7 +62,7 @@ Cipher.prototype = {
 					EDIT : function() {
 						this.common();
 					}
-				})[id[self.mode]]();
+				})[id]();
 				// DRAFT
 				({
 					div : $($('div[name="cp_draft"]')[0]),
@@ -83,7 +80,7 @@ Cipher.prototype = {
 					EDIT : function() {
 						this.common();
 					}
-				})[id[self.mode]]();
+				})[id]();
 				// EDITOR
 				({
 					div : $($('div[name="cp_editor"]')[0]),
@@ -115,7 +112,7 @@ Cipher.prototype = {
 					EDIT : function() {
 						this.common(false);
 					}
-				})[id[self.mode]]();
+				})[id]();
 				// NAME
 				({
 					div : $($('div[name="cp_name"]')[0]),
@@ -135,7 +132,7 @@ Cipher.prototype = {
 						this.common();
 						this.edit.val(self.data.name);
 					}
-				})[id[self.mode]]();
+				})[id]();
 				// DESC
 				({
 					div : $($('div[name="cp_desc"]')[0]),
@@ -155,7 +152,7 @@ Cipher.prototype = {
 						this.common();
 						this.edit.text(self.data.purpose);
 					}
-				})[id[self.mode]]();
+				})[id]();
 				// GOV
 				({
 					div : $($('div[name="cp_gov"]')[0]),
@@ -182,7 +179,7 @@ Cipher.prototype = {
 							true
 						);
 					}
-				})[id[self.mode]]();
+				})[id]();
 				// TOKEN 
 				({
 					div : $($('div[name="cp_token"]')[0]),
@@ -218,7 +215,7 @@ Cipher.prototype = {
 							}
 						);
 					}
-				})[id[self.mode]]();
+				})[id]();
 				// TASK
 				({
 					div : $($('div[name="cp_task"]')[0]),
@@ -250,7 +247,7 @@ Cipher.prototype = {
 							}
 						);
 					}
-				})[id[self.mode]]();
+				})[id]();
 				// RULELIST
 				({
 					div : $($('div[name="cp_rulelist"]')[0]),
@@ -298,7 +295,7 @@ Cipher.prototype = {
 								}
 						);
 					}
-				})[id[self.mode]]();
+				})[id]();
 				// APPROVED
 				({
 					div : $($('div[name="cp_approve"]')[0]),
@@ -318,7 +315,7 @@ Cipher.prototype = {
 					EDIT : function() {
 						this.div.css('display', 'none');
 					}
-				})[id[self.mode]]();
+				})[id]();
 				// BUTTON1
 				({
 					div : $($('div[name="cp_button1"]')[0]),
@@ -347,7 +344,7 @@ Cipher.prototype = {
 							self.cb(NOTIFY.CANCEL);
 						});
 					}
-				})[id[self.mode]]();
+				})[id]();
 				// BUTTON2
 				({
 					div : $($('div[name="cp_button2"]')[0]),
@@ -390,7 +387,7 @@ Cipher.prototype = {
 							self.cb(NOTIFY.CANCEL);
 						});
 					}
-				})[id[self.mode]]();
+				})[id]();
 				resolve();
 			});
 		});
