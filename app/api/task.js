@@ -272,6 +272,7 @@ module.exports = {
 					response = {code:'NOT_HAVE_APPROVE_AUTH'};
 					return;
 				}
+				// TODO:need to approve from pic
 				if (d.set) {
 					if (cur.pic==='') {
 						response = {code:'PIC_NOT_SET'};

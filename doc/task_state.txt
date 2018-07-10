@@ -1,0 +1,123 @@
+@startuml
+
+title state diagram for Task
+
+FirstVersion -right-> Formal : approved
+Formal -right-> NewDraft : create new draft
+
+state "Draft of V1" as FirstVersion {
+	[*] --> PicNotApplied1 : create by creator
+	PicNotApplied1 --> PicNotApproved1 : a person applies
+	PicNotApproved1 --> PicNotApplied1 : applier cancels
+	PicNotApproved1 --> PicApproved1 : approver approves pic
+	PicNotApproved1 --> PicNotApproved1 : approver approves pic
+	PicApproved1 --> PicNotApplied1 : applier cancels
+
+	state "PIC not applied" as PicNotApplied1 {
+	}
+	PicNotApplied1 : attributes editing : ○ 
+	PicNotApplied1 : pic application : ○
+	PicNotApplied1 : pic approval : ×
+	PicNotApplied1 : results approval : ×
+
+	state "PIC not approved" as PicNotApproved1 {
+	}
+	PicNotApproved1 : attributes editing : ○ 
+	PicNotApproved1 : pic application : ×
+	PicNotApproved1 : pic approval : ○
+	PicNotApproved1 : results approval : ×
+
+	state "PIC approved" as PicApproved1 {
+	}
+	PicApproved1 : attributes editing : × 
+	PicApproved1 : pic application : ×
+	PicApproved1 : pic approval : ×
+	PicApproved1 : results approval : ○
+
+}
+
+state "Formal of V1" as Formal {
+	[*] --> PicNotApplied2 : create by creator
+	PicNotApplied2 --> PicNotApproved2 : a person applies
+	PicNotApproved2 --> PicNotApplied2 : applier cancels
+	PicNotApproved2 --> PicApproved2 : approver approves pic
+	PicNotApproved2 --> PicNotApproved2 : approver approves pic
+	PicApproved2 --> PicNotApplied2 : applier cancels
+	PicApproved2 --> PicApproved2 : approver approves results
+	PicApproved2 --> ResultsApproved2 : approver approves results
+	ResultsApproved2 --> [*]
+
+	state "PIC not applied" as PicNotApplied2 {
+	}
+	PicNotApplied2 : attributes editing : ○ 
+	PicNotApplied2 : pic application : ○
+	PicNotApplied2 : pic approval : ×
+	PicNotApplied2 : results approval : ×
+
+	state "PIC not approved" as PicNotApproved2 {
+	}
+	PicNotApproved2 : attributes editing : ○ 
+	PicNotApproved2 : pic application : ×
+	PicNotApproved2 : pic approval : ○
+	PicNotApproved2 : results approval : ×
+
+	state "PIC approved" as PicApproved2 {
+	}
+	PicApproved2 : attributes editing : × 
+	PicApproved2 : pic application : ×
+	PicApproved2 : pic approval : ×
+	PicApproved2 : results approval : ○
+
+	state "Results approved" as ResultsApproved2 {
+	}
+	ResultsApproved2 : attributes editing : × 
+	ResultsApproved2 : pic application : ×
+	ResultsApproved2 : pic approval : ×
+	ResultsApproved2 : results approval : ×
+
+}
+
+state "Draft of New Version" as NewDraft {
+	[*] --> PicNotApplied3 : create by creator
+	PicNotApplied3 --> PicNotApproved3 : a person applies
+	PicNotApproved3 --> PicNotApplied3 : applier cancels
+	PicNotApproved3 --> PicApproved3 : approver approves pic
+	PicNotApproved3 --> PicNotApproved3 : approver approves pic
+	PicApproved3 --> PicNotApplied3 : applier cancels
+	PicApproved3 --> PicApproved3 : approver approves results
+	PicApproved3 --> ResultsApproved3 : approver approves results
+	ResultsApproved3 --> [*]
+
+	state "PIC not applied" as PicNotApplied3 {
+	}
+	PicNotApplied3 : attributes editing : ○ 
+	PicNotApplied3 : pic application : ○
+	PicNotApplied3 : pic approval : ×
+	PicNotApplied3 : results approval : ×
+
+	state "PIC not approved" as PicNotApproved3 {
+	}
+	PicNotApproved3 : attributes editing : ○ 
+	PicNotApproved3 : pic application : ×
+	PicNotApproved3 : pic approval : ○
+	PicNotApproved3 : results approval : ×
+
+	state "PIC approved" as PicApproved3 {
+	}
+	PicApproved3 : attributes editing : × 
+	PicApproved3 : pic application : ×
+	PicApproved3 : pic approval : ×
+	PicApproved3 : results approval : ○
+
+	state "Results approved" as ResultsApproved3 {
+	}
+	ResultsApproved3 : attributes editing : × 
+	ResultsApproved3 : pic application : ×
+	ResultsApproved3 : pic approval : ×
+	ResultsApproved3 : results approval : ×
+
+}
+
+
+
+@enduml
