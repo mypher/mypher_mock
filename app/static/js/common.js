@@ -20,6 +20,8 @@ NOTIFY = {
 	SELECT : 6
 }
 
+var module = {};
+
 Rpc = {
 	SV_URL : '',
 	getId : function() {

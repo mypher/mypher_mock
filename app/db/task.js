@@ -18,8 +18,8 @@ module.exports = {
 				[d.groupid, d.ver, d.draftno, d.id, d.name, d.parentid, d.description, d.ruleid, d.rewardid, d.quantity, d.tm]
 			);
 			await tx.none(
-				'insert into task_state(groupid, ver, draftno, id, pic, tm) values($1, $2, $3, $4, $5, $6)',
-				[d.groupid, d.ver, d.draftno, d.id, d.pic, d.tm]
+				'insert into task_state(groupid, pic, tm) values($1, $2, $3, $4)',
+				[d.groupid, d.id, d.pic, d.tm]
 			);
 		} catch (e) {
 			log.error('errored in insert : ' + e);
@@ -37,7 +37,7 @@ module.exports = {
 				'select t.groupid, t.ver, t.draftno, t.parentid, pa.name parentname, t.id, t.name, t.description, t.ruleid, r.name rname, r.req, r.auth, ' +
 				't.rewardid, t.rquantity, ts.pic, p.name pname, ts.pic_approve, ts.review ' +
 				'from ((((task t '+
-				'inner join task_state ts on t.groupid = ts.groupid and t.ver = ts.ver and t.draftno = ts.draftno and t.id = ts.id ) ' +
+				'inner join task_state ts on t.groupid = ts.groupid and t.id = ts.id ) ' +
 				'left join task pa on t.groupid = pa.groupid and t.ver = pa.ver and t.draftno = pa.draftno and t.parentid = pa.id ) ' +
 				'left join rule r on t.groupid = r.groupid and t.ver = r.ver and t.draftno = r.draftno and t.ruleid = r.id ) ' +
 				'left join person p on ts.pic = p.id ) ' +
@@ -81,12 +81,6 @@ module.exports = {
 				'where groupid = $4 and ver = $5 and draftno = $6'
 				,[to.ver, to.draftno, to.tm, src.id, src.ver, src.draftno]
 			);
-			await tx.none(
-				'insert into task_state(groupid, ver, draftno, id, pic, pic_approve, review, tm) ' +
-				'select groupid, $1, $2, id, pic, pic_approve, review, $3 from task_state ' +
-				'where groupid = $4 and ver = $5 and draftno = $6'
-				,[to.ver, to.draftno, to.tm, src.id, src.ver, src.draftno]
-			);
 		} catch (e) {
 			log.error('errored in copy : ' + e);
 			throw e;
@@ -95,14 +89,14 @@ module.exports = {
 
 	/*
 	 * approvePic
-	 * params : d.id, d.ver, d.draftno, d.id, d.pic_approve, tx
+	 * params : d.groupid, d.id, d.pic_approve, tx
 	 */
 	approvePic : async (d, tx) => {
 		try {
 			tx = tx ? tx : db;
 			let cnt = await tx.result(
-				'update task_state set pic_approve=$1 where groupid=$2 and ver=$3 and draftno=$4 and id=$5',
-				[d.pic_approve, d.groupid, d.ver, d.draftno, d.id], 
+				'update task_state set pic_approve=$1 where groupid=$2 and id=$3',
+				[d.pic_approve, d.groupid, d.id], 
 				r=>r.rowCount
 			);
 			// check number of affected rows
@@ -117,14 +111,14 @@ module.exports = {
 
 	/*
 	 * approveReview
-	 * params : d.id, d.ver, d.draftno, d.id, d.review, tx
+	 * params : d.groupid, d.id, d.review, tx
 	 */
 	approveReview : async (d, tx) => {
 		try {
 			tx = tx ? tx : db;
 			let cnt = await tx.result(
-				'update task_state set review=$1 where groupid=$2 and ver=$3 and draftno=$4 and id=$5',
-				[d.review, d.groupid, d.ver, d.draftno, d.id], 
+				'update task_state set review=$1 where groupid=$2 and id=$3',
+				[d.review, d.groupid, d.id], 
 				r=>r.rowCount
 			);
 			// check number of affected rows
@@ -140,7 +134,7 @@ module.exports = {
 	/*
 	 * update
 	 * params : d.groupid, d.ver, d.draftno, d.id, d.parentid, d.name, d.description, 
-	 *          d.ruleid, d.rewardid, d.quantiry, d.pic, d.pic_approve, d.review, tx
+	 *          d.ruleid, d.rewardid, d.quantiry , tx
 	 */
 	update : async (d, tx) => {
 		try {
@@ -156,17 +150,6 @@ module.exports = {
 			if (1!==cnt) {
 				throw 'number of updated rows was not 1';
 			}
-			cnt = await tx.result(
-				'update task_state ' +
-				'set pic=$1, pic_approve=$2, review=$3 ' +
-				'where groupid=$4 and ver=$5 and draftno=$6 and id=$7 ',
-				[d.pic, d.pic_approve, d.review, d.groupid, d.ver, d.draftno, d.id], 
-				r=>r.rowCount
-			);
-			// check number of affected rows
-			if (1!==cnt) {
-				throw 'number of updated rows was not 1';
-			}
 		} catch (e) {
 			log.error('errored in update : ' + e);
 			throw e;
@@ -175,7 +158,7 @@ module.exports = {
 
 	/*
 	 * applyPic
-	 * params : d.pic, d.groupid, d.ver, d.draftno, d.id, tx
+	 * params : d.pic, d.groupid, d.id, tx
 	 */
 	applyPic : async (d, tx) => {
 		try {
@@ -183,8 +166,8 @@ module.exports = {
 			cnt = await tx.result(
 				'update task_state ' +
 				"set pic=$1, pic_approve='', review='' " +
-				'where groupid=$2 and ver=$3 and draftno=$4 and id=$5 ',
-				[d.pic, d.groupid, d.ver, d.draftno, d.id], 
+				'where groupid=$2 and id=$3 ',
+				[d.pic, d.groupid, d.id], 
 				r=>r.rowCount
 			);
 			// check number of affected rows
@@ -199,7 +182,7 @@ module.exports = {
 
 	/*
 	 * approvePic
-	 * params : d.pic_approve, d.groupid, d.ver, d.draftno, d.id, tx
+	 * params : d.pic_approve, d.groupid, d.id, tx
 	 */
 	approvePic : async (d, tx) => {
 		try {
@@ -207,8 +190,8 @@ module.exports = {
 			cnt = await tx.result(
 				'update task_state ' +
 				'set pic_approve=$1 ' +
-				'where groupid=$2 and ver=$3 and draftno=$4 and id=$5 ',
-				[d.pic_approve, d.groupid, d.ver, d.draftno, d.id], 
+				'where groupid=$2 and id=$3 ',
+				[d.pic_approve, d.groupid, d.id], 
 				r=>r.rowCount
 			);
 			// check number of affected rows
@@ -231,8 +214,8 @@ module.exports = {
 			cnt = await tx.result(
 				'update task_state ' +
 				'set review=$1 ' +
-				'where groupid=$2 and ver=$3 and draftno=$4 and id=$5 ',
-				[d.review, d.groupid, d.ver, d.draftno, d.id], 
+				'where groupid=$2 and and id=$3 ',
+				[d.review, d.groupid, d.id], 
 				r=>r.rowCount
 			);
 			// check number of affected rows

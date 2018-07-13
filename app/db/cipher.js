@@ -35,7 +35,10 @@ module.exports = {
 		try {
 			tx = tx ? tx : db;
 			return await tx.one(
-				'select id, name, purpose, drule_req, drule_auth, approved, ver, draftno, editor, formal from cipher where id = $1 and ver = $2 and draftno = $3'
+				'select c.id, c.name, c.purpose, c.drule_req, c.drule_auth, c.approved, c.ver, c.draftno, c.editor, c.formal, f.ver formalver, f.draftno formaldraft ' +
+				'from cipher c, ' +
+				'(select ver, draftno from cipher where id = $1 and formal = true order by ver desc limit 1) f ' +
+				'where c.id = $1 and c.ver = $2 and c.draftno = $3'
 				, [d.id, d.ver, d.draftno]
 			);
 		} catch (e) {
@@ -46,7 +49,7 @@ module.exports = {
 	 * isEditor
 	 * params : d.id, d.ver, d.draftno, d.sender, tx
 	 */
-	isEditor : async(d, tx) => {
+/*	isEditor : async(d, tx) => {
 		try {
 			tx = tx ? tx : db;
 			let exp = cmn.expCsvInc(d.sender);
@@ -58,7 +61,7 @@ module.exports = {
 		} catch (e) {
 			return false;
 		}
-	},
+	},*/
 	/*
 	 * getCurrent
 	 * params : d.id, tx
@@ -156,7 +159,7 @@ module.exports = {
 	 * isEditable
 	 * params : d.id, d.ver, d.draftno, tx
 	 */
-	isEditable : async (d, tx) => {
+/*	isEditable : async (d, tx) => {
 		tx = tx ? tx : db;
 		try {
 			// check if specified draft is exists
@@ -170,7 +173,7 @@ module.exports = {
 		try {
 			// get latest formal version
 			let rec = await tx.one(
-				'select max(ver) from cipher where id = $1 and formal = true'
+				'select ver from cipher where id = $1 and formal = true order by ver desc limit 1'
 				, [d.id]
 			);
 			// a draft whose version is bigger than latest formal version is editable.
@@ -180,7 +183,7 @@ module.exports = {
 			log.error('errored in getLatestFormalVersion : ' + e);
 			throw e;
 		}
-	},
+	},*/
 
 	/*
 	 * isExist

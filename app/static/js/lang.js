@@ -90,7 +90,10 @@ var $L = {
 		'ALREADY_FULFILL_REQ' : 'すでに承認されています。',
 		'PIC_NOT_SET' : '担当者が設定されていません。',
 		'NOT_CURRENT' : '現行版ではありません。',
-
+		'TASK_ALREADY_COMPLETED' : 'タスクは既に完了しています。',
+		'THERE_IS_INCONSISTENT' : 'データに不整合があります。'
+		'CIPHER_NOT_FORMAL_YET' : 'CIPHERはまだ正式となっていません。',
+		'PIC_NOT_APPROVED' : '担当者が承認されていません。',
 		'@' : ''
 	}
 };

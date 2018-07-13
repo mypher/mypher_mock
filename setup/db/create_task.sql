@@ -18,12 +18,10 @@ CREATE INDEX task_key2 ON task(groupid, ver, draftno, name);
 
 CREATE TABLE task_state(
 	groupid CHARACTER(64) NOT NULL,
-	ver smallint NOT NULL,
-	draftno smallint NOT NULL,
 	id CHARACTER(64) NOT NULL,
 	pic VARCHAR(64),
 	pic_approve VARCHAR(1024),
 	review VARCHAR(1024),
 	tm CHARACTER(14)
 );
-CREATE UNIQUE INDEX task_state_key1 ON task_state(groupid, ver, draftno, id);
+CREATE UNIQUE INDEX task_state_key1 ON task_state(groupid, id);

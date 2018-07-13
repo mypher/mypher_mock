@@ -5,8 +5,9 @@ let cmn = require('./cmn');
 let log = require('../cmn/logger')('api.task');
 let sha256 = require('sha256');
 
-let dcipher = require('../db/cipher');
 let dtask = require('../db/task');
+let vtask = require('../validator/task');
+let vcipher = require('../validator/cipher');
 
 module.exports = {
 	/*
@@ -18,13 +19,20 @@ module.exports = {
 		try {
 			let response = null;
 			await db.tx(async t=>{
-				response = await cmn.isEditable({
+				// load cipher to which task belongs
+				let cdata = await dcipher.load({
 					id : d.groupid,
 					ver : d.ver,
-					draftno : d.draftno,
-					sender : sender
-				}, t);
-				if (response!==true) {
+					draftno : d.draftno
+				});
+				// check if cipher can be edited
+				response = vcipher.isEditableVer(cdata);
+				if (response.code) {
+					return;
+				}
+				// if sender is not editor, task can't be updated
+				response = vcipher.isEditor(sender, cdata);
+				if (response.code) {
 					return;
 				}
 				d = cmn.fillParams(d,{
@@ -88,85 +96,6 @@ module.exports = {
 	},
 
 	/*
-	 * _approvePic
-	 * params : sender, d
-	 */
-/*	_approvePic : async (sender, d) => {
-		try {
-			let response = {};
-			await db.tx(async t=>{
-				let cur = await dtask.load(d, t);
-				cur = cmn.null2Empty(cur);
-				// check if sender can update
-				if (!cmn.isMember(sender, cur.auth)) {
-					response = {code:'NOT_HAVE_APPROVE_AUTH'};
-					return;
-				}
-				// check id sender already voted
-				let appdone = cmn.isMember(sender, cur.pic_approve);
-				if (d.approve) {
-					if (appdone) {
-						response = {code:'ALREADY_APPROVED'};
-						return;
-					}
-					cur.pic_approve = cmn.addMember(sender, cur.pic_approve);
-				}
-				if (!d.approve) {
-					if (!appdone) {
-						response = {code:'NOT_APPROVE_YET'};
-						return;
-					}
-					cur.pic_approve = cmn.removeMember(sender, cur.pic_approve);
-				}
-				await dtask.approvePic(cur, t);
-			});
-			return response;
-		} catch (e) {
-			log.error('errored in _approvePic : ' + e);
-			throw 'system error';
-		}
-	},
-
-	/*
-	 * _approveReview
-	 * params : sender, d
-	 */
-/*	_approveReview : async (sender, d) => {
-		try {
-			let response = {};
-			await db.tx(async t=>{
-				let cur = await dtask.load(d, t);
-				cur = cmn.null2Empty(cur);
-				// check if sender can update
-				if (!cmn.isMember(sender, cur.auth)) {
-					response = {code:'NOT_HAVE_APPROVE_AUTH'};
-					return;
-				}
-				// check id sender already voted
-				let appdone = cmn.isMember(sender, cur.review);
-				if (d.approve) {
-					if (appdone) {
-						response = {code:'ALREADY_APPROVED'};
-						return;
-					}
-					cur.review = cmn.addMember(sender, cur.review);
-				}
-				if (!d.approve) {
-					if (!appdone) {
-						response = {code:'NOT_APPROVE_YET'};
-						return;
-					}
-					cur.review = cmn.removeMember(sender, cur.review);
-				}
-				await dtask.approveReview(cur, t);
-			});
-			return response;
-		} catch (e) {
-			log.error('errored in _approvePic : ' + e);
-			throw 'system error';
-		}
-	},
-	/*
 	 * _commit
 	 * param : sender, ini, cur
 	 */
@@ -184,13 +113,20 @@ module.exports = {
 					response = {code:'ALREADY_CHANGED'};
 					return;
 				}
-				let response = await cmn.isEditable({
+				// load cipher to which task belongs
+				let cdata = await dcipher.load({
 					id : ini.groupid,
 					ver : ini.ver,
-					draftno : ini.draftno,
-					sender : sender
-				}, t);
-				if (response!==true) {
+					draftno : ini.draftno
+				});
+				// check if task can be edited
+				response = vtask.isEditable(cdata, ini);
+				if (response.code) {
+					return;
+				}
+				// if sender is not editor, task can't be updated
+				response = vcipher.isEditor(sender, cdata);
+				if (response.code) {
 					return;
 				}
 				cur = cmn.fillParams(cur,{
@@ -234,14 +170,16 @@ module.exports = {
 			await db.tx(async t=>{
 				let cur = await dtask.load(d, t);
 				if (d.set) {
-					if (!cmn.isEmpty(cur.pic)) {
-						response = {code:'ALREADY_APPLIED'};
+					// check if sender can apply to pic
+					response = vtask.canApplyToPic(cur);
+					if (response.code) {
 						return;
 					}
 					d.pic = sender;
 				} else {
-					if (sender!==cur.pic) {
-						response = {code:'NOT_SET_TO_PIC'};
+					// check if sender can cancel application 
+					response = vtask.canCancelPic(sender, cur);
+					if (response.code) {
 						return;
 					}
 					d.pic = '';
@@ -267,29 +205,23 @@ module.exports = {
 			let response = {};
 			await db.tx(async t=>{
 				let cur = await dtask.load(d, t);
-				// check if sender can update
-				if (!cmn.isMember(sender, cur.auth)) {
-					response = {code:'NOT_HAVE_APPROVE_AUTH'};
-					return;
-				}
-				// TODO:need to approve from pic
+				// load cipher to which task belongs
+				let cdata = await dcipher.load({
+					id : d.groupid,
+					ver : d.ver,
+					draftno : d.draftno
+				});
 				if (d.set) {
-					if (cur.pic==='') {
-						response = {code:'PIC_NOT_SET'};
-						return;
-					}
-					if (cur.req===cmn.nofMember(cur.pic_approve)) {
-						response = {code:'ALREADY_FULFILL_REQ'};
-						return;
-					}
-					if (cmn.isMember(sender, cur.pic_approve)) {
-						response = {code:'ALREADY_APPLIED'};
+					// check if sender can approve pic
+					result = vtask.canApprovePic(cdata, cur, sender);
+					if (result.code) {
 						return;
 					}
 					cur.pic_approve = cmn.addMember(sender, cur.pic_approve);
 				} else {
-					if (!cmn.isMember(sender, cur.pic_approve)) {
-						response = {code:'NOT_APPROVE_YET'};
+					// check if sender can cancel approvement
+					result = vtask.canCancelApprovementPic(cdata, cur,sender);
+					if (result.code) {
 						return;
 					}
 					cur.pic_approve = cmn.removeMember(sender, cur.pic_approve);
@@ -307,35 +239,31 @@ module.exports = {
 	},
 
 	/*
-	 * _approveReview 
+	 * _approveResults 
 	 * params : sender, d.groupid, d.ver, d.draftno, d.set
 	 */
-	_approveReview : async (sender, d) => {
+	_approveResults : async (sender, d) => {
 		try {
 			let response = {};
 			await db.tx(async t=>{
 				let cur = await dtask.load(d, t);
-				// check if sender can update
-				if (!cmn.isMember(sender, cur.auth)) {
-					response = {code:'NOT_HAVE_APPROVE_AUTH'};
-					return;
-				}
-				if (!cmn.isCurrent(d, tx)) {
-					response = {code:'NOT_CURRENT'};
-				}
+				// load cipher to which task belongs
+				let cdata = await dcipher.load({
+					id : d.groupid,
+					ver : d.ver,
+					draftno : d.draftno
+				});
 				if (d.set) {
-					if (cur.req===cmn.nofMember(cur.review)) {
-						response = {code:'ALREADY_FULFILL_REQ'};
-						return;
-					}
-					if (cmn.isMember(sender, cur.review)) {
-						response = {code:'ALREADY_APPLIED'};
+					// check if sender can approve results
+					response = vtask.canApproveResults(cdata, cur, sender);
+					if (response.code) {
 						return;
 					}
 					cur.review = cmn.addMember(sender, cur.review);
 				} else {
-					if (!cmn.isMember(sender, cur.review)) {
-						response = {code:'NOT_APPROVE_YET'};
+					// check if sender can cancel
+					response = vtask.canCancelApprovementResults(cdata, cur, sender);
+					if (response.code) {
 						return;
 					}
 					cur.review = cmn.removeMember(sender, cur.review);
@@ -350,7 +278,6 @@ module.exports = {
 			log.error('errored in _commit : ' + e);
 			throw 'system error';
 		}		
-	},
-
+	}
 
 };

@@ -9,30 +9,20 @@ state "Draft of V1" as FirstVersion {
 	[*] --> PicNotApplied1 : create by creator
 	PicNotApplied1 --> PicNotApproved1 : a person applies
 	PicNotApproved1 --> PicNotApplied1 : applier cancels
-	PicNotApproved1 --> PicApproved1 : approver approves pic
-	PicNotApproved1 --> PicNotApproved1 : approver approves pic
-	PicApproved1 --> PicNotApplied1 : applier cancels
 
 	state "PIC not applied" as PicNotApplied1 {
 	}
-	PicNotApplied1 : attributes editing : ○ 
-	PicNotApplied1 : pic application : ○
-	PicNotApplied1 : pic approval : ×
-	PicNotApplied1 : results approval : ×
+	PicNotApplied1 : edit attributes : ✓
+	PicNotApplied1 : apply to pic : ✓
+	PicNotApplied1 : approve pic : 
+	PicNotApplied1 : approve results : 
 
 	state "PIC not approved" as PicNotApproved1 {
 	}
-	PicNotApproved1 : attributes editing : ○ 
-	PicNotApproved1 : pic application : ×
-	PicNotApproved1 : pic approval : ○
-	PicNotApproved1 : results approval : ×
-
-	state "PIC approved" as PicApproved1 {
-	}
-	PicApproved1 : attributes editing : × 
-	PicApproved1 : pic application : ×
-	PicApproved1 : pic approval : ×
-	PicApproved1 : results approval : ○
+	PicNotApproved1 : edit attributes : ✓ 
+	PicNotApproved1 : apply to pic : 
+	PicNotApproved1 : approve pic : 
+	PicNotApproved1 : approve results : 
 
 }
 
@@ -49,31 +39,31 @@ state "Formal of V1" as Formal {
 
 	state "PIC not applied" as PicNotApplied2 {
 	}
-	PicNotApplied2 : attributes editing : ○ 
-	PicNotApplied2 : pic application : ○
-	PicNotApplied2 : pic approval : ×
-	PicNotApplied2 : results approval : ×
+	PicNotApplied2 : edit attributes :  
+	PicNotApplied2 : apply to pic : ✓
+	PicNotApplied2 : approve pic : 
+	PicNotApplied2 : approve results : 
 
 	state "PIC not approved" as PicNotApproved2 {
 	}
-	PicNotApproved2 : attributes editing : ○ 
-	PicNotApproved2 : pic application : ×
-	PicNotApproved2 : pic approval : ○
-	PicNotApproved2 : results approval : ×
+	PicNotApproved2 : edit attributes :  
+	PicNotApproved2 : apply to pic : 
+	PicNotApproved2 : approve pic : ✓
+	PicNotApproved2 : approve results : 
 
 	state "PIC approved" as PicApproved2 {
 	}
-	PicApproved2 : attributes editing : × 
-	PicApproved2 : pic application : ×
-	PicApproved2 : pic approval : ×
-	PicApproved2 : results approval : ○
+	PicApproved2 : edit attributes :  
+	PicApproved2 : apply to pic : 
+	PicApproved2 : approve pic : 
+	PicApproved2 : approve results : ✓
 
 	state "Results approved" as ResultsApproved2 {
 	}
-	ResultsApproved2 : attributes editing : × 
-	ResultsApproved2 : pic application : ×
-	ResultsApproved2 : pic approval : ×
-	ResultsApproved2 : results approval : ×
+	ResultsApproved2 : edit attributes :  
+	ResultsApproved2 : apply to pic : 
+	ResultsApproved2 : approve pic : 
+	ResultsApproved2 : approve results : 
 
 }
 
@@ -90,34 +80,38 @@ state "Draft of New Version" as NewDraft {
 
 	state "PIC not applied" as PicNotApplied3 {
 	}
-	PicNotApplied3 : attributes editing : ○ 
-	PicNotApplied3 : pic application : ○
-	PicNotApplied3 : pic approval : ×
-	PicNotApplied3 : results approval : ×
+	PicNotApplied3 : edit attributes : ✓ 
+	PicNotApplied3 : apply to pic : ✓
+	PicNotApplied3 : approve pic : 
+	PicNotApplied3 : approve results : 
 
 	state "PIC not approved" as PicNotApproved3 {
 	}
-	PicNotApproved3 : attributes editing : ○ 
-	PicNotApproved3 : pic application : ×
-	PicNotApproved3 : pic approval : ○
-	PicNotApproved3 : results approval : ×
+	PicNotApproved3 : edit attributes : ✓ 
+	PicNotApproved3 : apply to pic : 
+	PicNotApproved3 : approve pic : ✓
+	PicNotApproved3 : approve results : 
 
 	state "PIC approved" as PicApproved3 {
 	}
-	PicApproved3 : attributes editing : × 
-	PicApproved3 : pic application : ×
-	PicApproved3 : pic approval : ×
-	PicApproved3 : results approval : ○
+	PicApproved3 : edit attributes :  
+	PicApproved3 : apply to pic : 
+	PicApproved3 : approve pic : 
+	PicApproved3 : approve results : ✓
 
 	state "Results approved" as ResultsApproved3 {
 	}
-	ResultsApproved3 : attributes editing : × 
-	ResultsApproved3 : pic application : ×
-	ResultsApproved3 : pic approval : ×
-	ResultsApproved3 : results approval : ×
+	ResultsApproved3 : edit attributes :  
+	PicNotApproved1 --> PicNotApproved1 : approver approves pic
+	ResultsApproved3 : apply to pic : 
+	ResultsApproved3 : approve pic : 
+	ResultsApproved3 : approve results : 
 
 }
 
-
+note bottom of NewDraft
+	If PIC is approved before a draft becomes formal, draft of task is reverted and previous formal version is adopted.
+	If approval members is changed from previous version, PIC approval is re-varidated.
+end note
 
 @enduml

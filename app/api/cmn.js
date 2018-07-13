@@ -214,7 +214,7 @@ module.exports = {
 		//return cryptico.decrypt(data,)
 	},
 
-	isEditable : async (d, tx) => {
+/*	isEditable : async (d, tx) => {
 		// check if draft can editable
 		let result = await dcipher.isEditable(d, tx);
 		switch (result) {
@@ -231,12 +231,12 @@ module.exports = {
 			return {code:'NOT_HAVE_UPDATE_AUTH'};
 		}
 		return true;
-	},
+	},*/
 
-	isCurrent : async (d, tx) => {
+	/*isCurrent : async (d, tx) => {
 		let result = await dcipher.getCurrent(d, tx);
 		return (d.ver===result.ver && d.draftno===result.draftno);
-	}
+	}*/
 	
 };
 
