@@ -18,7 +18,7 @@ module.exports = {
 				[d.groupid, d.ver, d.draftno, d.id, d.name, d.parentid, d.description, d.ruleid, d.rewardid, d.quantity, d.tm]
 			);
 			await tx.none(
-				'insert into task_state(groupid, pic, tm) values($1, $2, $3, $4)',
+				'insert into task_state(groupid, id, pic, tm) values($1, $2, $3, $4)',
 				[d.groupid, d.id, d.pic, d.tm]
 			);
 		} catch (e) {
@@ -35,11 +35,12 @@ module.exports = {
 		try {
 			return await db.one(
 				'select t.groupid, t.ver, t.draftno, t.parentid, pa.name parentname, t.id, t.name, t.description, t.ruleid, r.name rname, r.req, r.auth, ' +
-				't.rewardid, t.rquantity, ts.pic, p.name pname, ts.pic_approve, ts.review ' +
-				'from ((((task t '+
+				't.rewardid, tk.name rewardname, t.rquantity, ts.pic, p.name pname, ts.pic_approve, ts.review ' +
+				'from (((((task t '+
 				'inner join task_state ts on t.groupid = ts.groupid and t.id = ts.id ) ' +
 				'left join task pa on t.groupid = pa.groupid and t.ver = pa.ver and t.draftno = pa.draftno and t.parentid = pa.id ) ' +
 				'left join rule r on t.groupid = r.groupid and t.ver = r.ver and t.draftno = r.draftno and t.ruleid = r.id ) ' +
+				'left join token tk on t.groupid = tk.groupid and t.ver = tk.ver and t.draftno = tk.draftno and t.rewardid = tk.id ) ' +
 				'left join person p on ts.pic = p.id ) ' +
 				'where t.groupid = $1 and t.ver = $2 and t.draftno = $3 and t.id = $4'
 				, [d.groupid, d.ver, d.draftno, d.id]
@@ -110,10 +111,10 @@ module.exports = {
 	},
 
 	/*
-	 * approveReview
+	 * approveResults
 	 * params : d.groupid, d.id, d.review, tx
 	 */
-	approveReview : async (d, tx) => {
+	approveResults : async (d, tx) => {
 		try {
 			tx = tx ? tx : db;
 			let cnt = await tx.result(
@@ -143,7 +144,7 @@ module.exports = {
 				'update task ' +
 				'set parentid=$1, name=$2, description=$3, ruleid=$4, rewardid=$5, rquantity=$6 ' +
 				'where groupid=$7 and ver=$8 and draftno=$9 and id=$10 ',
-				[d.parentid, d.name, d.description, d.ruleid, d.rewardid, d.qruantity, d.groupid, d.ver, d.draftno, d.id], 
+				[d.parentid, d.name, d.description, d.ruleid, d.rewardid, d.rquantity, d.groupid, d.ver, d.draftno, d.id], 
 				r=>r.rowCount
 			);
 			// check number of affected rows

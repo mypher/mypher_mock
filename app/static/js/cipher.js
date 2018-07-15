@@ -233,7 +233,7 @@ Cipher.prototype = {
 							self.data.id, self.data.ver, self.data.draftno,
 							function(evt, sel) {
 								var div = UI.popup(900, 500);
-								var rule1 = TaskManager.ref(div, this.groupid, this.ver, this.draftno, sel.id);
+								var rule1 = TaskManager.ref(div, self.groupid, self.ver, self.draftno, sel.id);
 							}
 						);
 					},
@@ -243,7 +243,7 @@ Cipher.prototype = {
 							self.data.id, self.data.ver, self.data.draftno,
 							function(evt, sel) {
 								var div = UI.popup(900, 500);
-								var rule1 = TaskManager.ref(div, this.groupid, this.ver, this.draftno, sel.id);
+								var rule1 = TaskManager.ref(div, self.groupid, self.ver, self.draftno, sel.id);
 							}
 						);
 					}

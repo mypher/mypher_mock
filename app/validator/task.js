@@ -4,16 +4,21 @@ module.exports = {
 
 	/**
 	 * isEditable
-	 * params : cipher, task
+	 * params : cipher, task, person
 	 */
-	isEditable : function(cipher, task) {
+	isEditable : function(cipher, task, person) {
 		var ret = null;
+		// only a person who has editing authorization can edit
+		ret = Validator.cipher.isEditor(person, cipher);
+		if (ret.code) {
+			return ret;
+		} 
 		// if there is difference between cipher and task, return false
 		if (!Validator.task.isBelong(cipher, task)) {
 			return false;
 		}
 		// if cipher to which task belongs is not editable, task is uneditable
-		ret = Varidator.cipher.isEditableVer(cipher);
+		ret = Validator.cipher.isEditableVer(cipher);
 		if (ret.code) {
 			return ret;
 		}
@@ -31,7 +36,7 @@ module.exports = {
 	isPicApproved : function(task) {
 		var approved = Validator.cmn.split(task.pic_approve);
 		var auth = Validator.cmn.split(task.auth);
-		return Validator.cmn.isFulFill(task.req, approved, auth);
+		return Validator.cmn.isFulfill(task.req, approved, auth);
 	},
 
 	/**
@@ -41,7 +46,7 @@ module.exports = {
 	isResultsApproved : function(task) {
 		var review = Validator.cmn.split(task.review);
 		var auth = Validator.cmn.split(task.auth);
-		return Validator.cmn.isFulFill(task.req, review, auth);
+		return Validator.cmn.isFulfill(task.req, review, auth);
 	},
 	/**
 	 * isBelong
@@ -64,7 +69,7 @@ module.exports = {
 	 * canCancelPic
 	 * params : user, task
 	 */
-	canCancelPic : function(user, task) {
+	canCancelPic : function(task, user) {
 		// if results is already approved, pic can't cancel
 		if (Validator.task.isResultsApproved(task)) {
 			return {code:'TASK_ALREADY_COMPLETED'};
@@ -89,7 +94,7 @@ module.exports = {
 		}
 		// if pic is already approved, it is unnecessary to approve
 		if (Validator.task.isPicApproved(task)) {
-			return {code:'ALREADY_FULFILL_REQ'};
+			return {code:'ALREADY_Fulfill_REQ'};
 		}
 		// if pic is not set, it is impossible to approve
 		if (!task.pic||task.pic==='') {
@@ -153,7 +158,7 @@ module.exports = {
 		}
 		// if results are already approved, it is unnecessary to approve
 		if (Validator.task.isResultsApproved(task)) {
-			return {code:'ALREADY_FULFILL_REQ'};
+			return {code:'ALREADY_Fulfill_REQ'};
 		}
 		// if cipher doesn't become formal once before, it is impossible to approve
 		if (!cipher.formalver) {
@@ -184,10 +189,13 @@ module.exports = {
 		if (!Validator.cmn.isMember(person, task.review)) {
 			return {code:'NOT_APPROVE_YET'};
 		}
+		return {};
 	}
 };
 
 var Validator = Validator||{};
 Validator.task = module.exports;
-Validator.cmn = require ? require('./cmn') : Validator.cmn;
-Validator.cipher = require ? require('./cipher') : Validator.cipher;
+if (typeof(require)!=='undefined') {
+	Validator.cmn = require('./cmn');
+	Validator.cipher = require('./cipher');
+}

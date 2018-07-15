@@ -18,12 +18,14 @@ module.exports = {
 	 * params : person, cipher
 	 */
 	isEditor : function(person, cipher) {
-		var member = Varidator.cmn.split(cipher.editor);
-		var p = Varidator.cmn.pickMembers(person, member);
+		var member = Validator.cmn.split(cipher.editor);
+		var p = Validator.cmn.pickMembers(person, member);
 		return (p.length===1) ? {} : {code:'NOT_HAVE_UPDATE_AUTH'};
 	}
 };
 
 var Validator = Validator||{};
 Validator.cipher = module.exports;
-Validator.cmn = require ? require('./cmn') : Validator.cmn;
+if (typeof(require)!=='undefined') {
+	Validator.cmn = require('./cmn');
+}

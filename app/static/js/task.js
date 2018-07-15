@@ -1,3 +1,17 @@
+// task.js
+// necessary modules : 
+//   validator/cmn.js
+//   validator/task.js
+//   list.js
+//   member.js
+//   user.js
+//   sel_person.js
+//   votestate.js
+//   govrule.js
+//   lang.js
+//   common.js
+//   sha256.js
+
 function Task() {
 }
 
@@ -14,8 +28,8 @@ var TASK_NOTIFY = {
 	CANCEL : 1,
 	PIC_APPROVE : 2,
 	PIC_APPROVE_REV : 3,
-	REVIEW_APPROVE : 4,
-	REVIEW_APPROVE_REV : 5,
+	RESULTS_APPROVE : 4,
+	RESULTS_APPROVE_REV : 5,
 	COMMIT : 6,
 	APPLY_PIC : 7,
 	APPLY_PIC_REV : 8
@@ -24,8 +38,9 @@ var TASK_NOTIFY = {
 Task.prototype = {
 	init : function(p) {
 		this.div = p.div.addClass('task');
-		this.data = p.data;
 		this.mode = p.mode;
+		this.data = p.data;
+		this.cipher = p.cipher;
 		this.cb = p.cb;
 		var self = this;
 		this.layout().then(function() {
@@ -66,7 +81,7 @@ Task.prototype = {
 							if (self.mode===MODE.REF) return;
 							var div = UI.popup(600, 600);
 							var ctrl = new TaskList(div, MODE.REF,
-								self.data.groupid, self.data.ver, self.data.draftno,
+								self.data.data.draftno,
 								function(code, v) {
 									if (code===NOTIFY.SELECT) {
 										UI.closePopup();
@@ -249,13 +264,13 @@ Task.prototype = {
 						}
 					},
 					ADD : function() {
-						this.common(true);
+						this.common(false);
 					},
 					REF : function() {
 						this.common(false);
 					},
 					EDIT : function() {
-						this.common(true);
+						this.common(false);
 					}
 				})[id]();
 				// PICAPPROVE
@@ -312,45 +327,37 @@ Task.prototype = {
 					REF : function() {
 						var state = self.data.userstate;
 						var btn = this.div.find('button');
-						switch (state.pic_approve) {
-						case TASK_APPROVE.NO:
+						var vtask = Validator.task;
+						var user = UserManager.isLogin() ? UserManager.user().id : '';
+						if (!vtask.canApproveResults(self.cipher, self.data, user).code) {
+							$(btn[1]).text(_L('REVIEW_APPROVE')).click(function() {
+								self.cb&&self.cb(TASK_NOTIFY.RESULTS_APPROVE);
+							});
+						} else if (!vtask.canCancelApprovementResults(self.cipher, self.data, user).code) {
+							$(btn[1]).text(_L('REVIEW_APPROVE_REV')).click(function() {
+								self.cb&&self.cb(TASK_NOTIFY.RESULTS_APPROVE_REV);
+							});
+						} else {
+							$(btn[1]).css('display', 'none');
+						}
+						if (!vtask.canApprovePic(self.cipher, self.data, user).code) {
 							$(btn[0]).text(_L('PIC_APPROVE')).click(function() {
 								self.cb&&self.cb(TASK_NOTIFY.PIC_APPROVE);
 							});
-							break;
-						case TASK_APPROVE.DONE:
+						} else if (!vtask.canCancelApprovementPic(self.cipher, self.data, user).code) {
 							$(btn[0]).text(_L('PIC_APPROVE_REV')).click(function() {
 								self.cb&&self.cb(TASK_NOTIFY.PIC_APPROVE_REV);
 							});
-							break;
-						default:
-							if (state.apply_pic===TASK_APPROVE.CANAPPLY) {
-								$(btn[0]).text(_L('APPLY1')).click(function() {
-									self.cb&&self.cb(TASK_NOTIFY.APPLY_PIC);
-								});
-							} else if (state.apply_pic===TASK_APPROVE.APPLYED) {
-								$(btn[0]).text(_L('CANCEL_APPLY1')).click(function() {
-									self.cb&&self.cb(TASK_NOTIFY.APPLY_PIC_REV);
-								});
-							} else {
+						} else if (!vtask.canApplyToPic(self.data).code) {
+							$(btn[0]).text(_L('APPLY1')).click(function() {
+								self.cb&&self.cb(TASK_NOTIFY.APPLY_PIC);
+							});
+						} else if (!vtask.canCancelPic(self.data, user).code) {
+							$(btn[0]).text(_L('CANCEL_APPLY1')).click(function() {
+								self.cb&&self.cb(TASK_NOTIFY.APPLY_PIC_REV);
+							});
+						} else {
 								$(btn[0]).css('display', 'none');
-							}
-							break;
-						}
-						switch (state.review_approve) {
-						case TASK_APPROVE.NO:
-							$(btn[1]).text(_L('REVIEW_APPROVE')).click(function() {
-								self.cb&&self.cb(TASK_NOTIFY.REVIEW_APPROVE);
-							});
-							break;
-						case TASK_APPROVE.DONE:
-							$(btn[1]).text(_L('REVIEW_APPROVE_REV')).click(function() {
-								self.cb&&self.cb(TASK_NOFITY.REVIEW_APPROVE_REV);
-							});
-							break;
-						default:
-							$(btn[1]).css('display', 'none');
-							break;
 						}
 						$(btn[2]).text(_L('BACK')).click(function() {
 							self.cb&&self.cb(TASK_NOTIFY.CANCEL);
@@ -386,7 +393,7 @@ Task.prototype = {
 			description : $(ta[0]).val(),
 			ruleid : $(inp[2]).prop('rid'),
 			rewardid : $(inp[3]).prop('tid'),
-			quantity : $(inp[4]).val(),
+			rquantity : $(inp[4]).val(),
 			pic : $(inp[5]).prop('pid'),
 			pic_approve : this.data.pic_approve,
 			review : this.data.review
@@ -403,7 +410,7 @@ Task.prototype = {
 		$(input[0]).prop('tid', d.parentid).val(d.parentname);
 		$(input[1]).val(d.name);
 		$(input[2]).prop('rid', d.ruleid).val(d.rname);
-		$(input[3]).prop('tid', d.rewardid).val('');
+		$(input[3]).prop('tid', d.rewardid).val(d.rewardname);
 		$(input[4]).val(d.rquantity);
 		$(input[5]).prop('pid', d.pic).val(d.pname);
 		$(ta[0]).text(d.description);
@@ -416,49 +423,66 @@ Task.prototype = {
 
 
 TaskManager = {
-	ref : function(div, groupid, ver, draftno, id, cb) {
-		var task1 = new Task();
-		var self = this;
-		var base = function(code, v) {
-			var code2 = NOTIFY.CANCEL;
-			switch (code) {
-			case TASK_NOTIFY.PIC_APPROVE:
-				commit('task._approvePic', true);
-				code2 = NOTIFY.COMMIT;
-				break;
-			case TASK_NOTIFY.PIC_APPROVE_REV:
-				commit('task._approvePic', false);
-				code2 = NOTIFY.COMMIT;
-				break;
-			case TASK_NOTIFY.REVIEW_APPROVE:
-				commit('task._approveReview', true);
-				code2 = NOTIFY.COMMIT;
-				break;
-			case TASK_NOTIFY.REVIEW_APPROVE_REV:
-				commit('task._approveReview', false);
-				code2 = NOTIFY.COMMIT;
-				break;
-			case TASK_NOTIFY.APPLY_PIC:
-				commit('task._applyPic', true);
-				code2 = NOTIFY.COMMIT;
-				break;
-			case TASK_NOTIFY.APPLY_PIC_REV:
-				commit('task._applyPic', false);
-				code2 = NOTIFY.COMMIT;
-				break;
-			case TASK_NOTIFY.CANCEL:
-				break;
-			default:
-				return;
-			}
-			cb&&cb(code);
+	load : function(d, id) {
+		var loadTask = function(dd, id) {
+			return Util.promise(function(resolve, reject) {
+				if (!id) {
+					resolve({cipher:dd,task:{groupid:dd.id, ver:dd.ver, draftno:dd.draftno}});
+					return;
+				}
+				Rpc.call('task.load', [{
+					groupid : dd.id,
+					ver : dd.ver,
+					draftno : dd.draftno,
+					id : id
+				}], function(res) {
+					if (res.result.code) {
+						UI.alert(_L(res.result.code));
+						reject();
+						return;
+					}
+					resolve({cipher:dd, task:res.result});
+				}, function(err) {
+					reject(err.message);
+				}, function(fail) {
+					reject(fail);
+				});
+			});
 		};
+		if (!d.name) {
+			return Util.promise(function(resolve, reject) {
+				Rpc.call('cipher.load', [{
+					id : d.id,
+					ver : d.ver,
+					draftno : d.draftno
+				}], function(res) {
+					if (res.result.code) {
+						reject(res.result.code);
+						return;
+					}
+					resolve(res.result);
+				}, function(err) {
+					reject(err.message);
+				}, function(fail) {
+					reject(fail);
+				});
+			}).then(function(cipher) {
+				return loadTask(cipher, id);
+			}).catch(function(e) {
+				throw e;
+			});
+		} else {
+			return loadTask(d, id);
+		}
+	},
+	ref : function(div, d, id, cb) {
+		var self = this;
 		var commit = function(m, f) {
 			return Util.promise(function(resolve, reject) {
 				Rpc.call(m, [{
-					groupid : groupid,
-					ver : ver,
-					draftno : draftno,
+					groupid : d.id,
+					ver : d.ver,
+					draftno : d.draftno,
 					id : id,
 					set : f
 				}], function(res) {
@@ -477,88 +501,60 @@ TaskManager = {
 				});
 			});
 		};
-		var getState = function(d) {
-			var list = [ d.pic_approve ? d.pic_approve.split(',') : [],
-						 d.review ? d.review.split(',') : [],
-						 d.auth ? d.auth.split(',') : [] ];
-			var user = UserManager.isLogin() ? UserManager.user().id : '';
-			var found = [];
-			for ( var i in list ) {
-				var l = list[i];
-				found.push(false);
-				for ( var j in l ) {
-					if (l[j]===user) {
-						found[i] = true;
+		var prepare = function(o) {
+			var task1 = new Task();
+			task1.init({
+				mode : MODE.REF,
+				div : div,
+				data : o.task ? o.task : {},
+				cipher : o.cipher ? o.cipher : {},
+				cb : function(code, v) {
+					var code2 = NOTIFY.CANCEL;
+					switch (code) {
+					case TASK_NOTIFY.PIC_APPROVE:
+						commit('task._approvePic', true);
+						code2 = NOTIFY.COMMIT;
 						break;
+					case TASK_NOTIFY.PIC_APPROVE_REV:
+						commit('task._approvePic', false);
+						code2 = NOTIFY.COMMIT;
+						break;
+					case TASK_NOTIFY.RESULTS_APPROVE:
+						commit('task._approveResults', true);
+						code2 = NOTIFY.COMMIT;
+						break;
+					case TASK_NOTIFY.RESULTS_APPROVE_REV:
+						commit('task._approveResults', false);
+						code2 = NOTIFY.COMMIT;
+						break;
+					case TASK_NOTIFY.APPLY_PIC:
+						commit('task._applyPic', true);
+						code2 = NOTIFY.COMMIT;
+						break;
+					case TASK_NOTIFY.APPLY_PIC_REV:
+						commit('task._applyPic', false);
+						code2 = NOTIFY.COMMIT;
+						break;
+					case TASK_NOTIFY.CANCEL:
+						break;
+					default:
+						return;
 					}
+					cb&&cb(code);
 				}
-			}
-			var ret = {};
-			// if loginuser doesn't have approval authority for a task progress
-			if (!found[2]) {
-				ret.pic_approve = TASK_APPROVE.NO_AUTH;
-				ret.review_approve = TASK_APPROVE.NO_AUTH;
-				// if pic is not set, loginuser can apply to pic of this task
-				if (!d.pic||d.pic==='') {
-					ret.apply_pic = TASK_APPROVE.CANAPPLY;
-				} else if (d.pic===user) {
-					ret.apply_pic = TASK_APPROVE.APPLYED;
-				}
-				return ret;
-			}
-			if (list[0].length===d.req) {
-				ret.pic_approve = TASK_APPROVE.NO_AUTH;
-			} else {
-				ret.pic_approve = found[0] ? TASK_APPROVE.DONE : TASK_APPROVE.NO;
-			}
-			if (list[1].length===d.req) {
-				ret.review_approve = TASK_APPROVE.NO_AUTH;
-			} else {
-				ret.review_approve = found[1] ? TASK_APPROVE.DONE : TASK_APPROVE.NO;
-			}
-			return ret;
+			});
 		};
-		Util.promise(function(resolve, reject) {
-			Rpc.call('task.load', [{
-				groupid : groupid,
-				ver : ver,
-				draftno : draftno,
-				id : id
-			}], function(res) {
-				if (res.result.code) {
-					UI.alert(_L(res.result.code));
-					reject();
-					return;
-				}
-				res.result.userstate = getState(res.result);
-				task1.init({
-					mode : MODE.REF,
-					div : div,
-					data : res.result ? res.result : {},
-					cb : base
-				});
+		return Util.promise(function(resolve, reject) {
+			self.load(d, id).then(function(o) {
+				prepare(o);
 				resolve();
-			}, function(err) {
-				self.err = err.message;
-				reject();
-			}, function(fail) {
-				self.err = err.message;
-				reject();
+			}).catch(function(e) {
+				reject(e);
 			});
 		});
 	},
-	add : function(div, groupid, ver, draftno, cb) {
-		var task1 = new Task();
-		var base = function(code, v) {
-			if (code===TASK_NOTIFY.CREATE) {
-				var v  = task1.get().cur;
-				add(v).then(function(id) {
-					cb&&cb(NOTIFY.CREATE, id);
-				});
-			} else if (code===NOTIFY.CANCEL) {
-				cb&&cb(NOTIFY.CANCEL);
-			}
-		};
+	add : function(div, d, cb) {
+		var self = this;
 		var add = function(v) {
 			return Util.promise(function(resolve, reject) {
 				Rpc.call('task._add', [v], function(res) {
@@ -576,31 +572,35 @@ TaskManager = {
 					reject();
 				});
 			});
-		}
-		task1.init({
-			mode : MODE.NEW,
-			div : div,
-			data : {
-				groupid : groupid,
-				ver : ver,
-				draftno : draftno
-			}, 
-			cb : base
+		};
+		return Util.promise(function(resolve, reject) {
+			self.load(d).then(function(o) {
+				var task1 = new Task();
+				task1.init({
+					mode : MODE.NEW,
+					div : div,
+					data : o.task,
+					cipher : o.cipher,
+					cb : function(code, v) {
+						if (code===TASK_NOTIFY.CREATE) {
+							var v  = task1.get().cur;
+							add(v).then(function(id) {
+								cb&&cb(NOTIFY.CREATE, id);
+							});
+						} else if (code===NOTIFY.CANCEL) {
+							cb&&cb(NOTIFY.CANCEL);
+						}
+					}
+				});
+				resolve();
+			}).catch (function(e) {
+				reject(e);
+			});
 		});
 	},
-	edit : function(div, groupid, ver, draftno, id, cb) {
-		var task1 = new Task();
-		var base = function(code, v) {
-			if (code===TASK_NOTIFY.COMMIT) {
-				var v  = task1.get();
-				commit(v).then(function(id) {
-					cb&&cb(NOTIFY.COMMIT, id);
-				});
-			} else if (code===NOTIFY.CANCEL) {
-				cb&&cb(NOTIFY.CANCEL);
-			}
-		};
-		var commit= function(v) {
+	edit : function(div, d, id, cb) {
+		var self = this;
+		var commit = function(v) {
 			return Util.promise(function(resolve, reject) {
 				Rpc.call('task._commit', [v.ini, v.cur], function(res) {
 					if (res.result.code) {
@@ -617,32 +617,39 @@ TaskManager = {
 					reject();
 				});
 			});
-		}
-		Util.promise(function(resolve, reject) {
-			Rpc.call('task.load', [{
-				groupid : groupid,
-				ver : ver,
-				draftno : draftno,
-				id : id
-			}], function(res) {
-				if (res.result.code) {
-					UI.alert(_L(res.result.code));
-					reject();
-					return;
+		};
+		return Util.promise(function(resolve, reject) {
+			self.load(d, id).then(function(o) {
+				var vtask = Validator.task;
+				var user = UserManager.isLogin() ? UserManager.user().id : '';
+				if (vtask.isEditable(o.cipher, o.task, user).code) {
+					self.ref(div, o.cipher, id, cb).then(function() {
+						resolve();
+					}).catch(function(e) {
+						reject(e);
+					});
+				} else {
+					var task1 = new Task();
+					task1.init({
+						mode : MODE.EDIT,
+						div : div,
+						data : o.task,
+						cipher : o.cipher,
+						cb : function(code, v) {
+							if (code===TASK_NOTIFY.COMMIT) {
+								var v  = task1.get();
+								commit(v).then(function(id) {
+									cb&&cb(NOTIFY.COMMIT, id);
+								});
+							} else if (code===NOTIFY.CANCEL) {
+								cb&&cb(NOTIFY.CANCEL);
+							}
+						}
+					});
+					resolve();
 				}
-				task1.init({
-					mode : MODE.EDIT,
-					div : div,
-					data : res.result ? res.result : {},
-					cb : base
-				});
-				resolve();
-			}, function(err) {
-				self.err = err.message;
-				reject();
-			}, function(fail) {
-				self.err = err.message;
-				reject();
+			}).catch (function(e) {
+				reject(e);
 			});
 		});
 	}

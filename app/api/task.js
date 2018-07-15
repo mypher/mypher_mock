@@ -6,6 +6,7 @@ let log = require('../cmn/logger')('api.task');
 let sha256 = require('sha256');
 
 let dtask = require('../db/task');
+let dcipher = require('../db/cipher');
 let vtask = require('../validator/task');
 let vcipher = require('../validator/cipher');
 
@@ -60,7 +61,7 @@ module.exports = {
 				d.id = id;
 				d.tm = tm;
 				await dtask.insert(d, t)
-				respnse = id;
+				response = id;
 			});
 			return response;
 		} catch (e) {
@@ -120,7 +121,7 @@ module.exports = {
 					draftno : ini.draftno
 				});
 				// check if task can be edited
-				response = vtask.isEditable(cdata, ini);
+				response = vtask.isEditable(cdata, ini, sender);
 				if (response.code) {
 					return;
 				}
@@ -178,7 +179,7 @@ module.exports = {
 					d.pic = sender;
 				} else {
 					// check if sender can cancel application 
-					response = vtask.canCancelPic(sender, cur);
+					response = vtask.canCancelPic(cur, sender);
 					if (response.code) {
 						return;
 					}
@@ -268,12 +269,12 @@ module.exports = {
 					}
 					cur.review = cmn.removeMember(sender, cur.review);
 				}
-				await dtask.approveReview(cur, t);
+				await dtask.approveResults(cur, t);
 			}).then(function() {
 			}).catch(function() {
 				response = {code:'INVALID_PARAM'};
 			});
-			return response;
+				return response;
 		} catch (e) {
 			log.error('errored in _commit : ' + e);
 			throw 'system error';

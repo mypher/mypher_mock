@@ -8,7 +8,7 @@ module.exports = {
 	isFulfill : function(req, approved, members) {
 		try {
 			approved = Validator.cmn.pickMembers(approved, members);
-			return (req=>approved.length);
+			return (req<=approved.length);
 		} catch (e) {
 			return false;
 		}

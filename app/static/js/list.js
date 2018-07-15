@@ -215,12 +215,17 @@ TaskList.prototype = {
 			return refresh();
 		} else if (evt===NOTIFY_LIST.CREATE) {
 			var div = UI.popup(800, 500);
-			var rule1 = TaskManager.add(div, this.groupid, this.ver, this.draftno, function(code, id) {
-				if (code===NOTIFY.CREATE || code===NOTIFY.CANCEL) {
-					UI.closePopup();
-					refresh();
+			var rule1 = TaskManager.add(div, 
+				{ id : this.groupid, 
+				  ver : this.ver, 
+				  draftno : this.draftno }, 
+				function(code, id) {
+					if (code===NOTIFY.CREATE || code===NOTIFY.CANCEL) {
+						UI.closePopup();
+						refresh();
+					}
 				}
-			});
+			);
 		} else if (evt===NOTIFY_LIST.SELECT) {
 			//var div = UI.popup(900, 500);
 			//var rule1 = TaskManager.ref(div, this.groupid, this.ver, this.draftno, sel.id);
