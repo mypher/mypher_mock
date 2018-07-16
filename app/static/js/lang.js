@@ -66,6 +66,10 @@ var $L = {
 		'REVIEW_APPROVE_REV' : '結果承認を取消',
 		'APPLY1' : '志願',
 		'CANCEL_APPLY1' : '志願取消',
+		'CURRENT1' : '現行',
+		'DRAFT1' : 'ドラフト',
+		'HISTORY1' : '履歴',
+		'EDITOR' : '編集者',
 
 		'INVALID_PARAM' : '入力値が正しくありません',
 		'PASS_DIFFER_FROM_CONF' : 'パスワードと確認用パスワードが一致していません。',

@@ -45,23 +45,7 @@ module.exports = {
 			throw e;
 		}
 	},
-	/*
-	 * isEditor
-	 * params : d.id, d.ver, d.draftno, d.sender, tx
-	 */
-/*	isEditor : async(d, tx) => {
-		try {
-			tx = tx ? tx : db;
-			let exp = cmn.expCsvInc(d.sender);
-			await tx.one(
-				"select id from cipher where id = $1 and ver = $2 and draftno = $3 and editor ~ $4"
-				, [d.id, d.ver, d.draftno, exp]
-			);
-			return true;
-		} catch (e) {
-			return false;
-		}
-	},*/
+
 	/*
 	 * getCurrent
 	 * params : d.id, tx
@@ -156,36 +140,6 @@ module.exports = {
 	},
 
 	/*
-	 * isEditable
-	 * params : d.id, d.ver, d.draftno, tx
-	 */
-/*	isEditable : async (d, tx) => {
-		tx = tx ? tx : db;
-		try {
-			// check if specified draft is exists
-			await tx.one(
-				'select id from cipher where id = $1 and ver = $2 and draftno = $3'
-				, [d.id, d.ver, d.draftno]
-			);
-		} catch (e) {
-			return module.exports.NOT_EXIST;
-		}
-		try {
-			// get latest formal version
-			let rec = await tx.one(
-				'select ver from cipher where id = $1 and formal = true order by ver desc limit 1'
-				, [d.id]
-			);
-			// a draft whose version is bigger than latest formal version is editable.
-			return ((rec.max===null) || (rec.max<d.ver)) 
-				?  module.exports.EDITABLE : module.exports.NOT_EDITABLE;
-		} catch (e) {
-			log.error('errored in getLatestFormalVersion : ' + e);
-			throw e;
-		}
-	},*/
-
-	/*
 	 * isExist
 	 * params :  d.id, d.ver, d.draftno, tx
 	 */
@@ -238,6 +192,24 @@ module.exports = {
 			);
 		} catch (e) {
 			log.error('errored in copy : ' + e);
+			throw e;
+		}
+	},
+
+	/**
+	 * listVersion
+	 * params : d, tx
+	 */
+	listVersion : async (d, tx) => {
+		try {
+			tx = tx ? tx : db;
+			// get history
+			return await tx.any(
+				'select id, ver, draftno, editor, formal from cipher where id=$1 order by ver desc, formal desc, draftno asc',
+				[d.id]
+			);
+		} catch(e) {
+			log.error('error in listVersion : ' + e);
 			throw e;
 		}
 	}

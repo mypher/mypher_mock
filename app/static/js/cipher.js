@@ -1,4 +1,4 @@
-// task.js
+// cipher.js
 // depend on 
 //   js/validator/cmn.js
 //   js/validator/cipher.js

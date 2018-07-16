@@ -192,5 +192,18 @@ module.exports = {
 			log.error('errored in _newdraft : ' + e);
 			throw 'system error';
 		}
+	},
+
+	/**
+	 * listVersion
+	 * params : d
+	 */
+	listVersion : async d => {
+		try {
+			return await dcipher.listVersion(d);
+		} catch (e) {
+			log.error('errored in listVersion : ' + e);
+			throw 'system error';
+		}
 	}
 };
