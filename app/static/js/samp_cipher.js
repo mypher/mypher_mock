@@ -17,7 +17,7 @@ _ = {
 			ver : $('#ver').val(),
 			draftno : $('#draft').val()
 		}, function(code, v) {
-			if ( code===NOTIFY.CANCEL) {
+			if (code===NOTIFY.CANCEL || code===NOTIFY.APPROVE) {
 				$('#cipher').html('');
 			} else if (code===NOTIFY.CREATE) {
 				$('#gid').val(v.id);

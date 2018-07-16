@@ -9,6 +9,8 @@ let dtask = require('../db/task');
 let drule = require('../db/rule');
 let dtoken = require('../db/token');
 
+let vcipher = require('../validator/cipher');
+
 module.exports = {
 	/*
 	 * _new 
@@ -84,8 +86,8 @@ module.exports = {
 					return;
 				}
 				// check if sender can update
-				if (!cmn.isMember(sender, ini.editor)) {
-					resoponse = {code:'NOT_HAVE_UPDATE_AUTH'};
+				response = vcipher.isEditable(ini, sender);
+				if (!response.code) {
 					return;
 				}
 				// check the data for updating
@@ -130,33 +132,17 @@ module.exports = {
 			await db.tx(async t=>{
 				let cur = await dcipher.load(d, t);
 				cur = cmn.null2Empty(cur);
-				// check if sender can update
-				if (!cmn.isMember(sender, cur.drule_auth)) {
-					response = {code:'NOT_HAVE_APPROVE_AUTH'};
-					return;
-				}
-				// check if alredy been formal
-				if (cur.formal) {
-					response = {code:'ALREADY_BEEN_FORMAL'};
-					return;
-				}
-				// check id sender already voted
-				let appdone = cmn.isMember(sender, cur.approved);
 				if (d.approve) {
-					if (appdone) {
-						response = {code:'ALREADY_APPROVED'};
+					response = vcipher.canApprove(cur, sender);
+					if (response.code) {
 						return;
 					}
 					cur.approved = cmn.addMember(sender, cur.approved);
-				}
-				if (!d.approve) {
-					if (!appdone) {
-						response = {code:'NOT_APPROVE_YET'};
-						return;
-					}
+					cur.formal = (cmn.getReq(cur.drule_req, cur.drule_auth)===cmn.nofMember(cur.approved));
+				} else {
+					response = vcipher.canCancelApprovement(cur, sender);
 					cur.approved = cmn.removeMember(sender, cur.approved);
 				}
-				cur.formal = (cmn.getReq(cur.drule_req, cur.drule_auth)===cmn.nofMember(cur.approved));
 				await dcipher.approve(cur, t);
 			});
 			return response;
@@ -174,8 +160,10 @@ module.exports = {
 		try {
 			let response = null;
 			await db.tx(async t=>{
-				if (!await dcipher.isExist(d, t)) {
-					response = {code : 'NOT_EXIST'};
+				let cur = dcipher.load(d, t);
+				// check if specified draft can be used for source
+				response = vcipher.canUseForSource(cur);
+				if (response.code) {
 					return;
 				}
 				let rec = await dcipher.getLatestFormalVersion(d, t);

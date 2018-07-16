@@ -1,9 +1,24 @@
+// task.js
+// depend on 
+//   js/validator/cmn.js
+//   js/validator/cipher.js
+//   js/common.js
+//   js/sha256.js
+//   js/lang.js
+//   js/sel_person.js
+//   js/task.js
+//   js/list.js
+//   js/member.js
+//   js/cipher.js
+//   js/user.js
+//   js/govrule.js
+//   js/tokenrule.js
+
 function Cipher(d) {
 	this.div = d.div;
 	this.mode = d.mode;
 	this.data = d.data;
 	this.cb = d.cb;
-	this.approvetype = d.approvetype;
 }
 var CIPHER_APPROVEID = {
 	NONE : 0,
@@ -357,23 +372,26 @@ Cipher.prototype = {
 					},
 					REF : function() {
 						this.common();
-						$(this.btn[0]).text(_L('NEW_DRAFT')).click(function() {
-							self.cb(NOTIFY.CREATE);
-						});
-						switch (self.approvetype) {
-						case CIPHER_APPROVEID.DO:
+						var user = UserManager.isLogin() ? UserManager.user().id : '';
+						var vcipher = Validator.cipher;
+						if (!vcipher.canUseForSource(self.data).code && 
+							UserManager.isLogin()) {
+							$(this.btn[0]).text(_L('NEW_DRAFT')).click(function() {
+								self.cb(NOTIFY.CREATE);
+							});
+						} else {
+							$(this.btn[0]).css('display', 'none');
+						}
+						if (!vcipher.canApprove(self.data, user).code) {
 							$(this.btn[1]).text(_L('APPROVE')).click(function() {
 								self.cb(NOTIFY.APPROVE, true);
 							});
-							break;
-						case CIPHER_APPROVEID.REV:
+						} else if (!vcipher.canCancelApprovement(self.data, user).code) {
 							$(this.btn[1]).text(_L('REVERT_APPROVE')).click(function() {
 								self.cb(NOTIFY.APPROVE, false);
 							});
-							break;
-						default:
+						} else {
 							$(this.btn[1]).css('display', 'none');
-							break;
 						}
 						$(this.btn[2]).text(_L('BACK')).click(function() {
 							self.cb(NOTIFY.CANCEL);
@@ -484,29 +502,6 @@ CipherManager = {
 	
 	ref_n_edit : function(div, key, cb, mode) {
 		var self = this;
-		var getType = function(d) {
-			var approved = d.approved ? d.approved.split(',') : [];
-			var auth = d.drule_auth ? d.drule_auth.split(',') : [];
-			var user = UserManager.isLogin() ? UserManager.user().id : '';
-			var userstate = false;
-			var userauth = false;
-			for ( var i in approved ) {
-				if (approved[i]===user) {
-					userstate = true;
-					break;
-				}
-			}
-			for ( var i in auth ) {
-				if (auth[i]===user) {
-					userauth = true;
-					break;
-				}
-			}
-			if (d.formal || !userauth) {
-				return CIPHER_APPROVEID.NONE;
-			}
-			return userstate ? CIPHER_APPROVEID.REV : CIPHER_APPROVEID.DO;
-		};
 		return Util.promise(function(resolve, reject) {
 			Rpc.call('cipher.load', [{id:key.id, ver:key.ver, draftno:key.draftno}], function(res) {
 				if (res.result.code) {
@@ -519,7 +514,6 @@ CipherManager = {
 					div : div,
 					mode : mode, 
 					data : data,
-					approvetype : getType(data),
 					cb : cb
 				});
 				cipher.init().then(function() {
@@ -586,6 +580,7 @@ CipherManager = {
 		return this.ref_n_edit(div, key, function(code, v) {
 			if (code===NOTIFY.APPROVE) {
 				approve(v).then(function() {
+					cb(code);
 				});
 			} else if (code===NOTIFY.CANCEL) {
 				cb(code);

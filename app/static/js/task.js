@@ -1,5 +1,5 @@
 // task.js
-// necessary modules : 
+// depend on 
 //   validator/cmn.js
 //   validator/task.js
 //   list.js

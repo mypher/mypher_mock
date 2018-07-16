@@ -14,6 +14,22 @@ module.exports = {
 	},
 
 	/**
+	 * canUseForSource
+	 * params cipher
+	 */
+	canUseForSource : function(cipher) {
+		// a draft whose version is bigger than latest formal version can be used for source.
+		if (cipher.ver>cipher.formalver) {
+			return {};
+		}
+		// latest formal version can be used for source.
+		if (cipher.ver===cipher.formalver && cipher.draftno===cipher.formaldraft) {
+			return {};
+		}
+		return {code:'CANT_USE_FOR_SOURCE'};
+	},
+
+	/**
 	 * isEditor
 	 * params : person, cipher
 	 */
@@ -21,6 +37,66 @@ module.exports = {
 		var member = Validator.cmn.split(cipher.editor);
 		var p = Validator.cmn.pickMembers(person, member);
 		return (p.length===1) ? {} : {code:'NOT_HAVE_UPDATE_AUTH'};
+	},
+
+	/**
+	 * isEditable
+	 * params : cipher, person
+	 */
+	isEditable : function(cipher, person) {
+		// check if cipher is editable
+		var ret = Validator.cipher.isEditableVer(cipher);
+		if (ret.code) {
+			return ret;
+		}
+		// check if person is editor
+		ret = Validator.cipher.isEditor(person, cipher);
+		if (ret.code) {
+			return ret;
+		}
+		return {};
+	},
+
+	/**
+	 * canApprove
+	 * params cipher, person
+	 */
+	canApprove : function(cipher, person) {
+		// only editable draft can be approved
+		let ret = Validator.cipher.isEditableVer(cipher);
+		if (ret.code) {
+			return ret;
+		}
+		// check if person is approver
+		if (!Validator.cmn.isMember(person, cipher.drule_auth)) {
+			return {code:'NOT_HAVE_APPROVE_AUTH'};
+		}
+		// check if person already approved
+		if (Validator.cmn.isMember(person, cipher.approved)) {
+			return {code:'ALREADY_APPROVED'};
+		}
+		return {};
+	},
+
+	/**
+	 * canCancelApprovement
+	 * cipher, person
+	 */
+	canCancelApprovement : function(cipher,person) {
+		// only editable draft can be canceled
+		let ret = Validator.cipher.isEditableVer(cipher);
+		if (ret.code) {
+			return ret;
+		}
+		// check if person is approver
+		if (!Validator.cmn.isMember(person, cipher.drule_auth)) {
+			return {code:'NOT_HAVE_APPROVE_AUTH'};
+		}
+		// check if person approved
+		if (!Validator.cmn.isMember(person, cipher.approved)) {
+			return {code:'NOT_APPROVE_YET'};
+		}
+		return {};
 	}
 };
 

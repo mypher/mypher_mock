@@ -107,8 +107,8 @@ module.exports = {
 		try {
 			tx = tx ? tx : db;
 			let cnt = await tx.result(
-				'update cipher set approved=$1, formal=$2 where groupid=$3 and ver=$4 and draftno=$5 and id=$6',
-				[d.approved, d.formal, d.groupid, d.ver, d.draftno, d.id], 
+				'update cipher set approved=$1, formal=$2 where id=$3 and ver=$4 and draftno=$5',
+				[d.approved, d.formal, d.id, d.ver, d.draftno], 
 				r=>r.rowCount
 			);
 			// check number of affected rows
