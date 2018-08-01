@@ -38,6 +38,7 @@ var $L = {
 		'SELECT' : '選択',
 		'CANCEL' : 'キャンセル',
 		'GOVRULE' : '統治ルール',
+		'CIPHER' : 'サイファー',
 		'TASK' : 'タスク',
 		'PURPOSE' : '目的',
 		'DECISION_RULE' : '意思決定ルール',
@@ -70,6 +71,10 @@ var $L = {
 		'DRAFT1' : 'ドラフト',
 		'HISTORY1' : '履歴',
 		'EDITOR' : '編集者',
+		'SEARCH_TARGET' : '検索対象',
+		'SEARCH_WORDS' : '検索ワード',
+		'SEARCH' : '検索',
+		'LOGOUT' : 'ログアウト',
 
 		'INVALID_PARAM' : '入力値が正しくありません',
 		'PASS_DIFFER_FROM_CONF' : 'パスワードと確認用パスワードが一致していません。',

@@ -212,5 +212,25 @@ module.exports = {
 			log.error('error in listVersion : ' + e);
 			throw e;
 		}
+	},
+
+	/**
+	 * listbywords
+	 * params d, tx
+	 */
+	listbywords : async (d, tx) => {
+		try {
+			tx = tx ? tx : db;
+			// get history
+			return await tx.any(
+				'select id, ver, draftno, name, purpose from cipher b ' + 
+				'where formal = true and ver=(select max(ver) from cipher c where c.id=b.id and c.formal = true) and ' +
+				'(name like $1 or purpose like $1)',
+				['%' + d + '%']
+			);
+		} catch(e) {
+			log.error('error in listbywords : ' + e);
+			throw e;
+		}
 	}
 };

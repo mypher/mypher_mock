@@ -279,6 +279,19 @@ module.exports = {
 			log.error('errored in _commit : ' + e);
 			throw 'system error';
 		}		
+	},
+
+	/**
+	 * listbywords
+	 * params : d
+	 */
+	listbywords : async d => {
+		try {
+			return await dtask.listbywords(d.words);
+		} catch (e) {
+			log.error('errored in listbywords : ' + e);
+			throw 'system error';
+		}
 	}
 
 };

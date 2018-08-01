@@ -17,7 +17,8 @@ NOTIFY = {
 	COMMIT : 3,
 	LOGIN : 4,
 	APPROVE : 5,
-	SELECT : 6
+	SELECT : 6,
+	SEARCH : 7,
 }
 
 var module = {};
