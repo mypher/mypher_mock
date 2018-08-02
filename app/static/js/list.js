@@ -45,7 +45,7 @@ List.prototype = {
 		// header
 		var html = ['<div class="row li_head">'];
 		for ( var i=0; i<col.length; i++ ) {
-			html.push('<div class="col-sm-' + col[i].width + '"><div>');
+			html.push('<div class="col-' + col[i].width + '"><div>');
 			html.push(col[i].label);
 			html.push('</div></div>');
 		}
@@ -58,7 +58,7 @@ List.prototype = {
 				'<div class="row' + cls + '" key="' + data[i][key] + '">'
 			];
 			for ( var j=0; j<col.length; j++ ) {
-				html.push('<div class="col-sm-' + col[j].width + '"><div>');
+				html.push('<div class="col-' + col[j].width + '"><div>');
 				html.push(data[i][col[j].name]);
 				html.push('</div></div>');
 			}

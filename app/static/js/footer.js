@@ -11,7 +11,7 @@ Footer = {
 				if (status==='error') {
 					self.reject();
 				}
-				self.div.addClass('container footer');
+				self.div.addClass('footer');
 				resolve();
 			});
 		});

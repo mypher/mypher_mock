@@ -97,9 +97,12 @@ var SearcherManager = {
 							{ width : 4,
 							  label : _L('NAME1'),
 							  name : 'name' },
-							{ width : 8,
+							{ width : 6,
 							  label : _L('PURPOSE'),
-							  name : 'purpose' }
+							  name : 'purpose' },
+							{ width : 2,
+							  label : _L('RUNNING'),
+							  name : 'running' }
 						]
 					},
 					{
@@ -141,6 +144,7 @@ var SearcherManager = {
 						var o = res.result[i];
 						if (v.type==='1') {
 							o.key = [o.id, o.ver, o.draftno].join('_');
+							o.running = o.formal ? '✓' : '';
 						} else if (v.type==='2') {
 							o.key = [o.groupid, o.ver, o.draftno, o.id].join('_');
 						}

@@ -1,6 +1,8 @@
 .footer {
 	position:fixed;
 	bottom:0;
-	border-top:1px solid #111;
+	border-top:2px solid #30b0f0;
 	background-color:#fff;
+	color:#30b0f0;
+	width:100%;
 }

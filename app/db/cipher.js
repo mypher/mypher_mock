@@ -35,10 +35,12 @@ module.exports = {
 		try {
 			tx = tx ? tx : db;
 			return await tx.one(
-				'select c.id, c.name, c.purpose, c.drule_req, c.drule_auth, c.approved, c.ver, c.draftno, c.editor, c.formal, f.ver formalver, f.draftno formaldraft ' +
-				'from cipher c, ' +
-				'(select ver, draftno from cipher where id = $1 and formal = true order by ver desc limit 1) f ' +
-				'where c.id = $1 and c.ver = $2 and c.draftno = $3'
+				'select c.id, c.name, c.purpose, c.drule_req, c.drule_auth, c.approved, c.ver, c.draftno, c.editor, c.formal, ' +
+				'f.ver formalver, f.draftno formaldraft ' +
+				'from cipher c left join ' +
+				'(select * from (select ver, draftno, id, formal, rank() over (partition by id order by formal desc, ver desc) rank1 ' +
+				'from cipher as c1 where formal=true) as c2 where rank1=1) as f on c.id = f.id ' +
+				'where c.id = $1 and c.ver = $2 and c.draftno = $3 '
 				, [d.id, d.ver, d.draftno]
 			);
 		} catch (e) {
@@ -223,8 +225,9 @@ module.exports = {
 			tx = tx ? tx : db;
 			// get history
 			return await tx.any(
-				'select id, ver, draftno, name, purpose from cipher b ' + 
-				'where formal = true and ver=(select max(ver) from cipher c where c.id=b.id and c.formal = true) and ' +
+				'select * from (select id, ver, draftno, name, purpose, formal, rank() ' +
+				'over (partition by id order by formal desc, ver desc) rank1 from cipher) as c ' + 
+				'where rank1=1 and' +
 				'(name like $1 or purpose like $1)',
 				['%' + d + '%']
 			);
