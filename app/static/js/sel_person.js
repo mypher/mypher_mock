@@ -22,36 +22,38 @@ function SelPerson(div, cb, selected) {
 
 SelPerson.prototype = {
 	init : function() {
-		this.layout();	
-		this.get('');
+		var self = this;
+		this.layout().then(function() {
+			self.get('');
+		});
 	},
 
 	layout : function() {
-		var list = $('<div class="list">');
-		var text = $('<input type="text" class="filter">');
-		var selected = $('<div class="ed">');
-		var btn_ok = $('<input type="button" class="ok" value="決定">');
-		var btn_cancel = $('<input type="button" class="cancel" value="キャンセル">');
 		var self = this;
-		this.div.empty();
 		this.div.addClass('selp')
-		this.div.append(list);
-		this.div.append(text);
-		this.div.append(selected);
-		this.div.append(btn_ok);
-		this.div.append(btn_cancel);
-		text.blur(() => {
-			self.get($(text).val());
-		}).focus();
-		btn_ok.click(function() {
-			var ret = [];
-			for ( var i in self.selected) {
-				if (self.selected[i]) ret.push(i);
-			}
-			self.cb(true, ret);
-		});
-		btn_cancel.click(function() {
-			self.cb(false);
+		return Util.promise(function(resolve, reject) {
+			self.div.load('parts/selperson.html', function(res, status) {
+				if (status==='error') {
+					self.reject();
+					return;
+				}
+				var btn = self.div.find('button');
+				var text = $(self.div.find('input[type="text"]')[0]);
+				text.blur(() => {
+					self.get(text.val());
+				}).focus();
+				$(btn[0]).click(function() {
+					var ret = [];
+					for ( var i in self.selected) {
+						if (self.selected[i]) ret.push(i);
+					}
+					self.cb(true, ret);
+				}).text(_L('SELECT'));
+				$(btn[1]).click(function() {
+					self.cb(false);
+				}).text(_L('CANCEL'));
+				resolve();
+			});
 		});
 	},
 

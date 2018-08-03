@@ -4,12 +4,16 @@
 	background-color:#fff;
 	box-shadow: 2px 2px 4px -2px gray;
 	border:1px solid 444;
+	-ms-user-select: none;
+	-webkit-user-select: none;
+	-moz-user-select: none;
 }
 
 .selp > .list {
 	border:1px solid #888;
 	height:60%;
 	overflow:scroll;
+	cursor: pointer;
 }
 
 .selp > .list > .tb {
@@ -96,5 +100,6 @@
 	border-radius: 10px;
 	-webkit-border-radius: 10px;
 	-moz-border-radius: 10px;
+	cursor: pointer;
 }
 

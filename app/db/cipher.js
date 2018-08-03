@@ -19,7 +19,7 @@ module.exports = {
 		try {
 			tx = tx ? tx : db;
 			await tx.none(
-					'insert into cipher(id, name, purpose, drule_req, drule_auth, ver, draftno, editor, approved, tm) values ($1, $2, $3, $4, $5, 1, 1, $6, $7)'
+					'insert into cipher(id, name, purpose, drule_req, drule_auth, ver, draftno, editor, tm) values ($1, $2, $3, $4, $5, 1, 1, $6, $7)'
 					, [d.id, d.name, d.purpose, d.drule_req, d.drule_auth, d.editor, d.tm]
 				);
 		} catch (e) {

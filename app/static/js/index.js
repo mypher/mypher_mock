@@ -10,7 +10,9 @@ _ = {
 				}
 			}
 		});
-		Header.init($('#head'));
+		Header.init($('#head'), function() {
+			_.init();
+		});
 		Footer.init($('#tail'));
 		_.trans2Search(true);
 		_.scroll();
@@ -38,18 +40,14 @@ _ = {
 	},
 
 	selectCipher : function(d) {
-		this.prepareTransition();
+		_.prepareTransition();
 		CipherManager.ref($('#main'), {
 			id : d.id,
 			ver : d.ver,
 			draftno : d.draftno
 		}, function(code, v) {
 			if (code===NOTIFY.CANCEL || code===NOTIFY.APPROVE) {
-				$('#cipher').html('');
 			} else if (code===NOTIFY.CREATE) {
-				$('#gid').val(v.id);
-				$('#ver').val(v.ver);
-				$('#draft').val(v.draftno);
 				_.edit();
 			}
 		}).then(function(cipher) {
@@ -72,9 +70,9 @@ _ = {
 	},
 
 	createCipher : function() {
-		CipherManager.add($('#cipher'), function(code, v) {
+		CipherManager.add($('#main'), function(code, v) {
 			if (code===NOTIFY.CREATE) {
-				_.selectCipher(v);
+				_.selectCipher({id:v, ver:'1', draftno:'1'});
 			}
 		}).then(function(cipher) {
 			_.scroll();

@@ -8,7 +8,7 @@ module.exports = {
 	},
 
 	sanitizeForLike : v => {
-		return v ? v.replace(/(%|_))/g, '¥¥$1') : '';
+		return v ? v.replace(/(%|_)/g, '¥¥$1') : '';
 	}
 };
 

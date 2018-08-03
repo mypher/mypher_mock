@@ -39,6 +39,7 @@ module.exports = {
 	 * params : person, list
 	 */
 	isMember : function(person, list) {
+		list = list ? list : ''; 
 		list = list.split(',');
 		for (var i in list) {
 			if (person===list[i]) {

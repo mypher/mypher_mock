@@ -1,6 +1,7 @@
 Header = {
-	init : function(d) {
+	init : function(d, cb) {
 		this.div = d;
+		this.cb = cb;
 		return this.layout();
 	},
 	layout : function() {
@@ -65,13 +66,15 @@ Header = {
 			UI.closePopup();
 			self.refresh();
 			$(self.div.find('button')[0]).click();
+			self.cb();
 		});
 	},
 
 	logout : function() {
 		UserManager.logout();
 		this.refresh();
-		$(self.div.find('button')[0]).click();
+		$(this.div.find('button')[0]).click();
+		this.cb();
 	},
 
 	set : function(l) {

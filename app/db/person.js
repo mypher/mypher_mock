@@ -52,7 +52,7 @@ module.exports = {
 				['%' + name + '%']
 			);
 		} catch (e) {
-			log.error('errored in getGroup : ' + e);
+			log.error('errored in list_fast : ' + e);
 			throw e;
 		}
 	},
