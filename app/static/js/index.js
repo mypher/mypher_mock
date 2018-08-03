@@ -16,6 +16,27 @@ _ = {
 		_.scroll();
 	},
 
+	prepareMenu  : function(isAddSearch, isAddCipher) {
+		var menu = [];
+		if (isAddSearch) {
+			menu.push({
+				text : _L('SEARCH'),
+				cb : function() {
+					_.trans2Search();
+				}
+			});
+		}
+		if (isAddCipher && UserManager.isLogin() ) {
+			menu.push({
+				text : _L('CREATE_CIPHER'),
+				cb : function() {
+					_.createCipher();
+				}
+			});
+		}
+		return menu;
+	},
+
 	selectCipher : function(d) {
 		this.prepareTransition();
 		CipherManager.ref($('#main'), {
@@ -35,14 +56,7 @@ _ = {
 			_.scroll();
 			Header.set({
 				title : _L('CIPHER'),
-				menu : [
-					{
-						text : _L('SEARCH'),
-						cb : function() {
-							_.trans2Search();
-						},
-					}
-				]
+				menu : _.prepareMenu(true, true)
 			});
 		});
 	},
@@ -50,11 +64,25 @@ _ = {
 	trans2Search : function(noredraw) {
 		Header.set({
 			title : _L('SEARCH'),
-			menu : []
+			menu : _.prepareMenu(false, true)
 		});
 		if (!noredraw) {
 			SearcherManager.draw();
 		}
+	},
+
+	createCipher : function() {
+		CipherManager.add($('#cipher'), function(code, v) {
+			if (code===NOTIFY.CREATE) {
+				_.selectCipher(v);
+			}
+		}).then(function(cipher) {
+			_.scroll();
+			Header.set({
+				title : _L('CIPHER'),
+				menu : _.prepareMenu(true, false)
+			});
+		});
 	},
 
 	selectTask : function(d) {

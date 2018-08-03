@@ -76,6 +76,8 @@ var $L = {
 		'SEARCH' : '検索',
 		'LOGOUT' : 'ログアウト',
 		'RUNNING' : '運営中',
+		'EDIT' : '編集',
+		'CREATE_CIPHER' : 'サイファー作成',
 
 		'INVALID_PARAM' : '入力値が正しくありません',
 		'PASS_DIFFER_FROM_CONF' : 'パスワードと確認用パスワードが一致していません。',

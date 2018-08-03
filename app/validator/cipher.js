@@ -6,8 +6,12 @@ module.exports = {
 	 * params : cipher
 	 */
 	isEditableVer : function(cipher) {
-		// only the case which version is bigger than latest formal version, draft is editable
-		if (!cipher.formalver || cipher.formalver >= cipher.ver) {
+		// if a draft is formalized yet, it is editable
+		if (!cipher.formalver) {
+			return {};
+		}
+		// only the case which version is bigger than latest formal version, a draft is editable
+		if (cipher.formalver >= cipher.ver) {
 			return {code:'NOT_EDITABLE'};
 		}
 		return {};

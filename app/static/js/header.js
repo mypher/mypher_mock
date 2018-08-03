@@ -36,10 +36,13 @@ Header = {
 			}
 			if (this.data.menu) {
 				for ( var i in this.data.menu ) {
-					addItem(this.data.menu[i].text, function() {
-						self.data.menu[i].cb();
-						$(self.div.find('button')[0]).click();
-					});
+					+ function() {
+						var m = self.data.menu[i];
+						addItem(m.text, function() {
+							m.cb();
+							$(self.div.find('button')[0]).click();
+						});
+					}();
 				}
 			}
 		}

@@ -183,3 +183,14 @@ select {
 body {
 	color:#336;
 }
+
+.btn-normal {
+	color: #fff;
+	background-color: #30b0f0;
+	border-color: #30b0f0;
+}
+.btn-normal:not(:disabled):not(.disabled).active, .btn-normal:not(:disabled):not(.disabled):active, .show > .btn-normal.dropdown-toggle {
+	color: #fff;
+	background-color: #1080c0;
+	border-color: #1080c0;
+}

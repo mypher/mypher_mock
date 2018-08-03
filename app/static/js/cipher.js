@@ -333,6 +333,16 @@ Cipher.prototype = {
 				})[id]();
 				// BUTTON1
 				({
+					set : function(arr) {
+						var len = this.btn.length;
+						var start = len - arr.length;
+						for ( var i=0; i<start; i++ ) {
+							$(this.btn[i]).css('display', 'none');
+						}
+						for ( var i=0; i<arr.length; i++) {
+							$(this.btn[start + i]).text(arr[i].text).click(arr[i].cb);
+						}
+					},
 					div : $($('div[name="cp_button1"]')[0]),
 					common : function() {
 						var lbl = this.div.find('label');
@@ -340,28 +350,54 @@ Cipher.prototype = {
 					},
 					ADD : function() {
 						this.common();
-						$(this.btn[0]).text(_L('CREATE')).click(function() {
-							self.cb(NOTIFY.CREATE);
-						});
-						$(this.btn[1]).text(_L('CANCEL')).click(function() {
-							self.cb(NOTIFY.CANCEL);
-						});
+						this.set([
+							{
+								text : _L('CREATE'),
+								cb : function() {
+									self.cb(NOTIFY.CREATE);
+								}
+							},
+							{
+								text : _L('CANCEL'),
+								cb : function() {
+									self.cb(NOTIFY.CANCEL);
+								}
+							}
+						]);
 					},
 					REF : function() {
 						this.div.css('display', 'none');
 					},
 					EDIT : function() {
 						this.common();
-						$(this.btn[0]).text(_L('COMMIT')).click(function() {
-							self.cb(NOTIFY.COMMIT);
-						});
-						$(this.btn[1]).text(_L('RELOAD')).click(function() {
-							self.cb(NOTIFY.CANCEL);
-						});
+						this.set([
+							{
+								text : _L('COMMIT'),
+								cb : function() {
+									self.cb(NOTIFY.COMMIT);
+								}
+							},
+							{
+								text : _L('RELOAD'),
+								cb : function() {
+									self.cb(NOTIFY.CANCEL);
+								}
+							}
+						]);
 					}
 				})[id]();
 				// BUTTON2
 				({
+					set : function(arr) {
+						var len = this.btn.length;
+						var start = len - arr.length;
+						for ( var i=0; i<start; i++ ) {
+							$(this.btn[i]).css('display', 'none');
+						}
+						for ( var i=0; i<arr.length; i++) {
+							$(this.btn[start + i]).text(arr[i].text).click(arr[i].cb);
+						}
+					},
 					div : $($('div[name="cp_button2"]')[0]),
 					common : function() {
 						var lbl = this.div.find('label');
@@ -374,36 +410,49 @@ Cipher.prototype = {
 						this.common();
 						var user = UserManager.isLogin() ? UserManager.user().id : '';
 						var vcipher = Validator.cipher;
+						var btns = [];
+						if (!vcipher.isEditable(self.data, user).code) {
+							btns.push({
+								text : _L('EDIT'),
+								cb : function() {
+									self.cb(NOTIFY.EDIT);
+								}
+							});
+						}
 						if (!vcipher.canUseForSource(self.data).code && 
 							UserManager.isLogin()) {
-							$(this.btn[0]).text(_L('NEW_DRAFT')).click(function() {
-								self.cb(NOTIFY.CREATE);
+							btns.push({
+								text : _L('NEW_DRAFT'),
+								cb : function() {
+									self.cb(NOTIFY.CREATE);
+								}
 							});
-						} else {
-							$(this.btn[0]).css('display', 'none');
 						}
 						if (!vcipher.canApprove(self.data, user).code) {
-							$(this.btn[1]).text(_L('APPROVE')).click(function() {
-								self.cb(NOTIFY.APPROVE, true);
+							btns.push({
+								text : _L('APPROVE'),
+								cb : function() {
+									self.cb(NOTIFY.APPROVE, true);
+								}
 							});
 						} else if (!vcipher.canCancelApprovement(self.data, user).code) {
-							$(this.btn[1]).text(_L('REVERT_APPROVE')).click(function() {
-								self.cb(NOTIFY.APPROVE, false);
+							btns.push({
+								text : _L('REVERT_APPROVE'),
+								cb : function() {
+									self.cb(NOTIFY.APPROVE, false);
+								}
 							});
-						} else {
-							$(this.btn[1]).css('display', 'none');
 						}
-						$(this.btn[2]).text(_L('BACK')).click(function() {
-							self.cb(NOTIFY.CANCEL);
-						});
+						this.set(btns);
 					},
 					EDIT : function() {
 						this.common();
-						$(this.btn[0]).css('display', 'none');
-						$(this.btn[1]).css('display', 'none');
-						$(this.btn[2]).text(_L('BACK')).click(function() {
-							self.cb(NOTIFY.CANCEL);
-						});
+						this.set([{
+							text : _L('BACK'),
+							cb : function() {
+								self.cb(NOTIFY.CANCEL);
+							}
+						}]);
 					}
 				})[id]();
 				resolve();
@@ -534,6 +583,7 @@ CipherManager = {
 	
 	ref : function(div, key, cb) {
 		var cipher = null;
+		var self = this;
 		var approve = function(f) {
 			return Util.promise(function(resolve, reject) {
 				var data = cipher.get().ini;
@@ -588,6 +638,8 @@ CipherManager = {
 				create().then(function(res) {
 					cb(code, res);
 				});
+			} else if (code===NOTIFY.EDIT) {
+				self.edit(div, key, cb);
 			}
 		}, MODE.REF).then(function(o) {
 			cipher = o;
@@ -596,6 +648,7 @@ CipherManager = {
 
 	edit : function(div, key, cb) {
 		var cipher = null;
+		var self = this;
 		var commit = function() {
 			return Util.promise(function(resolve, reject) {
 				var data = cipher.get();
@@ -618,6 +671,8 @@ CipherManager = {
 				commit().then(function() {
 					cb(code);
 				});
+			} else if (code===NOTIFY.CANCEL) {
+				self.ref(div, key, cb);
 			} else {
 				cb(code);
 			}
