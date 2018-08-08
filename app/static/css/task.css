@@ -11,3 +11,16 @@
 	margin:24px 0px 24px 0px;
 }
 
+.btn-detail {
+	background: url(../img/detail.png) center no-repeat;
+	height:100%;
+	width:48px;
+	background-color:#30b0f0;
+}
+
+.btn-search {
+	background: url(../img/search.png) center no-repeat;
+	height:100%;
+	width:48px;
+	background-color:#30b0f0;
+}

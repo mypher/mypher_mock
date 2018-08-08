@@ -81,7 +81,9 @@ Task.prototype = {
 							if (self.mode===MODE.REF) return;
 							var div = UI.popup(600, 600);
 							var ctrl = new TaskList(div, MODE.REF,
-								self.data.data.draftno,
+								self.data.id,
+								self.data.draftno,
+								self.data.ver,
 								function(code, v) {
 									if (code===NOTIFY.SELECT) {
 										UI.closePopup();
@@ -264,13 +266,13 @@ Task.prototype = {
 						}
 					},
 					ADD : function() {
-						this.common(false);
+						this.common(true);
 					},
 					REF : function() {
 						this.common(false);
 					},
 					EDIT : function() {
-						this.common(false);
+						this.common(true);
 					}
 				})[id]();
 				// PICAPPROVE

@@ -225,10 +225,7 @@ module.exports = {
 			tx = tx ? tx : db;
 			// get history
 			return await tx.any(
-				'select * from (select id, ver, draftno, name, purpose, formal, rank() ' +
-				'over (partition by id order by formal desc, ver desc) rank1 from cipher) as c ' + 
-				'where rank1=1 and' +
-				'(name like $1 or purpose like $1)',
+				'select * from cipher_current where name like $1 or purpose like $1',
 				['%' + d + '%']
 			);
 		} catch(e) {

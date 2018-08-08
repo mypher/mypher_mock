@@ -19,6 +19,8 @@ NOTIFY = {
 	APPROVE : 5,
 	SELECT : 6,
 	SEARCH : 7,
+	VERSION : 8,
+	BACK : 9
 }
 
 var module = {};

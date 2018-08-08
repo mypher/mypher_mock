@@ -54,7 +54,7 @@ module.exports = {
 	 * params : csv
 	 */
 	split : function(csv) {
-		return (csv==='') ? [] : csv.split(',');
+		return (csv===null||csv==='') ? [] : csv.split(',');
 	}
 };
 

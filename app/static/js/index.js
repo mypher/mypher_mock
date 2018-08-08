@@ -4,17 +4,18 @@ _ = {
 		SearcherManager.init($('#main'), function(code, v) {
 			if (code===NOTIFY.SELECT) {
 				if (v.type==='1') {
-					self.selectCipher(v);
+					_.Cipher.init(v);
 				} else if (v.type==='2') {
-					self.selectTask(v);
+					_.Task.init(v);
 				}
 			}
 		});
+		History.push(_L('HOME'));
 		Header.init($('#head'), function() {
 			_.init();
 		});
 		Footer.init($('#tail'));
-		_.trans2Search(true);
+		_.Search.transit(true);
 		_.scroll();
 	},
 
@@ -24,7 +25,7 @@ _ = {
 			menu.push({
 				text : _L('SEARCH'),
 				cb : function() {
-					_.trans2Search();
+					_.Search.transit();
 				}
 			});
 		}
@@ -32,59 +33,132 @@ _ = {
 			menu.push({
 				text : _L('CREATE_CIPHER'),
 				cb : function() {
-					_.createCipher();
+					_.Cipher.create();
 				}
 			});
 		}
 		return menu;
 	},
 
-	selectCipher : function(d) {
-		_.prepareTransition();
-		CipherManager.ref($('#main'), {
-			id : d.id,
-			ver : d.ver,
-			draftno : d.draftno
-		}, function(code, v) {
-			if (code===NOTIFY.CANCEL || code===NOTIFY.APPROVE) {
-			} else if (code===NOTIFY.CREATE) {
-				_.edit();
-			}
-		}).then(function(cipher) {
-			_.scroll();
-			Header.set({
-				title : _L('CIPHER'),
-				menu : _.prepareMenu(true, true)
+	Cipher : {
+		init : function(v) {
+			History.push(_L('CIPHER'), function() {
+				_.Search.draw();
 			});
-		});
+			_.Cipher.select(v);
+		},
+		select : function(d) {
+			_.prepareTransition();
+			CipherManager.ref($('#main'), {
+				id : d.id,
+				ver : d.ver,
+				draftno : d.draftno
+			}, function(code, v) {
+				if (code===NOTIFY.CANCEL || code===NOTIFY.APPROVE) {
+				} else if (code===NOTIFY.CREATE) {
+					_.Cipher.create();
+				} else if (code===NOTIFY.VERSION) {
+					History.push(_L('HISTORY1'), function() {
+						_.Cipher.select(d);
+					});
+					_.Cipher.listVersion(d);
+				}
+			}).then(function(cipher) {
+				_.scroll();
+				Header.set({
+					menu : _.prepareMenu(true, true)
+				});
+			});
+		},
+		create : function() {
+			CipherManager.add($('#main'), function(code, v) {
+				var d = {
+					id : v,
+					ver : '1',
+					draftno : '1'
+				};
+				if (code===NOTIFY.CREATE) {
+					_.Cipher.select(d);
+				} else {
+					History.push(_L('HISTORY1'), function() {
+						_.Cipher.select(d);
+					});
+					_.Cipher.listVersion(d);
+				}
+			}).then(function(cipher) {
+				_.scroll();
+				Header.set({
+					menu : _.prepareMenu(true, false)
+				});
+			});
+		},
+	
+		listVersion : function(d) {
+			_.prepareTransition();
+			CipherVerManager.ref($('#main'), d.id, function(code, v) {
+				if (code===NOTIFY.BACK) {
+					History.back();
+				} else if (code===NOTIFY.SELECT) {
+					History.pop();
+					History.pop();
+					History.push(_L('CIPHER'));
+					_.Cipher.select(v);
+				}
+			}).then(function(cipher) {
+				_.scroll();
+				Header.set({
+					menu : _.prepareMenu(true, false)
+				});
+			});
+		}
 	},
+	
+	Search : {
+		transit : function(noredraw) {
+			Header.set({
+				menu : _.prepareMenu(false, true)
+			});
+			if (!noredraw) {
+				_.Search.draw();
+			}
+		},
 
-	trans2Search : function(noredraw) {
-		Header.set({
-			title : _L('SEARCH'),
-			menu : _.prepareMenu(false, true)
-		});
-		if (!noredraw) {
+		draw : function() {
 			SearcherManager.draw();
+			Header.refresh();
 		}
 	},
 
-	createCipher : function() {
-		CipherManager.add($('#main'), function(code, v) {
-			if (code===NOTIFY.CREATE) {
-				_.selectCipher({id:v, ver:'1', draftno:'1'});
-			}
-		}).then(function(cipher) {
-			_.scroll();
-			Header.set({
-				title : _L('CIPHER'),
-				menu : _.prepareMenu(true, false)
+	Task : {
+		init : function(v) {
+			History.push(_L('CIPHER'), function() {
+				_.Search.draw();
 			});
-		});
-	},
-
-	selectTask : function(d) {
-		alert('selectTask');
+			History.push(_L('TASK'), function() {
+				_.Cipher.select({id:v.groupid, ver:v.ver, draftno:v.draftno});
+			});
+			_.Task.select(v);
+		},
+		select : function(d) {
+			_.prepareTransition();
+			TaskManager.ref(
+				$('#main'), 
+				{
+					id : d.groupid, 
+					ver : d.ver,  
+					draftno : d.draftno
+				},
+				d.id,
+				function(code, v) {
+					alert(1);
+				}
+			).then(function() {
+				_.scroll();
+				Header.set({
+					menu : _.prepareMenu(true, true)
+				});
+			});
+		}
 	},
 
 	prepareTransition : function() {

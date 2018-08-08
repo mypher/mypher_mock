@@ -83,8 +83,12 @@ Cipher.prototype = {
 					div : $($('div[name="cp_draft"]')[0]),
 					common : function() {
 						var lbl = this.div.find('label');
+						var button = this.div.find('button');
 						$(lbl[0]).text(_L('DRAFT_NO'));
 						$(lbl[1]).text(self.data.draftno);
+						$(button[0]).click(function() {
+							self.cb(NOTIFY.VERSION);
+						});
 					},
 					ADD : function() {
 						this.div.css('display' , 'none');
@@ -531,12 +535,12 @@ CipherManager = {
 				mode : MODE.NEW, 
 				data : {},
 				cb : function(code) {
-					if (code===NOTIFY.CANCEL) {
-						cb(code);
-					} else if (code===NOTIFY.CREATE) {
+					if (code===NOTIFY.CREATE) {
 						commit().then(function(v) {
 							cb(code, v);
 						});
+					} else {
+						cb(code, v);
 					}
 				}
 			});
@@ -632,14 +636,14 @@ CipherManager = {
 				approve(v).then(function() {
 					cb(code);
 				});
-			} else if (code===NOTIFY.CANCEL) {
-				cb(code);
 			} else if (code===NOTIFY.CREATE) {
 				create().then(function(res) {
 					cb(code, res);
 				});
 			} else if (code===NOTIFY.EDIT) {
 				self.edit(div, key, cb);
+			} else {
+				cb(code, v);
 			}
 		}, MODE.REF).then(function(o) {
 			cipher = o;

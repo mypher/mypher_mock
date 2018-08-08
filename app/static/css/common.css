@@ -194,3 +194,13 @@ body {
 	background-color: #1080c0;
 	border-color: #1080c0;
 }
+
+.bc a, .bc small{
+	margin:0px 4px 0px 4px;
+	float:left;
+}
+
+.bc span {
+	margin:0px 4px 0px 4px;
+	float:none;
+}

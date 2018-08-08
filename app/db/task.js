@@ -238,9 +238,11 @@ module.exports = {
 			tx = tx ? tx : db;
 			// get history
 			return await tx.any(
-				'select t.groupid, t.ver, t.draftno, t.id, t.name tname, t.description, c.name cname from task t ' +
-				'inner join cipher c on t.groupid=c.id and t.ver=c.ver and t.draftno=c.draftno and formal = true and c.ver = (select max(ver) from cipher d where d.id=c.id and d.formal = true) ' + 
-				'where (t.name like $1 or t.description like $1) ',
+				'select t.groupid, t.ver, t.draftno, t.id, t.name tname, t.description, c.name cname, c.formal ' +
+				'from task t ' +
+				'inner join cipher_current c ' +
+				'on t.groupid=c.id and t.ver=c.ver and t.draftno=c.draftno ' +
+				'where t.name like $1 or t.description like $1 ',
 				['%' + d + '%']
 			);
 		} catch(e) {
@@ -249,4 +251,6 @@ module.exports = {
 		}
 	}
 };
+
+
 

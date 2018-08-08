@@ -5,6 +5,7 @@
 .li_list { 
 	margin:0px;
 	padding-left:30px;
+	cursor:pointer;
 }
 
 .li_list > .li_head {

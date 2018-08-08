@@ -38,7 +38,11 @@ CipherVer.prototype = {
 						]
 					}, function(evt, sel) {
 						if (evt===NOTIFY_LIST.DATA) {
-							list.show([self.data.formal]);
+							if (self.data.formal) {
+								list.show([self.data.formal]);
+							} else {
+								list.show([]);
+							}
 						} else if (evt===NOTIFY_LIST.SELECT) {
 							onselect(sel);
 						}
@@ -61,7 +65,11 @@ CipherVer.prototype = {
 						]
 					}, function(evt, sel) {
 						if (evt===NOTIFY_LIST.DATA) {
-							list.show(self.data.draft);
+							if (self.data.draft) {
+								list.show(self.data.draft);
+							} else {
+								list.show([]);
+							}
 						} else if (evt===NOTIFY_LIST.SELECT) {
 							onselect(sel);
 						}
@@ -84,7 +92,11 @@ CipherVer.prototype = {
 						]
 					}, function(evt, sel) {
 						if (evt===NOTIFY_LIST.DATA) {
-							list.show(self.data.history);
+							if (self.data.history) {
+								list.show(self.data.history);
+							} else {
+								list.show([]);
+							}
 						} else if (evt===NOTIFY_LIST.SELECT) {
 							onselect(sel);
 						}
@@ -96,8 +108,8 @@ CipherVer.prototype = {
 					var lbl = div.find('label');
 					var btn = div.find('button');
 					$(lbl[0]).text(_L('HISTORY1'));
-					$(btn[0]).text(_L('CANCEL')).click(function() {
-						self.cb(NOTIFY.CANCEL);
+					$(btn[0]).text(_L('BACK')).click(function() {
+						self.cb(NOTIFY.BACK);
 					});
 				}();
 				resolve();
@@ -136,6 +148,7 @@ CipherVerManager = {
 					cb(code, v);
 				});
 				cipher.init();
+				resolve();
 			});
 		});
 	}

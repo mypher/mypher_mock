@@ -29,12 +29,9 @@ Header = {
 			ul.append(li);
 		};
 		ul.empty();
-		title.empty();
+		title.empty().append(History.breadcrumbs());
 		duser.empty();
 		if (this.data) {
-			if (this.data.title) {
-				title.text(this.data.title);
-			}
 			if (this.data.menu) {
 				for ( var i in this.data.menu ) {
 					+ function() {
