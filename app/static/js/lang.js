@@ -107,6 +107,7 @@ var $L = {
 		'THERE_IS_INCONSISTENT' : 'データに不整合があります。',
 		'CIPHER_NOT_FORMAL_YET' : 'CIPHERはまだ正式となっていません。',
 		'PIC_NOT_APPROVED' : '担当者が承認されていません。',
+		'USER_NOT_LOGIN' : 'ログインしていません。',
 		'@' : ''
 	}
 };

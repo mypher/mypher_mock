@@ -350,7 +350,7 @@ Task.prototype = {
 							$(btn[0]).text(_L('PIC_APPROVE_REV')).click(function() {
 								self.cb&&self.cb(TASK_NOTIFY.PIC_APPROVE_REV);
 							});
-						} else if (!vtask.canApplyToPic(self.data).code) {
+						} else if (!vtask.canApplyToPic(self.data, user).code) {
 							$(btn[0]).text(_L('APPLY1')).click(function() {
 								self.cb&&self.cb(TASK_NOTIFY.APPLY_PIC);
 							});
@@ -361,9 +361,6 @@ Task.prototype = {
 						} else {
 								$(btn[0]).css('display', 'none');
 						}
-						$(btn[2]).text(_L('BACK')).click(function() {
-							self.cb&&self.cb(TASK_NOTIFY.CANCEL);
-						});
 						this.common();
 					},
 					EDIT : function() {

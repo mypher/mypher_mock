@@ -59,10 +59,11 @@ module.exports = {
 
 	/**
 	 * canApplyToPic
-	 * params : task
+	 * params : task, user
 	 */
-	canApplyToPic : function(task) {
-		return (task.pic&&task.pic!=='') ? {code:'ALREADY_APPLIED'} : {};
+	canApplyToPic : function(task, user) {
+		if (Validator.cmn.isEmpty(user)) return {code:'USER_NOT_LOGIN'};
+		return (Validator.cmn.isEmpty(task.pic)) ? {} : {code:'ALREADY_APPLIED'};
 	},
 
 	/**

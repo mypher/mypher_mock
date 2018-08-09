@@ -195,6 +195,11 @@ body {
 	border-color: #1080c0;
 }
 
+.bc {
+	overflow-x: scroll;
+	white-space: nowrap;
+}
+
 .bc a, .bc small{
 	margin:0px 4px 0px 4px;
 	float:left;

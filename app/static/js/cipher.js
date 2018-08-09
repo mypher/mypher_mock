@@ -26,6 +26,12 @@ var CIPHER_APPROVEID = {
 	REV : 2
 };
 
+var CIPHER_SELECT_TYPE = {
+	TOKEN : 1,
+	RULE : 2,
+	TASK : 3
+}
+
 Cipher.prototype = {
 	init : function() {
 		return this.layout();
@@ -251,8 +257,15 @@ Cipher.prototype = {
 						var list = new TaskList(this.ctrl, MODE.REF, 
 							self.data.id, self.data.ver, self.data.draftno,
 							function(evt, sel) {
-								var div = UI.popup(900, 500);
-								var rule1 = TaskManager.ref(div, self.groupid, self.ver, self.draftno, sel.id);
+								self.cb(NOTIFY.SELECT, {
+									type : CIPHER_SELECT_TYPE.TASK,
+									d : {
+										groupid : self.data.id,
+										ver : self.data.ver,
+										draftno : self.data.draftno,
+										id : sel.id
+									}
+								});
 							}
 						);
 					},

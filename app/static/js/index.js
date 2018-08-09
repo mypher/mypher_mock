@@ -62,6 +62,13 @@ _ = {
 						_.Cipher.select(d);
 					});
 					_.Cipher.listVersion(d);
+				} else if (code===NOTIFY.SELECT) {
+					if (v.type===CIPHER_SELECT_TYPE.TASK) {
+						History.push(_L('TASK'), function() {
+							_.Cipher.select(d);
+						});
+						_.Task.select(v.d);
+					}
 				}
 			}).then(function(cipher) {
 				_.scroll();

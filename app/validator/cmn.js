@@ -2,6 +2,14 @@
 
 module.exports = {
 	/*
+	 * isEmpty
+	 * params : v
+	 */
+	isEmpty : function(v) {
+		return (v===undefined||v===null||v==='');
+	},
+
+	/*
 	 * isFulfill
 	 * params : req, approved, members
 	 */
@@ -39,7 +47,8 @@ module.exports = {
 	 * params : person, list
 	 */
 	isMember : function(person, list) {
-		list = list ? list : ''; 
+		if (Validator.cmn.isEmpty(list)) return false;
+		if (Validator.cmn.isEmpty(person)) return false;
 		list = list.split(',');
 		for (var i in list) {
 			if (person===list[i]) {
