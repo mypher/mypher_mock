@@ -20,7 +20,9 @@ NOTIFY = {
 	SELECT : 6,
 	SEARCH : 7,
 	VERSION : 8,
-	BACK : 9
+	BACK : 9,
+	INIT : 10,
+	REDRAW : 11
 }
 
 var module = {};
@@ -30,7 +32,7 @@ Rpc = {
 	getId : function() {
 		return Math.floor( Math.random() * 0x8000000000000000 );
 	},
-	call : function(method, param, cb, cberr, failcb, bNoModal) {
+	call : function(method, param, cb, cberr, bNoModal) {
 		var name = this.call.caller.name;
 		var getMsg = function(val) {
 			var sep = '&nbsp;:&nbsp;';
@@ -49,8 +51,10 @@ Rpc = {
 				data.auth = UserManager.getHash({data:JSON.stringify(param)});
 			}
 		}
-		if (failcb===failcb||type(failcb)!=='function') {
-			failcb = function(jqXHR, textStatus, errorThrown) {};
+		if (!cberr) {
+			cberr = function(msg) {
+				UI.alert(msg);
+			}
 		}
 		var retry = 0;
 		var call = function() {
@@ -280,6 +284,17 @@ var Util = {
 			ret[i] = ret[i].trim();
 		}
 		return ret;
+	},
+	load : function(div, file, cb) {
+		div.empty();
+		return Util.promise(function(resolve, reject) {
+			div.load(file, function(res, status) {
+				if (status==='error') {
+					reject();
+				}
+				cb(resolve, reject);
+			});
+		});
 	}
 };
 

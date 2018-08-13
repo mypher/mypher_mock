@@ -1,7 +1,6 @@
 Header = {
-	init : function(d, cb) {
+	init : function(d) {
 		this.div = d;
-		this.cb = cb;
 		return this.layout();
 	},
 	layout : function() {
@@ -11,6 +10,8 @@ Header = {
 				if (status==='error') {
 					self.reject();
 				}
+				var title = $(self.div.find('span[name="title"]')[0]);
+				History.init(title);
 				self.refresh();
 				resolve();
 			});
@@ -19,7 +20,6 @@ Header = {
 
 	refresh : function() {
 		var ul = $(this.div.find('ul')[0]);
-		var title = $(this.div.find('span[name="title"]')[0]);
 		var duser = $(this.div.find('div[name="user"]')[0]);
 		var self = this;
 		var addItem = function(label, cb) {
@@ -29,7 +29,6 @@ Header = {
 			ul.append(li);
 		};
 		ul.empty();
-		title.empty().append(History.breadcrumbs());
 		duser.empty();
 		if (this.data) {
 			if (this.data.menu) {
@@ -63,7 +62,7 @@ Header = {
 			UI.closePopup();
 			self.refresh();
 			$(self.div.find('button')[0]).click();
-			self.cb();
+			History.rerun();
 		});
 	},
 
@@ -71,7 +70,7 @@ Header = {
 		UserManager.logout();
 		this.refresh();
 		$(this.div.find('button')[0]).click();
-		this.cb();
+		History.rerun();
 	},
 
 	set : function(l) {

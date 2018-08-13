@@ -1,5 +1,60 @@
 _ = {
 	init : function() {
+		Header.init($('#head')).then(function() {
+			Footer.init($('#tail'));
+			_.Search.new();
+		});
+	},
+	Search : {
+		new : function() {
+			var search = new Search($('#main'), function(code, v) {
+			if (code===NOTIFY.SELECT) {
+				if (v.type==='1') {
+					_.Cipher.new(v);
+				} else if (v.type==='2') {
+					_.Task.new(v);
+				}
+			}
+			});
+			History.run(_L('SEARCH'), search);
+		}
+	},
+	Cipher : {
+		new : function(v) {
+			var cipher = new Cipher({
+				div : $('#main'),
+				mode : MODE.REF,
+				key : {
+					id: v.id,
+					ver : v.ver,
+					draftno : v.draftno
+				}
+			}, function(code, v) {
+				if (code===NOTIFY.CANCEL || code===NOTIFY.APPROVE) {
+				} else if (code===NOTIFY.CREATE) {
+					_.Cipher.create();
+				} else if (code===NOTIFY.SELECT) {
+					if (v.type===CIPHER_SELECT_TYPE.TASK) {
+						History.push(_L('TASK'), function() {
+							_.Cipher.select(d);
+						});
+						_.Task.select(v.d);
+					}
+				} else if (code===NOTIFY.REDRAW) {
+					// TODO:HEADER
+				}
+			});
+			History.run(_L('CIPHER'), cipher);
+		}
+	},
+	Task : {
+		new : function(v) {
+		}
+	}
+};
+/*
+{
+	init : function() {
 		var self = this;
 		SearcherManager.init($('#main'), function(code, v) {
 			if (code===NOTIFY.SELECT) {
@@ -10,10 +65,7 @@ _ = {
 				}
 			}
 		});
-		History.push(_L('HOME'));
-		Header.init($('#head'), function() {
-			_.init();
-		});
+		Header.init($('#head'));
 		Footer.init($('#tail'));
 		_.Search.transit(true);
 		_.scroll();
@@ -177,16 +229,17 @@ _ = {
 	}
 
 };
+*/
 
 $(function() {
 	_.init();
 	$(window).on('popstate', function(event) {
 	});
 	$(window).scroll(function() {
-		_.scroll();
+		Footer.scroll();
 	});
 	$(window).resize(function() {
-		_.scroll();
+		Footer.scroll();
 	});
 });
 
