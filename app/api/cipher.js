@@ -87,7 +87,7 @@ module.exports = {
 				}
 				// check if sender can update
 				response = vcipher.isEditable(ini, sender);
-				if (!response.code) {
+				if (response.code) {
 					return;
 				}
 				// check the data for updating

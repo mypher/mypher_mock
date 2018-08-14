@@ -11,7 +11,327 @@
 //   lang.js
 //   common.js
 //   sha256.js
+//
 
+function Task(d, cb) {
+	this.div = d.div;
+	this.mode = d.mode;
+	this.data = d.data;
+	this.cipher = d.cipher;
+	this.cb = cb;
+}
+
+Task.prototype = {
+	draw : function() {
+		var self = this;
+		return self.layout().then(function() {
+			return self.list().then(function() {
+				return Util.promise(function(resolve) {
+					self.cb(NOTIFY.REDRAW);
+					resolve();
+				});
+			});
+		});
+	},
+
+	layout : function() {
+		var self = this;
+		return Util.load(self.div, 'parts/task.html', function(resolve) {
+			Util.initDiv(self.div, self.mode);
+			// GROUP
+			var div = self.div.find('div[name="tk_group"]:eq(0)');
+			div.find('button:eq(0)').click(function() {
+				if (self.mode===MODE.REF) return;
+				var div = UI.popup(600, 600);
+				var ctrl = new TaskList(div, MODE.REF,
+					self.data.id,
+					self.data.draftno,
+					self.data.ver,
+					function(code, v) {
+						if (code===NOTIFY.SELECT) {
+							UI.closePopup();
+							self.div.find('div[name="tk_group"] input:eq(0)')
+								.val(v.name).prop('tid', v.id);
+						}
+					}
+				);
+			});
+			// NAME
+			div = self.div.find('div[name="tk_name"]:eq(0)');
+			div.find('label:eq(0)').text(_L('NAME1'));
+				({
+					div : $(self.div.find('div[name="tk_name"]')[0]),
+					common : function(editable) {
+						var lbl = this.div.find('label');
+						var edit = this.div.find('input');
+						$(lbl[0]).text(_L('NAME1'));
+						$(edit[0]).prop('disabled', !editable);
+					},
+					ADD : function() {
+						this.common(true);
+					},
+					REF : function() {
+						this.common(false);
+					},
+					EDIT : function() {
+						this.common(true);
+					}
+				})[id]();
+				// DESCRIPTION 
+				({
+					div : $(self.div.find('div[name="tk_desc"]')[0]),
+					common : function(editable) {
+						var lbl = this.div.find('label');
+						var edit = this.div.find('textarea');
+						$(lbl[0]).text(_L('DESC'));
+						$(edit[0]).prop('disabled', !editable);
+					},
+					ADD : function() {
+						this.common(true);
+					},
+					REF : function() {
+						this.common(false);
+					},
+					EDIT : function() {
+						this.common(true);
+					}
+				})[id]();
+				// RULE
+				({
+					div : $(self.div.find('div[name="tk_rule"]')[0]),
+					common : function(editable) {
+						var lbl = this.div.find('label');
+						var btn = this.div.find('button');
+						if (editable) {
+							$(btn[0]).click(function() {
+								if (self.mode===MODE.REF) return;
+								var cb = function(code, v) {
+									if (code===NOTIFY.SELECT) {
+										UI.closePopup();
+										var inp = self.div.find('div[name="tk_rule"] input');
+										$(inp[0]).val(v.name).prop('rid', v.id);
+									}
+								};
+								var div = UI.popup(600, 600);
+								var ctrl = new RuleList(div, MODE.REF,
+									self.data.groupid, self.data.ver, self.data.draftno, cb
+								);
+							});
+						}
+						$(btn[1]).click(function() {
+							var div = UI.popup(600, 200);
+							var inp = self.div.find('div[name="tk_rule"] input');
+							var rid = $(inp[0]).prop('rid');
+							GovRuleManager.make(div, {
+								groupid:self.data.groupid, 
+								ver:self.data.ver,
+								draftno:self.data.draftno,
+								id:rid }, false)
+							.then(function(obj){
+								
+							});
+						});
+						$(lbl[0]).text(_L('RULE'));
+					},
+					ADD : function() {
+						this.common(true);
+					},
+					REF : function() {
+						this.common(false);
+					},
+					EDIT : function() {
+						this.common(true);
+					}
+				})[id]();
+				// REWARD
+				({
+					div : $(self.div.find('div[name="tk_reward"]')[0]),
+					common : function(editable) {
+						var lbl = this.div.find('label');
+						var span = this.div.find('span');
+						var btn = this.div.find('button');
+						var inp = this.div.find('input');
+						$(span[0]).text(_L('TOKEN_ID'));
+						$(span[1]).text(_L('QUANTITY'));
+						$(lbl[0]).text(_L('REWARD'));
+						$(inp[1]).prop('disabled', !editable);
+						if (editable) {
+							$(btn[0]).click(function() {
+								if (self.mode===MODE.REF) return;
+								var div = UI.popup(600, 600);
+								var cb = function(code, v) {
+									if (code===NOTIFY.SELECT) {
+										UI.closePopup();
+										var inp = self.div.find('div[name="tk_reward"] input');
+										$(inp[0]).val(v.name).prop('tid', v.id);
+									}
+								};
+								var ctrl = new TokenList(div, MODE.REF,
+									self.data.groupid, self.data.ver, self.data.draftno, cb);
+							});
+						}
+					},
+					ADD : function() {
+						this.common(true);
+					},
+					REF : function() {
+						this.common(false);
+					},
+					EDIT : function() {
+						this.common(true);
+					}
+				})[id]();
+				// PIC
+				({
+					div : $(self.div.find('div[name="tk_pic"]')[0]),
+					common : function(editable) {
+						var lbl = this.div.find('label');
+						var btn = this.div.find('button');
+						$(lbl[0]).text(_L('PIC'));
+						if (editable) {
+							$(btn[0]).click(function() {
+								if (self.mode===MODE.REF) return;
+								var div = UI.popup(400, 400);
+								var inp = self.div.find('div[name="tk_pic"] input');
+								var id = $(inp[0]).prop('pid');
+								var list = [];
+								if (id) {
+									list.push(id);
+								}
+								var pic = new SelPerson(div, function(l, sel) {
+									UI.closePopup();
+									if (l) {
+										if (sel.length===0) {
+											$(inp).val('').prop('pid', '');
+											return;
+										}
+										Util.name(sel).then(function(ns) {
+											for ( var i in ns ) {
+												$(inp).val(ns[i]).prop('pid', i);
+											}
+										});
+									}
+								},list);
+							});
+						}
+					},
+					ADD : function() {
+						this.common(true);
+					},
+					REF : function() {
+						this.common(false);
+					},
+					EDIT : function() {
+						this.common(true);
+					}
+				})[id]();
+				// PICAPPROVE
+				({
+					div : $(self.div.find('div[name="tk_picapprove"]')[0]),
+					common : function() {
+						var lbl = this.div.find('label');
+						$(lbl[0]).text(_L('PIC_APPROVE_STATE'));
+					},
+					ADD : function() {
+						this.div.css('display', 'none');
+					},
+					REF : function() {
+						this.common();
+					},
+					EDIT : function() {
+						this.div.css('display', 'none');
+					}
+				})[id]();
+				// REVIEW
+				({
+					div : $(self.div.find('div[name="tk_review"]')[0]),
+					common : function() {
+						var lbl = this.div.find('label');
+						$(lbl[0]).text(_L('REVIEW_STATE'));
+					},
+					ADD : function() {
+						this.div.css('display', 'none');
+					},
+					REF : function() {
+						this.common();
+					},
+					EDIT : function() {
+						this.div.css('display', 'none');
+					}
+				})[id]();
+				// BUTTON
+				({
+					div : $(self.div.find('div[name="tk_button"]')[0]),
+					common : function() {
+						var lbl = this.div.find('label');
+						$(lbl[0]).text(_L('REVIEW_STATE'));
+					},
+					ADD : function() {
+						var btn = this.div.find('button');
+						$(btn[0]).css('display', 'none');
+						$(btn[1]).text(_L('CREATE')).click(function() {
+							self.cb&&self.cb(TASK_NOTIFY.CREATE);
+						});
+						$(btn[2]).text(_L('CANCEL')).click(function() {
+							self.cb&&self.cb(TASK_NOTIFY.CANCEL);
+						});
+					},
+					REF : function() {
+						var state = self.data.userstate;
+						var btn = this.div.find('button');
+						var vtask = Validator.task;
+						var user = UserManager.isLogin() ? UserManager.user().id : '';
+						if (!vtask.canApproveResults(self.cipher, self.data, user).code) {
+							$(btn[1]).text(_L('REVIEW_APPROVE')).click(function() {
+								self.cb&&self.cb(TASK_NOTIFY.RESULTS_APPROVE);
+							});
+						} else if (!vtask.canCancelApprovementResults(self.cipher, self.data, user).code) {
+							$(btn[1]).text(_L('REVIEW_APPROVE_REV')).click(function() {
+								self.cb&&self.cb(TASK_NOTIFY.RESULTS_APPROVE_REV);
+							});
+						} else {
+							$(btn[1]).css('display', 'none');
+						}
+						if (!vtask.canApprovePic(self.cipher, self.data, user).code) {
+							$(btn[0]).text(_L('PIC_APPROVE')).click(function() {
+								self.cb&&self.cb(TASK_NOTIFY.PIC_APPROVE);
+							});
+						} else if (!vtask.canCancelApprovementPic(self.cipher, self.data, user).code) {
+							$(btn[0]).text(_L('PIC_APPROVE_REV')).click(function() {
+								self.cb&&self.cb(TASK_NOTIFY.PIC_APPROVE_REV);
+							});
+						} else if (!vtask.canApplyToPic(self.data, user).code) {
+							$(btn[0]).text(_L('APPLY1')).click(function() {
+								self.cb&&self.cb(TASK_NOTIFY.APPLY_PIC);
+							});
+						} else if (!vtask.canCancelPic(self.data, user).code) {
+							$(btn[0]).text(_L('CANCEL_APPLY1')).click(function() {
+								self.cb&&self.cb(TASK_NOTIFY.APPLY_PIC_REV);
+							});
+						} else {
+								$(btn[0]).css('display', 'none');
+						}
+						this.common();
+					},
+					EDIT : function() {
+						var btn = this.div.find('button');
+						$(btn[0]).css('display', 'none');
+						$(btn[1]).text(_L('COMMIT')).click(function() {
+							self.cb&&self.cb(TASK_NOTIFY.COMMIT);
+						});
+						$(btn[2]).text(_L('CANCEL')).click(function() {
+							self.cb&&self.cb(TASK_NOTIFY.CANCEL);
+						});
+					}
+				})[id]();
+
+			resolve();
+		});
+	}
+};
+
+
+/*
 function Task() {
 }
 
@@ -653,3 +973,4 @@ TaskManager = {
 		});
 	}
 };
+*/

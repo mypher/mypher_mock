@@ -36,7 +36,7 @@ History = {
 
 	backTo : function(no) {
 		if (this.hist.length<=no) return;
-		this.hist = this.hist.splice(0,no+1);
+		this.hist = this.hist.splice(0,no+2);
 		this.back();
 	},
 

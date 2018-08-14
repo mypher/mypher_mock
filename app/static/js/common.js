@@ -295,6 +295,60 @@ var Util = {
 				cb(resolve, reject);
 			});
 		});
+	},
+	initDiv : function(div, mode, btns) {
+		div.find('*[disable_on*=add]').prop('disabled', mode===MODE.ADD);
+		div.find('*[disable_on*=edit]').prop('disabled', mode===MODE.EDIT);
+		div.find('*[disable_on*=ref]').prop('disabled', mode===MODE.REF);
+		div.find('*[hide_on*=add]').css('display', (mode===MODE.ADD) ? 'none' : '');
+		div.find('*[hide_on*=edit]').css('display', (mode===MODE.EDIT) ? 'none' : '');
+		div.find('*[hide_on*=ref]').css('display', (mode===MODE.REF) ? 'none' : '');
+		var l = div.find('label[ltext]');
+		for ( var i=0; i<l.length; i++ ) {
+			var elm = l.eq(i);
+			elm.text(_L(elm.attr('ltext')));
+		}
+		l = div.find('div[btnproc]');
+		for ( var i=0; i<l.length; i++ ) {
+			var elm = l.eq(i);
+			Util.initButton(elm.find('button'), btns[elm.attr('btnproc')]);
+		}
+	},
+	initButton : function(btns, arr) {
+		var len = btns.length;
+		var start = len - arr.length;
+		for ( var i=0; i<start; i++ ) {
+			btns.eq(i).css('display', 'none');
+		}
+		for ( var i=0; i<arr.length; i++) {
+			var elm = btns.eq(start + i).css('display', '');
+			if (arr[i].text) {
+				elm.text(_L(arr[i].text));
+			}
+			if (arr[i].click) {
+				elm.click(arr[i].click);
+			}
+		}
+	},
+	setData : function(div, d) {
+		for ( var i in d ) {
+			div.find('label[field=' + i + ']').text(d[i]);
+			div.find('input[field=' + i + ']').val(d[i]);
+			div.find('textarea[field=' + i + ']').val(d[i]);
+		}
+	},
+	getData : function(div, base) {
+		var elms = div.find('*[field]');
+		for ( var i=0; i<elms.length; i++ ) {
+			var elm = elms.eq(i);
+			var tagname = elm.prop('tagName');
+			if (tagname==='LABEL') {
+				base[elm.attr('field')] = elm.text();
+			} else {
+				base[elm.attr('field')] = elm.val();
+			}
+		}
+		return base;
 	}
 };
 

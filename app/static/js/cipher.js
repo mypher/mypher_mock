@@ -37,160 +37,62 @@ Cipher.prototype = {
 	layout : function() {
 		var self = this;
 		return Util.load(self.div, 'parts/cipher.html', function(resolve) {
-			var id = MODE_LABEL[self.mode];
-			// ID
-			var div = self.div.find('div[name="cp_id"]:eq(0)');
-			if (self.mode===MODE.ADD) {
-				div.css('display' , 'none');
-			} else {
-				div.find('label:eq(0)').text(_L('ID'));
-			}
-			// VERSION
-			div = self.div.find('div[name="cp_ver"]:eq(0)');
-			if (self.mode===MODE.ADD) {
-				div.css('display' , 'none');
-			} else {
-				div.find('label:eq(0)').text(_L('VERSION'));
-			}
-			// DRAFT
-			div = self.div.find('div[name="cp_draft"]:eq(0)');
-			if (self.mode===MODE.ADD) {
-				div.css('display' , 'none');
-			} else {
-				div.find('label:eq(0)').text(_L('DRAFT_NO'));
-				div.find('button:eq(0)').click(function() {
-					var ctrl = new CipherVer(
-						{div:self.div, key:self.key}, 
-						function(code, v) {
-							if (code===NOTIFY.SELECT) {
-								self.mode = MODE.REF;
-								self.key = v;
-								History.back();
+			Util.initDiv(self.div, self.mode, {
+				draft : [{
+					click : function() {
+						var ctrl = new CipherVer(
+							{div:self.div, key:self.key}, 
+							function(code, v) {
+								if (code===NOTIFY.SELECT) {
+									self.mode = MODE.REF;
+									self.key = v;
+									History.back();
+								}
 							}
-						}
-					);
-					History.run(_L('HISTORY1'), ctrl);
-				});
-			}
-			// EDITOR
-			div = self.div.find('div[name="cp_editor"]:eq(0)');
-			div.find('label:eq(0)').text(_L('DRAFT_EDIT_MEMBER'));
-			// NAME
-			div = self.div.find('div[name="cp_name"]:eq(0)');
-			div.find('label:eq(0)').text(_L('NAME1'));
-			if (self.mode===MODE.REF) {
-				div.find('input:eq(0)').prop('disabled', true);
-			}
-			// DESC
-			div = self.div.find('div[name="cp_desc"]:eq(0)');
-			div.find('label:eq(0)').text(_L('PURPOSE'));
-			if (self.mode===MODE.REF) {
-				div.find('textarea:eq(0)').prop('disabled', true);
-			}
-			// GOV
-			div = self.div.find('div[name="cp_gov"]:eq(0)');
-			div.find('label:eq(0)').text(_L('DECISION_RULE'))
-			// TOKEN 
-			div = self.div.find('div[name="cp_token"]:eq(0)');
-			if (self.mode===MODE.ADD) {
-				div.css('display', 'none');
-			} else {
-				div.find('label:eq(0)').text(_L('TOKEN'));
-			}
-			// TASK
-			div = self.div.find('div[name="cp_task"]:eq(0)');
-			if (self.mode===MODE.ADD) {
-				div.css('display', 'none');
-			} else {
-				div.find('label:eq(0)').text(_L('TASK'));
-			}
-			// RULELIST
-			div = self.div.find('div[name="cp_rulelist"]:eq(0)');
-			if (self.mode===MODE.ADD) {
-				div.css('display', 'none');
-			} else {
-				div.find('label:eq(0)').text(_L('RULELIST'));
-			}
-			// APPROVED
-			div = self.div.find('div[name="cp_approve"]:eq(0)');
-			if (self.mode!==MODE.REF) {
-				div.css('display', 'none');
-			} else {
-				div.find('label:eq(0)').text(_L('APPROVE'));
-			}
-			// BUTTON1
-			({
-				set : function(arr) {
-					var len = this.btn.length;
-					var start = len - arr.length;
-					for ( var i=0; i<start; i++ ) {
-						this.btn.eq(i).css('display', 'none');
+						);
+						History.run(_L('HISTORY1'), ctrl);
 					}
-					for ( var i=0; i<arr.length; i++) {
-						this.btn.eq(start + i).text(arr[i].text).click(arr[i].cb);
+				}],
+				button1 : (function() {
+					switch (self.mode) {
+					case MODE.ADD: 
+						return [
+							{
+								text : 'CREATE',
+								click : function() {
+									self.
+									self.cb(NOTIFY.CREATE);
+								}
+							},
+							{
+								text : 'CANCEL',
+								click : function() {
+									self.cb(NOTIFY.CANCEL);
+								}
+							}
+						];
+					case MODE.EDIT: 
+						return [
+							{
+								text : 'COMMIT',
+								click : function() {
+									self.commit();
+								}
+							},
+							{
+								text : 'RELOAD',
+								click : function() {
+									self.draw();
+								}
+							}
+						];
+					default:
+						return [];
 					}
-				},
-				div : self.div.find('div[name="cp_button1"]:eq(0)'),
-				common : function() {
-					this.btn = this.div.find('button');
-				},
-				ADD : function() {
-					this.common();
-					this.set([
-						{
-							text : _L('CREATE'),
-							cb : function() {
-								self.cb(NOTIFY.CREATE);
-							}
-						},
-						{
-							text : _L('CANCEL'),
-							cb : function() {
-								self.cb(NOTIFY.CANCEL);
-							}
-						}
-					]);
-				},
-				REF : function() {
-					this.div.css('display', 'none');
-				},
-				EDIT : function() {
-					this.common();
-					this.set([
-						{
-							text : _L('COMMIT'),
-							cb : function() {
-								self.cb(NOTIFY.COMMIT);
-							}
-						},
-						{
-							text : _L('RELOAD'),
-							cb : function() {
-								self.cb(NOTIFY.CANCEL);
-							}
-						}
-					]);
-				}
-			})[id]();
-			// BUTTON2
-			({
-				div : self.div.find('div[name="cp_button2"]:eq(0)'),
-				common : function() {
-					this.btn = this.div.find('button');
-					for ( var i=0; i<this.btn.length; i++ ) {
-						this.btn.eq(i).css('display', 'none');
-					}
-				},
-				ADD : function() {
-					this.div.css('display', 'none');
-				},
-				REF : function() {
-					this.common();
-				},
-				EDIT : function() {
-					this.common();
-				}
-			})[id]();
+				})(),
+				button2 : [
+				]
+			});
 			resolve();
 		});
 	},
@@ -221,34 +123,40 @@ Cipher.prototype = {
 			);
 		});
 	},
+	commit : function() {
+		var data = this.get();
+		var self = this;
+		return Util.promise(function(resolve, reject) {
+			Rpc.call('cipher._commit', [data.ini, data.cur], function(res) {
+				if (res.result.code) {
+					UI.alert(_L(res.result.code));
+					reject();
+					return;
+				}
+				self.cancel();
+				resolve(res.result);
+			}, function(err) {
+				UI.alert(err.message);
+				reject(err.message);
+			});
+		});
+	},
+
 	get : function() {
 		var drule = this.drule.get();
-		var data = {
-			id : this.data.id,
+		var data = Util.getData(this.div,{
 			editor : this.editor.get().join(','),
-			ver : this.data.ver,
-			draftno : this.data.draftno,
-			name : this.div.find('div[name="cp_name"] input:eq(0)').val(),
-			purpose : this.div.find('div[name="cp_desc"] textarea:eq(0)').val(),
 			drule_req : drule.req,
 			drule_auth : drule.auth.join(','),
 			drule :  this.div.find('div[name="cp_gov"] input:eq(0)').prop('ruleid')
-		};
+		});
 		return {ini:this.data, cur:data};
 	},
 	set : function(d) {
 		var self = this;
-		var label = function(name, idx, val) {
-			var lbl = self.div.find('div[name="' + name + '"] label');
-			lbl.eq(idx).text(val);
-		};
 		self.data = d;
-		// ID
-		label('cp_id', 1, d.id);
-		// VERSION
-		label('cp_ver', 1, d.ver);
-		// DRAFT
-		label('cp_draft', 1, d.draftno);
+		d.purpose = self.data.purpose;
+		Util.setData(self.div, d);
 		// EDITOR
 		var ctrl = self.div.find('div[name="cp_editor"] .ctrl:eq(0)');
 		if (self.mode===MODE.ADD) {
@@ -264,11 +172,7 @@ Cipher.prototype = {
 		} else {
 			var cb = function(){};
 		}
-		new Member(ctrl, d.editor, cb);
-		// NAME
-		self.div.find('div[name="cp_name"] input:eq(0)').val(d.name);
-		// DESC
-		self.div.find('div[name="cp_desc"] textarea:eq(0)').text(self.data.purpose);
+		self.editor = new Member(ctrl, d.editor, cb);
 		// GOV
 		if (self.mode===MODE.ADD) {
 			var data = {}
@@ -378,29 +282,18 @@ Cipher.prototype = {
 		// APPROVED
 		if (self.mode===MODE.REF) {
 			ctrl = self.div.find('div[name="cp_approve"] .ctrl:eq(0)');
-			self.approve = new Member(ctrl, self.data.approved, function(code) {
+			new Member(ctrl, self.data.approved, function(code) {
 			});
 		}
 		// BUTTON2
-		var btn = self.div.find('div[name="cp_button2"] button');
-		var set = function(arr) {
-			var len = btn.length;
-			var start = len - arr.length;
-			for ( var i=0; i<start; i++ ) {
-				btn.eq(i).css('display', 'none');
-			}
-			for ( var i=0; i<arr.length; i++) {
-				btn.eq(start + i).css('display', '').text(arr[i].text).click(arr[i].cb);
-			}
-		};
 		if (self.mode===MODE.REF) {
 			var user = UserManager.isLogin() ? UserManager.user().id : '';
 			var vcipher = Validator.cipher;
 			var btns = [];
 			if (!vcipher.isEditable(self.data, user).code) {
 				btns.push({
-					text : _L('EDIT'),
-					cb : function() {
+					text : 'EDIT',
+					click : function() {
 						self.edit();
 					}
 				});
@@ -408,35 +301,37 @@ Cipher.prototype = {
 			if (!vcipher.canUseForSource(self.data).code && 
 				UserManager.isLogin()) {
 				btns.push({
-					text : _L('NEW_DRAFT'),
-					cb : function() {
-						self.create();
+					text : 'NEW_DRAFT',
+					click : function() {
+						self.newDraft();
 					}
 				});
 			}
 			if (!vcipher.canApprove(self.data, user).code) {
 				btns.push({
-					text : _L('APPROVE'),
-					cb : function() {
+					text : 'APPROVE',
+					click : function() {
 						self.approve(true);
 					}
 				});
 			} else if (!vcipher.canCancelApprovement(self.data, user).code) {
 				btns.push({
-					text : _L('REVERT_APPROVE'),
-					cb : function() {
+					text : 'REVERT_APPROVE',
+					click : function() {
 						self.approve(false);
 					}
 				});
 			}
-			set(btns);
+			Util.initButton(self.div.find('div[name="cp_button2"] button'), btns);
 		} else if (self.mode===MODE.EDIT) {
-			set([{
-				text : _L('BACK'),
-				cb : function() {
-					self.cancel();
-				}
-			}]);
+			Util.initButton(self.div.find('div[name="cp_button2"] button'), 
+				[{
+					text : 'BACK',
+					click : function() {
+						self.cancel();
+					}
+				}]
+			);
 		}
 	},
 	approve : function(app) {
@@ -455,6 +350,7 @@ Cipher.prototype = {
 					return;
 				}
 				self.cb(NOTIFY.APPROVE,app);
+				self.draw();
 				resolve(res.result);
 			}, function(err) {
 				UI.alert(err.message);
@@ -463,7 +359,7 @@ Cipher.prototype = {
 		});
 	},
 
-	create : function() {
+	newDraft : function() {
 		var self = this;
 		return Util.promise(function(resolve, reject) {
 			var data = self.get().ini;
@@ -477,7 +373,8 @@ Cipher.prototype = {
 					reject();
 					return;
 				}
-				self.cb(NOTIFY.CREATE, res.result);
+				self.key = res.result;
+				self.edit();
 				resolve(res.result);
 			}, function(err) {
 				reject(err.message);
