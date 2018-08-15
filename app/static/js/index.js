@@ -50,6 +50,13 @@ _ = {
 	},
 	Task : {
 		ref : function(v) {
+			var task = new Task({
+				div : $('#main'),
+				mode : MODE.REF,
+				key : v
+			}, function(code, v) {
+			});
+			History.run(_L('TASK'), task);
 		}
 	}
 };

@@ -318,6 +318,11 @@ var Util = {
 			var elm = l.eq(i);
 			elm.text(_L(elm.attr('ltext')));
 		}
+		l = div.find('span[ltext]');
+		for ( var i=0; i<l.length; i++ ) {
+			var elm = l.eq(i);
+			elm.text(_L(elm.attr('ltext')));
+		}
 		l = div.find('div[btnproc]');
 		for ( var i=0; i<l.length; i++ ) {
 			var elm = l.eq(i);
@@ -342,9 +347,18 @@ var Util = {
 	},
 	setData : function(div, d) {
 		for ( var i in d ) {
-			div.find('label[field=' + i + ']').text(d[i]);
-			div.find('input[field=' + i + ']').val(d[i]);
-			div.find('textarea[field=' + i + ']').val(d[i]);
+			var dd = d[i];
+			div.find('label[field=' + i + ']').text(dd);
+			div.find('span[field=' + i + ']').text(dd);
+			div.find('input[field=' + i + ']').val(dd);
+			div.find('textarea[field=' + i + ']').val(dd);
+			var elms = div.find('*[subfield^=' + i + ']');
+			for ( var i=0; i<elms.length; i++ ) {
+				var elm = elms.eq(i);
+				var val = elm.attr('subfield').split('=');
+				if (val.length!==2) continue;
+				elm.attr(val[1], dd);
+			}
 		}
 	},
 	getData : function(div, base) {
@@ -357,6 +371,13 @@ var Util = {
 			} else {
 				base[elm.attr('field')] = elm.val();
 			}
+		}
+		elms = div.find('*[subfield]');
+		for ( var i=0; i<elms.length; i++ ) {
+			var elm = elms.eq(i);
+			var attr = elm.attr('subfield').split('=');
+			if (attr.length!==2) continue;
+			base[attr[1]] = elm.attr(attr[0]);
 		}
 		return base;
 	}
