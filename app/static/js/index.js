@@ -10,9 +10,9 @@ _ = {
 			var search = new Search($('#main'), function(code, v) {
 			if (code===NOTIFY.SELECT) {
 				if (v.type==='1') {
-					_.Cipher.new(v);
+					_.Cipher.ref(v);
 				} else if (v.type==='2') {
-					_.Task.new(v);
+					_.Task.ref(v);
 				}
 			}
 			});
@@ -20,7 +20,7 @@ _ = {
 		}
 	},
 	Cipher : {
-		new : function(v) {
+		ref : function(v) {
 			var cipher = new Cipher({
 				div : $('#main'),
 				mode : MODE.REF,
@@ -30,7 +30,7 @@ _ = {
 					draftno : v.draftno
 				}
 			}, function(code, v) {
-				if (code===NOTIFY.CANCEL || code===NOTIFY.APPROVE) {
+			/*	if (code===NOTIFY.CANCEL || code===NOTIFY.APPROVE) {
 				} else if (code===NOTIFY.CREATE) {
 					_.Cipher.create();
 				} else if (code===NOTIFY.SELECT) {
@@ -42,13 +42,14 @@ _ = {
 					}
 				} else if (code===NOTIFY.REDRAW) {
 					// TODO:HEADER
-				}
+				}*/
 			});
 			History.run(_L('CIPHER'), cipher);
 		}
+		
 	},
 	Task : {
-		new : function(v) {
+		ref : function(v) {
 		}
 	}
 };

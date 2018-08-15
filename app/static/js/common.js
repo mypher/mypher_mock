@@ -297,12 +297,22 @@ var Util = {
 		});
 	},
 	initDiv : function(div, mode, btns) {
-		div.find('*[disable_on*=add]').prop('disabled', mode===MODE.ADD);
-		div.find('*[disable_on*=edit]').prop('disabled', mode===MODE.EDIT);
-		div.find('*[disable_on*=ref]').prop('disabled', mode===MODE.REF);
-		div.find('*[hide_on*=add]').css('display', (mode===MODE.ADD) ? 'none' : '');
-		div.find('*[hide_on*=edit]').css('display', (mode===MODE.EDIT) ? 'none' : '');
-		div.find('*[hide_on*=ref]').css('display', (mode===MODE.REF) ? 'none' : '');
+		div.find('*[disable_on]').prop('disabled', false);
+		div.find("*[hide_on]").css('display', '');
+		switch (mode) {
+		case MODE.NEW:
+			div.find('*[disable_on*=add]').prop('disabled', true);
+			div.find("*[hide_on*=add]").css('display', 'none');
+			break;
+		case MODE.EDIT:
+			div.find('*[disable_on*=edit]').prop('disabled', true);
+			div.find('*[hide_on*=edit]').css('display', 'none');
+			break;
+		case MODE.REF:
+			div.find('*[disable_on*=ref]').prop('disabled', true);
+			div.find('*[hide_on*=ref]').css('display', 'none');
+			break;
+		}
 		var l = div.find('label[ltext]');
 		for ( var i=0; i<l.length; i++ ) {
 			var elm = l.eq(i);

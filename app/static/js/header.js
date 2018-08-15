@@ -25,7 +25,13 @@ Header = {
 		var addItem = function(label, cb) {
 			var a = $('<a class="nav-link" href="#">');
 			var li = $('<li class="nav-item">').append(a);
-			a.text(label).click(cb);
+			a.text(label).click(function() {
+				cb();
+				var btn = self.div.find('button:eq(0)');
+				if (btn.attr('aria-expanded')==='true') {
+					btn.click();
+				}
+			});
 			ul.append(li);
 		};
 		ul.empty();
@@ -37,14 +43,25 @@ Header = {
 						var m = self.data.menu[i];
 						addItem(m.text, function() {
 							m.cb();
-							$(self.div.find('button')[0]).click();
 						});
 					}();
 				}
 			}
 		}
+		addItem(_L('SEARCH'), function() {
+			History.backTo(0);
+		});
 		// loginform
 		if (UserManager.isLogin()) {
+			addItem(_L('CREATE_CIPHER'), function() {
+				var cipher = new Cipher({
+					div : $('#main'),
+					mode : MODE.NEW
+				}, function(code, v) {
+					
+				});
+				History.overwrite(1, _L('CIPHER'), cipher);
+			});
 			addItem(_L('LOGOUT'), function() {
 				self.logout();
 			});
@@ -61,7 +78,6 @@ Header = {
 		UserManager.login(div, function(code) {
 			UI.closePopup();
 			self.refresh();
-			$(self.div.find('button')[0]).click();
 			History.rerun();
 		});
 	},
@@ -69,7 +85,6 @@ Header = {
 	logout : function() {
 		UserManager.logout();
 		this.refresh();
-		$(this.div.find('button')[0]).click();
 		History.rerun();
 	},
 

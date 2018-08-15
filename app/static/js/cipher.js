@@ -55,19 +55,18 @@ Cipher.prototype = {
 				}],
 				button1 : (function() {
 					switch (self.mode) {
-					case MODE.ADD: 
+					case MODE.NEW: 
 						return [
 							{
 								text : 'CREATE',
 								click : function() {
-									self.
-									self.cb(NOTIFY.CREATE);
+									self.add();
 								}
 							},
 							{
 								text : 'CANCEL',
 								click : function() {
-									self.cb(NOTIFY.CANCEL);
+									History.back();
 								}
 							}
 						];
@@ -141,6 +140,28 @@ Cipher.prototype = {
 			});
 		});
 	},
+	add : function() {
+		var self = this;
+		return Util.promise(function(resolve, reject) {
+			Rpc.call('cipher._new', [self.get().cur], function(res) {
+				if (res.result.code) {
+					UI.alert(_L(res.result.code));
+					reject();
+					return;
+				}
+				self.key = {
+					id : res.result,
+					ver : '1',
+					draftno : '1'
+				};
+				self.cancel();
+				resolve(res.result);
+			}, function(err) {
+				UI.alert(err.message);
+				reject(err.message);
+			});
+		});
+	},
 
 	get : function() {
 		var drule = this.drule.get();
@@ -159,7 +180,7 @@ Cipher.prototype = {
 		Util.setData(self.div, d);
 		// EDITOR
 		var ctrl = self.div.find('div[name="cp_editor"] .ctrl:eq(0)');
-		if (self.mode===MODE.ADD) {
+		if (self.mode===MODE.NEW) {
 			var cb = function() {
 				var list = UI.popup(400,430);
 				var sel = new SelPerson(list, function(ok, sp) {
@@ -174,7 +195,7 @@ Cipher.prototype = {
 		}
 		self.editor = new Member(ctrl, d.editor, cb);
 		// GOV
-		if (self.mode===MODE.ADD) {
+		if (self.mode===MODE.NEW) {
 			var data = {}
 		} else {
 			var data = {auth:self.data.drule_auth, req:self.data.drule_req};
@@ -243,7 +264,7 @@ Cipher.prototype = {
 		ctrl = self.div.find('div[name="cp_rulelist"] .ctrl:eq(0)');
 		switch (self.mode) {
 		case MODE.REF:
-			new RuleList(ctrl, (self.mode===MODE.REF) ? MODE.REF : MODE.ADD, 
+			new RuleList(ctrl, (self.mode===MODE.REF) ? MODE.REF : MODE.NEW, 
 				self.data.id, self.data.ver, self.data.draftno,
 				function(code, sel) {
 					if (code===NOTIFY.SELECT) {
@@ -260,7 +281,7 @@ Cipher.prototype = {
 			);
 			break;
 		case MODE.EDIT:
-			new RuleList(ctrl, (self.mode===MODE.REF) ? MODE.REF : MODE.ADD, 
+			new RuleList(ctrl, (self.mode===MODE.REF) ? MODE.REF : MODE.NEW, 
 				self.data.id, self.data.ver, self.data.draftno,
 				function(code, sel) {
 					if (code===NOTIFY.SELECT) {

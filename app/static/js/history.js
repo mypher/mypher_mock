@@ -35,9 +35,17 @@ History = {
 	},
 
 	backTo : function(no) {
+		if (this.hist.length===0) return;
 		if (this.hist.length<=no) return;
-		this.hist = this.hist.splice(0,no+2);
-		this.back();
+		this.hist = this.hist.splice(0,no+1);
+		this.rerun();
+	},
+
+	overwrite : function(no, label, o) {
+		no--;
+		if (this.hist.length<=no) return;
+		this.hist = this.hist.splice(0,no+1);
+		this.run(label, o);
 	},
 
 	clear : function(d) {
