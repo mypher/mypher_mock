@@ -204,13 +204,13 @@ Task.prototype = {
 			btns.push({
 				text : 'CREATE',
 				click : function() {
-					self.cb&&self.cb(TASK_NOTIFY.CREATE);
+					self.create();
 				}
 			});
 			btns.push({
 				text : 'CANCEL',
 				click : function() {
-					self.cb&&self.cb(TASK_NOTIFY.CANCEL);
+					self.cancel();
 				}
 			});
 			break;
@@ -218,13 +218,13 @@ Task.prototype = {
 			btns.push({
 				text : 'COMMIT',
 				click : function() {
-					self.cb&&self.cb(TASK_NOTIFY.COMMIT);
+					self.commit();
 				}
 			});
 			btns.push({
 				text : 'CANCEL',
 				click : function() {
-					self.cb&&self.cb(TASK_NOTIFY.CANCEL);
+					self.cancel();
 				}
 			});
 			break;
@@ -233,14 +233,14 @@ Task.prototype = {
 				btns.push({
 					text : 'REVIEW_APPROVE',
 					click : function() {
-						self.cb&&self.cb(TASK_NOTIFY.RESULTS_APPROVE);
+						self.approve();
 					}
 				});
 			} else if (!vtask.canCancelApprovementResults(self.cipher, data, user).code) {
 				btns.push({
 					text : 'REVIEW_APPROVE_REV',
 					click : function() {
-						self.cb&&self.cb(TASK_NOTIFY.RESULTS_APPROVE_REV);
+						self.revApprove();
 					}
 				});
 			}
@@ -248,28 +248,28 @@ Task.prototype = {
 				btns.push({
 					text : 'PIC_APPROVE',
 					click : function() {
-						self.cb&&self.cb(TASK_NOTIFY.PIC_APPROVE);
+						self.approvePic();
 					}
 				});
 			} else if (!vtask.canCancelApprovementPic(self.cipher, data, user).code) {
 				btns.push({
 					text : 'PIC_APPROVE_REV',
 					click : function() {
-						self.cb&&self.cb(TASK_NOTIFY.PIC_APPROVE_REV);
+						self.revApprovePic();
 					}
 				});
 			} else if (!vtask.canApplyToPic(data, user).code) {
 				btns.push({
 					text : 'APPLY1',
 					click : function() {
-						self.cb&&self.cb(TASK_NOTIFY.APPLY_PIC);
+						self.applyPic();
 					}
 				});
 			} else if (!vtask.canCancelPic(data, user).code) {
 				btns.push({
 					text : 'CANCEL_APPLY1',
 					click : function() {
-						self.cb&&self.cb(TASK_NOTIFY.APPLY_PIC_REV);
+						self.revApplyPic();
 					}
 				});
 			}
@@ -287,6 +287,98 @@ Task.prototype = {
 			review : this.data.review
 		});
 		return {ini:this.task, cur:cur};
+	},
+
+	create : function() {
+		var self = this;
+		var data = self.get();
+		return Util.promise(function(resolve, reject) {
+			Rpc.call('task._add', [data.cur], function(res) {
+				if (res.result.code) {
+					UI.alert(_L(res.result.code));
+					reject();
+					return;
+				}
+				self.key.id = res.result;
+				self.mode = MODE.REF;
+				self.draw();
+				resolve(res.result);
+			}, function(err) {
+				UI.alert(err.message);
+				reject();
+			});
+		});
+	},
+
+	cancel : function() {
+		this.mode = MODE.REF;
+		this.draw();
+	},
+
+	commit : function() {
+		var self = this;
+		var v = self.get();
+		return Util.promise(function(resolve, reject) {
+			Rpc.call('task._commit', [v.ini, v.cur], function(res) {
+				if (res.result.code) {
+					UI.alert(_L(res.result.code));
+					reject();
+					return;
+				}
+				resolve(res.result);
+			}, function(err) {
+				UI.alert(err.message);
+				reject();
+			});
+		});
+	},
+
+	approve : function() {
+		return this.updateStatus('task._approveResults', true);
+	},
+
+	revApprove : function() {
+		return this.updateStatus('task._approveResults', false);
+	},
+
+	approvePic : function() {
+		return this.updateStatus('task._approvePic', true);
+	},
+
+	revApprovePic : function() {
+		return this.updateStatus('task._approvePic', false);
+	},
+
+	applyPic : function() {
+		return this.updateStatus('task._applyPic', true);
+	},
+
+	revApplyPic : function() {
+		return this.updateStatus('task._applyPic', false);
+	},
+
+	updateStatus : function(m, f) {
+		var self = this;
+		return Util.promise(function(resolve, reject) {
+			Rpc.call(m, [{
+				groupid : self.key.groupid,
+				ver : self.key.ver,
+				draftno : self.key.draftno,
+				id : self.key.id,
+				set : f
+			}], function(res) {
+				if (res.result.code) {
+					UI.alert(res.result.code);
+					reject();
+					return;
+				}
+				self.draw();
+				resolve(res.result);
+			}, function(err) {
+				UI.alert(err.message);
+				reject();
+			});
+		});
 	}
 };
 
