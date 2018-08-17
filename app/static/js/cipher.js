@@ -230,36 +230,13 @@ Cipher.prototype = {
 		}
 		// TASK
 		ctrl = self.div.find('div[name="cp_task"] .ctrl:eq(0)');
-		switch (self.mode) {
-		case MODE.REF:
-			new TaskList(ctrl, MODE.REF, 
-				self.data.id, self.data.ver, self.data.draftno,
-				function(evt, sel) {
-					/*self.cb(NOTIFY.SELECT, {
-						type : CIPHER_SELECT_TYPE.TASK,
-						d : {
-							groupid : self.data.id,
-							ver : self.data.ver,
-							draftno : self.data.draftno,
-							id : sel.id
-						}
-					});*/
-
-				}
-			);
-			break;
-		case MODE.EDIT:
-			new TaskList(ctrl, MODE.NEW, 
-				self.data.id, self.data.ver, self.data.draftno,
-				function(evt, sel) {
-					var div = UI.popup(900, 500);
-					var rule1 = TaskManager.ref(
-						div, self.groupid, self.ver, self.draftno, sel.id);
-				});
-			break;
-		default:
-			break;
-		}
+		new TaskList(ctrl, (self.mode===MODE.REF) ? MODE.REF : MODE.NEW, 
+			self.data.id, self.data.ver, self.data.draftno,
+			function(code, sel) {
+				// proceed by default definition
+				return false;
+			}
+		);
 		// RULELIST
 		ctrl = self.div.find('div[name="cp_rulelist"] .ctrl:eq(0)');
 		switch (self.mode) {

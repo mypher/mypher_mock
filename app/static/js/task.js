@@ -14,7 +14,7 @@
 //
 
 function Task(d, cb) {
-	this.div = d.div;
+	this.div = (d.div===undefined) ? UI.getMainDiv() : d.div;
 	this.mode = d.mode;
 	this.key = d.key;
 	this.cipher = d.cipher;
@@ -27,7 +27,6 @@ Task.prototype = {
 		return self.layout().then(function() {
 			return self.load().then(function() {
 				return Util.promise(function(resolve) {
-					self.cb(NOTIFY.REDRAW);
 					resolve();
 				});
 			});
@@ -229,6 +228,14 @@ Task.prototype = {
 			});
 			break;
 		case MODE.REF:
+			if (!vtask.isEditable(self.cipher, data, user).code) {
+				btns.push({
+					text : 'EDIT',
+					click : function() {
+						self.edit();
+					}
+				});
+			}
 			if (!vtask.canApproveResults(self.cipher, data, user).code) {
 				btns.push({
 					text : 'REVIEW_APPROVE',
@@ -273,18 +280,24 @@ Task.prototype = {
 					}
 				});
 			}
+			btns.push({
+				text : 'BACK',
+				click : function() {
+					History.back();
+				}
+			});
 			break;
 		}
 		Util.initButton(self.div.find('div[name="tk_button"] button'), btns);
 	},
 
 	get : function() {
-		var cur = Util.getData(this.data, {
-			groupid : this.data.groupid,
-			ver : this.data.ver,
-			draftno : this.data.draftno,
-			pic_approve : this.data.pic_approve,
-			review : this.data.review
+		var cur = Util.getData(this.div, {
+			groupid : this.key.groupid,
+			ver : this.key.ver,
+			draftno : this.key.draftno,
+			pic_approve : (this.task) ? this.task.pic_approve : null,
+			review : (this.task) ? this.task.review : null
 		});
 		return {ini:this.task, cur:cur};
 	},
@@ -310,6 +323,11 @@ Task.prototype = {
 		});
 	},
 
+	edit : function() {
+		this.mode = MODE.EDIT;
+		this.draw();
+	},
+
 	cancel : function() {
 		this.mode = MODE.REF;
 		this.draw();
@@ -325,6 +343,8 @@ Task.prototype = {
 					reject();
 					return;
 				}
+				self.mode = MODE.REF;
+				self.draw();
 				resolve(res.result);
 			}, function(err) {
 				UI.alert(err.message);

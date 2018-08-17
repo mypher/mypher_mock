@@ -172,7 +172,7 @@ module.exports = {
 				let cur = await dtask.load(d, t);
 				if (d.set) {
 					// check if sender can apply to pic
-					response = vtask.canApplyToPic(cur);
+					response = vtask.canApplyToPic(cur, sender);
 					if (response.code) {
 						return;
 					}

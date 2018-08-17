@@ -205,6 +205,14 @@ var UI = {
 	alert : function(msg) {
 		var l = _L(msg);
 		alert(l ? l : msg);
+	},
+
+	setMainDiv : function(div) {
+		this.maindiv = div;
+	},
+
+	getMainDiv : function(div) {
+		return this.maindiv;
 	}
 };
 

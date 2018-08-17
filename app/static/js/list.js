@@ -184,8 +184,9 @@ function TaskList(div, type, gid, ver, draftno, cb) {
 		]
 	};
 	var self = this;
-	this.list = new List(opt, function(evt, sel) {
-		self.onevent(evt, sel);
+	this.list = new List(opt, function(code, v) {
+		if (self.cb&&self.cb(code, v)===true) return;
+		self.onevent(code, v);
 	});
 }
 
@@ -214,28 +215,26 @@ TaskList.prototype = {
 		if (evt===NOTIFY_LIST.DATA) {
 			return refresh();
 		} else if (evt===NOTIFY_LIST.CREATE) {
-			var div = UI.popup(800, 500);
-			var rule1 = TaskManager.add(div, 
-				{ id : this.groupid, 
-				  ver : this.ver, 
-				  draftno : this.draftno }, 
-				function(code, id) {
-					if (code===NOTIFY.CREATE || code===NOTIFY.CANCEL) {
-						UI.closePopup();
-						refresh();
-					}
-				}
-			);
-		} else if (evt===NOTIFY_LIST.SELECT) {
-			//var div = UI.popup(900, 500);
-			//var rule1 = TaskManager.ref(div, this.groupid, this.ver, this.draftno, sel.id);
-			this.cb(NOTIFY.SELECT, {
-				groupid : this.groupid,
-				ver : this.ver,
-				draftno : this.draftno,
-				id : sel.id,
-				name : this.getName(sel.id)
+			var task = new Task({
+				key : {
+					groupid : this.groupid,
+					ver : this.ver,
+					draftno : this.draftno,
+				},
+				mode : MODE.NEW
 			});
+			History.run(_L('TASK'), task);
+		} else if (evt===NOTIFY_LIST.SELECT) {
+			var task = new Task({
+				key : {
+					groupid : this.groupid,
+					ver : this.ver,
+					draftno : this.draftno,
+					id : sel.id
+				},
+				mode : MODE.REF
+			});
+			History.run(_L('TASK'), task);
 		}
 	},
 	getName : function(id) {

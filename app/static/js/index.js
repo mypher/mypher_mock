@@ -4,6 +4,7 @@ _ = {
 			Footer.init($('#tail'));
 			_.Search.new();
 		});
+		UI.setMainDiv($('#main'));
 	},
 	Search : {
 		new : function() {
