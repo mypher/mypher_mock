@@ -321,12 +321,7 @@ var Util = {
 			div.find('*[hide_on*=ref]').css('display', 'none');
 			break;
 		}
-		var l = div.find('label[ltext]');
-		for ( var i=0; i<l.length; i++ ) {
-			var elm = l.eq(i);
-			elm.text(_L(elm.attr('ltext')));
-		}
-		l = div.find('span[ltext]');
+		var l = div.find('*[ltext]');
 		for ( var i=0; i<l.length; i++ ) {
 			var elm = l.eq(i);
 			elm.text(_L(elm.attr('ltext')));
@@ -356,16 +351,52 @@ var Util = {
 	setData : function(div, d) {
 		for ( var i in d ) {
 			var dd = d[i];
-			div.find('label[field=' + i + ']').text(dd);
-			div.find('span[field=' + i + ']').text(dd);
-			div.find('input[field=' + i + ']').val(dd);
-			div.find('textarea[field=' + i + ']').val(dd);
-			var elms = div.find('*[subfield^=' + i + ']');
-			for ( var i=0; i<elms.length; i++ ) {
-				var elm = elms.eq(i);
-				var val = elm.attr('subfield').split('=');
-				if (val.length!==2) continue;
-				elm.attr(val[1], dd);
+			var elms = div.find('label[field=' + i + ']');
+			if (elms.length>0) {
+				elms.text(dd);
+				continue;
+			}
+			elms = div.find('span[field=' + i + ']');
+			if (elms.length>0) {
+				elms.text(dd);
+				continue;
+			}
+			elms = div.find('input[type="text"][field=' + i + ']');
+			if (elms.length>0) {
+				elms.val(dd);
+				continue;
+			}
+			elms = div.find('textarea[field=' + i + ']');
+			if (elms.length>0) {
+				elms.val(dd);
+				continue;
+			}
+			elms = div.find('*[subfield^=' + i + ']');
+			if (elms.length>0) {
+				for ( var i=0; i<elms.length; i++ ) {
+					var elm = elms.eq(i);
+					var val = elm.attr('subfield').split('=');
+					if (val.length!==2) continue;
+					elm.attr(val[1], dd);
+				}
+				continue;
+			}
+			elms = div.find('select[field=' + i + ']');
+			if (elms.length>0) {
+				elms.eq(0).val(dd).change();
+				continue;
+			}
+			elms = div.find('input[type="radio"][field=' + i + ']');
+			try {
+				for ( var i=0; i<elms.length; i++) {
+					var r = elms.eq(i);
+					if (parseInt(r.val())===parseInt(dd)) {
+						r.click();
+						break;
+					}
+				}
+			} catch (e) {
+				// nothing
 			}
 		}
 	},

@@ -98,8 +98,9 @@ function TokenList(div, type, gid, ver, draftno, cb) {
 		]
 	};
 	var self = this;
-	this.list = new List(opt, function(evt, sel) {
-		self.onevent(evt, sel);
+	this.list = new List(opt, function(code, sel) {
+		if (self.cb&&self.cb(code, sel)===true) return;
+		self.onevent(code, sel);
 	});
 }
 
@@ -128,26 +129,26 @@ TokenList.prototype = {
 		if (evt===NOTIFY_LIST.DATA) {
 			return refresh();
 		} else if (evt===NOTIFY_LIST.CREATE) {
-			var div = UI.popup(900, 600);
-			var rule1 = TokenRuleManager.add(div, this.groupid, this.ver, this.draftno, function(code, v) {
-				if (code===NOTIFY.CREATE) {
-					UI.closePopup();
-					refresh();
-				} else if (code===NOTIFY.CANCEL) {
-					UI.closePopup();
-					refresh();
-				}
+			var token = new TokenRule({
+				key : {
+					groupid : this.groupid,
+					ver : this.ver,
+					draftno : this.draftno
+				},
+				mode : MODE.NEW
 			});
+			History.run(_L('TOKEN'), token);
 		} else if (evt===NOTIFY_LIST.SELECT) {
-			//var div = UI.popup(900, 600);
-			//var rule1 = TokenRuleManager.ref(div, this.groupid, this.ver, this.draftno, sel.id);
-			this.cb(NOTIFY.SELECT, {
-				groupid : this.groupid,
-				ver : this.ver,
-				draftno : this.draftno,
-				id : sel.id,
-				name : this.getName(sel.id)
+			var token = new TokenRule({
+				key : {
+					groupid : this.groupid,
+					ver : this.ver,
+					draftno : this.draftno,
+					id : sel.id
+				},
+				mode : MODE.REF
 			});
+			History.run(_L('TOKEN'), token);
 		}
 	},
 	getName : function(id) {
@@ -184,9 +185,9 @@ function TaskList(div, type, gid, ver, draftno, cb) {
 		]
 	};
 	var self = this;
-	this.list = new List(opt, function(code, v) {
-		if (self.cb&&self.cb(code, v)===true) return;
-		self.onevent(code, v);
+	this.list = new List(opt, function(code, sel) {
+		if (self.cb&&self.cb(code, sel)===true) return;
+		self.onevent(code, sel);
 	});
 }
 
@@ -272,8 +273,9 @@ function RuleList(div, type, gid, ver, draftno, cb) {
 		]
 	};
 	var self = this;
-	this.list = new List(opt, function(evt, sel) {
-		self.onevent(evt, sel);
+	this.list = new List(opt, function(code, sel) {
+		if (self.cb&&self.cb(code, sel)===true) return;
+		self.onevent(code, sel);
 	});
 }
 
@@ -302,34 +304,27 @@ RuleList.prototype = {
 		if (evt===NOTIFY_LIST.DATA) {
 			return refresh();
 		} else if (evt===NOTIFY_LIST.CREATE) {
-			var div = UI.popup(700, 300);
-			var rule1 = GovRuleManager.add(div, {
-				groupid : this.groupid, 
-				ver : this.ver, 
-				draftno  : this.draftno, 
-			}, function(code, id) {
-				if (code===NOTIFY.CREATE || code===NOTIFY.CANCEL) {
-					UI.closePopup();
-					refresh();
-				}
+			var rule = new GovRule({
+				key : {
+					groupid : this.groupid,
+					ver : this.ver,
+					draftno : this.draftno
+				},
+				mode : MODE.NEW
 			});
+			History.run(_L('GOVRULE'), rule);
 		} else if (evt===NOTIFY_LIST.SELECT) {
-			//var div = UI.popup(700, 300);
-			//var rule1 = GovRuleManager.ref(div, {
-			//		groupid : this.groupid, 
-			//		ver : this.ver, 
-			//		draftno : this.draftno, 
-			//		id : sel.id
-			//	},  function() {
-			//	}
-			//);
-			this.cb(NOTIFY.SELECT, {
-				groupid : this.groupid,
-				ver : this.ver,
-				draftno : this.draftno,
-				id : sel.id,
-				name : this.getName(sel.id)
+			var rule = new GovRule({
+				key : {
+					groupid : this.groupid,
+					ver : this.ver,
+					draftno : this.draftno,
+					id : sel.id,
+					name : this.getName(sel.id)
+				},
+				mode : MODE.REF
 			});
+			History.run(_L('GOVRULE'), rule);
 		}
 	},
 	getName : function(id) {

@@ -1,17 +1,4 @@
 // task.js
-// depend on 
-//   validator/cmn.js
-//   validator/task.js
-//   list.js
-//   member.js
-//   user.js
-//   sel_person.js
-//   votestate.js
-//   govrule.js
-//   lang.js
-//   common.js
-//   sha256.js
-//
 
 function Task(d, cb) {
 	this.div = (d.div===undefined) ? UI.getMainDiv() : d.div;

@@ -204,30 +204,13 @@ Cipher.prototype = {
 					data, (self.mode!==MODE.REF), true);
 		// TOKEN
 		ctrl =  self.div.find('div[name="cp_token"] .ctrl:eq(0)');
-		switch (self.mode) {
-		case MODE.REF:
-			new TokenList(ctrl, MODE.REF, 
-				self.data.id, self.data.ver, self.data.draftno,
-				function(evt, sel) {
-					if (evt===NOTIFY.SELECT) {
-						var div = UI.popup(900, 600);
-						var rule1 = TokenRuleManager.ref(
-								div, sel.groupid, sel.ver, sel.draftno, sel.id);
-					}
-				}
-			);
-			break;
-		case MODE.EDIT:
-			new TokenList(ctrl, MODE.NEW, 
-				self.data.id, self.data.ver, self.data.draftno,
-				function(evt, sel) {
-					// TODO:
-				}
-			);
-			break;
-		default:
-			break;
-		}
+		new TokenList(ctrl, (self.mode===MODE.REF) ? MODE.REF : MODE.NEW, 
+			self.data.id, self.data.ver, self.data.draftno,
+			function(code, sel) {
+				// proceed by default definition
+				return false;
+			}
+		);
 		// TASK
 		ctrl = self.div.find('div[name="cp_task"] .ctrl:eq(0)');
 		new TaskList(ctrl, (self.mode===MODE.REF) ? MODE.REF : MODE.NEW, 
