@@ -22,7 +22,7 @@ TokenRule.prototype = {
 
 	layout : function() {
 		var self = this;
-		return Util.load(self.div, 'parts/task.html', function(resolve) {
+		return Util.load(self.div, 'parts/tokenrule.html', function(resolve) {
 			Util.initDiv(self.div, self.mode, {
 				trigger : [{
 					click : function() {
@@ -54,17 +54,6 @@ TokenRule.prototype = {
 							}
 						);
 					}
-				}],
-				bottom : [{
-					text : 'CREATE',
-					click : function() {
-						self.create();
-					}
-				}, {
-					text : 'CANCEL',
-					click : function() {
-						self.cancel();
-					}
 				}]
 			});
 			self.div.find('select[name="reward_type"]:eq(0)').change(function() {
@@ -73,7 +62,7 @@ TokenRule.prototype = {
 					[true,  true],
 					[false, true],
 					[true,  false]
-				][parseInt(sel.val())];
+				][parseInt($(this).val())];
 				var inp = self.div.find('div[name="tr_trigger"] input[type="text"]');
 				var btn = self.div.find('div[name="tr_trigger"] button');
 				btn.eq(0).attr('disabled', mask[0]);
@@ -92,9 +81,16 @@ TokenRule.prototype = {
 			resolve();
 		});
 	},
+	save : function() {
+	},
 	load : function() {
 		var self = this;
 		return Util.promise(function(resolve, reject) {
+			if (self.mode===MODE.NEW) {
+				resolve();
+				self.set({})
+				return;
+			}
 			Rpc.call('token.load', [{
 				groupid : self.key.groupid,
 				ver : self.key.ver,
@@ -115,8 +111,53 @@ TokenRule.prototype = {
 		});
 	},
 	set : function(data) {
-		this.data = data;
-		Util.setData(this.div, data);
+		var self = this;
+		self.data = data;
+		Util.setData(self.div, data);
+		var btns = [];
+		switch (self.mode) {
+		case MODE.NEW:
+			btns.push({
+				text : 'CREATE',
+				click : function() {
+					self.create();
+				}
+			});
+			btns.push({
+				text : 'BACK',
+				click : function() {
+					History.back();
+				}
+			});
+			break;
+		case MODE.EDIT:
+			btns.push({
+				text : 'COMMIT',
+				click : function() {
+					self.commit();
+				}
+			});
+			btns.push({
+				text : 'CANCEL',
+				click : function() {
+					self.cancel();
+				}
+			});
+			break;
+		case MODE.REF:
+			btns.push({
+				text : 'BACK',
+				click : function() {
+					History.back();
+				}
+			});
+			break;
+		}
+		Util.initButton(self.div.find('div[name="tr_button"] button'), btns);
+	},
+	cancel : function() {
+		this.mode = MODE.REF;
+		this.draw();
 	},
 	get : function() {
 		var cur = Util.getData(this.div, {
@@ -144,9 +185,24 @@ TokenRule.prototype = {
 			});
 		});
 	},
-	cancel : function() {
-		self.mode = MODE.REF;
-		self.draw();
+	commit : function() {
+		var self = this;
+		var v = self.get();
+		return Util.promise(function(resolve, reject) {
+			Rpc.call('token._commit', [v.ini, v.cur], function(res) {
+				if (res.result.code) {
+					UI.alert(_L(res.result.code));
+					reject();
+					return;
+				}
+				self.mode = MODE.REF;
+				self.draw();
+				resolve();
+			}, function(err) {
+				UI.alert(err.message);
+				reject();
+			});
+		});
 	}
 
 };

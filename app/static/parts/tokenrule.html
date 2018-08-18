@@ -1,37 +1,38 @@
 <div class="form-horizontal tr_root">
 	<div class="form-group row" name="tr_id" hide_on="add">
-		<label class="col-sm-3 right" ltext="ID"></label>
+		<label class="col-sm-3 name" ltext="ID"></label>
 		<label class="col-sm-9" field="id">
 		</label>
 	</div>
 	<div class="form-group row" name="tr_title">
-		<label class="col-sm-3 right" ltext="NAME1"></label>
+		<label class="col-sm-3 name" ltext="NAME1"></label>
 		<div class="col-sm-9">
-			<input type="text" class="form-control" field="name">
+			<input type="text" class="form-control" field="name" disable_on="ref">
 		</div>
 	</div>
 	<div class="row tr_rowlabel" name="tr_typelabel">
-		<label class="col-sm-3 right" ltext="TYPE"></label>
+		<label class="col-sm-3 name" ltext="TYPE"></label>
 		<div class="col-sm-9"></div>
 	</div>
 	<div class="form-group row" name="tr_type">
-		<label class="col-sm-3 right" ltext="REWARD_TYPE"></label>
+		<label class="col-sm-3 name" ltext="REWARD_TYPE"></label>
 		<div class="col-sm-9 btn-group btn-group-toggle" data-toggle="buttons">
-			<label class="btn btn-primary">
-				<input type="radio" autocomplete="off" value="0" field="type">
+			<label class="btn btn-normal">
+				<input type="radio" autocomplete="off" value="0" field="type" disable_on="ref">
 				<span ltext="DIVIDEND"></span>
 			</label>
-			<label class="btn btn-primary">
-				<input type="radio" autocomplete="off" value="1" field="type">
+			<label class="btn btn-normal">
+				<input type="radio" autocomplete="off" value="1" field="type" disable_on="ref">
 				<span ltext="EXCHANGE"></span>
 			</label>
 		</div>
 	</div>
 	<div class="row" name="tr_trigger">
-		<label class="col-sm-3 right" ltext="REWARD_REQUIREMENT"></label>
+		<label class="col-sm-3 name" ltext="REWARD_REQUIREMENT"></label>
 		<div class="col-sm-9" btnproc="trigger">
 			<div class="row form-group"><div class="col-sm-12">
-				<select class="form-control" name="reward_type" field="firetype">
+				<select class="form-control" name="reward_type" 
+					field="firetype" disable_on="ref">
 					<option value="0" ltext="NONE">
 					<option value="1" ltext="BY_REQUEST_OF_OWNER">
 					<option value="2" ltext="BY_COMPLETION_OF_TASK">
@@ -40,87 +41,95 @@
 			</div></div>
 			<div class="row form-group"><div class="input-group col-sm-12">
 				<div class="input-group-prepend">
-					<span class="input-group-text" ltext="TASK_ID"></span>
+					<span class="input-group-text label-normal" ltext="TASK_ID"></span>
 				</div>
 				<input type="text" class="form-control" disabled 
 					subfield="tid=taskid" field="taskname">
 				<div class="input-group-append">
-					<button class="btn btn-primary" disabled><img src="img/search.png"></button>
+					<button class="btn btn-search" disabled></button>
 				</div>
 			</div></div>
 			<div class="row form-group"><div class="input-group col-sm-12">
 				<div class="input-group-prepend">
-					<span class="input-group-text" ltext="TOKEN_ID"></span>
+					<span class="input-group-text label-normal" ltext="TOKEN_ID"></span>
 				</div>
 				<input type="text" class="form-control" disabled
 					subfield="tid=tokenid" field="tokenname">
 				<div class="input-group-append">
-					<button class="btn btn-primary" disabled><img src="img/search.png"></button>
+					<button class="btn btn-search" disabled></button>
 				</div>
 			</div></div>
 			<div class="row form-group"><div class="input-group col-sm-12">
 				<div class="input-group-prepend">
-					<span class="input-group-text" ltext="MINIMUM_TOKEN"></span>
+					<span class="input-group-text label-normal" ltext="MINIMUM_TOKEN"></span>
 				</div>
-				<input type="text" class="form-control" field="noftoken">
+				<input type="text" class="form-control" field="noftoken" disable_on="ref">
 			</div></div>
 		</div>
 	</div>
 	<div name="tr_rulelabel" class="row tr_rowlabel">
-		<label class="col-sm-3 right" ltext="TRANSFERED_CONTENT"></label>
+		<label class="col-sm-3 name" ltext="TRANSFERED_CONTENT"></label>
 		<div class="col-sm-9"></div>
 	</div>
 	<div name="tr_rule">
 		<div class="form-group row">
-		<label class="col-sm-3 right" ltext="TARGET_CONTENT"></label>
+		<label class="col-sm-3 name" ltext="TARGET_CONTENT"></label>
 		<div class="col-sm-9 btn-group btn-group-toggle" data-toggle="buttons">
-			<label class="btn btn-primary">
-				<input type="radio" autocomplete="off" value="0" field="rewardtype">
+			<label class="btn btn-normal">
+				<input type="radio" autocomplete="off" value="0" 
+					field="rewardtype" disable_on="ref">
 				<span ltext="QRCODE"></span>
 			</label>
-			<label class="btn btn-primary">
-				<input type="radio" autocomplete="off" value="1" field="rewardtype">
+			<label class="btn btn-normal">
+				<input type="radio" autocomplete="off" value="1" 
+					field="rewardtype" disable_on="ref">
 				<span ltext="TOKEN"></span>
 			</label>
-			<label class="btn btn-primary">
-				<input type="radio" autocomplete="off" value="2" field="rewardtype">
+			<label class="btn btn-normal">
+				<input type="radio" autocomplete="off" value="2" 
+					field="rewardtype" disable_on="ref">
 				<span ltext="CRYPTOCURRENCY"></span>
 			</label>
-			<label class="btn btn-primary">
-				<input type="radio" autocomplete="off" value="3" field="rewardtype">
+			<label class="btn btn-normal">
+				<input type="radio" autocomplete="off" value="3" 
+					field="rewardtype" disable_on="ref">
 				<span ltext="TRANSFER"></span>
 			</label>
 		</div>
 		</div>
 		<div class="form-group row">
-			<label class="col-sm-3 right" ltext="QUANTITY"></label>
+			<label class="col-sm-3 name" ltext="QUANTITY"></label>
 			<div class="col-sm-9">
 				<div class="btn-group btn-group-toggle form-group" data-toggle="buttons">
-					<label class="btn btn-primary">
-						<input type="radio" autocomplete="off" value="0" field="rcalctype">
+					<label class="btn btn-normal">
+						<input type="radio" autocomplete="off" value="0" 
+							field="rcalctype" disable_on="ref">
 						<span ltext="SPECIFIED_NUMBER"></span>
 					</label>
-					<label class="btn btn-primary">
-						<input type="radio" autocomplete="off" value="1" field="rcalctype">
+					<label class="btn btn-normal">
+						<input type="radio" autocomplete="off" value="1" 
+							field="rcalctype" disable_on="ref">
 						<span ltext="ISSUED_PER_SPECIFIED"></span>
 					</label>
 				</div>
 				<div class="form-group row">
 					<div class="input-group col-sm-12">
 						<div class="input-group-prepend">
-							<span class="input-group-text" ltext="SPECIFIED_NUMBER"></span>
+							<span class="input-group-text label-normal" ltext="SPECIFIED_NUMBER"></span>
 						</div>
-						<input type="text" class="form-control" field="qruantity">
+						<input type="text" class="form-control" 
+							field="qruantity" disable_on="ref">
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
 	<!-- BUTTON -->
-	<div class="form-group row" name="tr_button" hide_on="edit,ref">
-		<div class="col-sm-12 right" btnproc="bottom">
-			<button class="btn btn-primary btn-md"></button>
-			<button class="btn btn-secondary btn-md"></button>
+	<div class="form-group row" name="tr_button">
+		<div class="col-sm-12 right">
+			<button class="btn btn-normal btn-md"></button>
+			<button class="btn btn-normal btn-md"></button>
+			<button class="btn btn-normal btn-md"></button>
 		</div>
 	</div>
 </div>

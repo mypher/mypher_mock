@@ -160,11 +160,11 @@ button img {
 
 select {
 	color:#fff;
-	background-color#007bff;
+	background-color#30b0f0;
 	-webkit-appearance: none;
 	-moz-appearance: none;
 	appearance: none;
-	background: url(../img/arrow01.png) right 50% no-repeat, -webkit-linear-gradient(top, #fff 0%,#ddd 100%);
+	background: url(../img/down.png) right 50% no-repeat/*, -webkit-linear-gradient(top, #fff 0%,#ddd 100%)*/;
 }
 
 .row > .name {
@@ -208,4 +208,23 @@ body {
 .bc span {
 	margin:0px 4px 0px 4px;
 	float:none;
+}
+
+.btn-detail {
+	background: url(../img/detail.png) center no-repeat;
+	height:100%;
+	width:48px;
+	background-color:#30b0f0;
+}
+
+.btn-search {
+	background: url(../img/search.png) center no-repeat;
+	height:100%;
+	width:48px;
+	background-color:#30b0f0;
+}
+
+.label-normal {
+	background-color:#eee !important;
+	color:#39c !important;
 }

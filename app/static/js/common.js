@@ -387,6 +387,8 @@ var Util = {
 				continue;
 			}
 			elms = div.find('input[type="radio"][field=' + i + ']');
+			var dis = div.find('input[type="radio"][field=' + i + ']:disabled')
+					.prop('disabled', false);
 			try {
 				for ( var i=0; i<elms.length; i++) {
 					var r = elms.eq(i);
@@ -398,6 +400,7 @@ var Util = {
 			} catch (e) {
 				// nothing
 			}
+			dis.prop('disabled', true);
 		}
 	},
 	getData : function(div, base) {
