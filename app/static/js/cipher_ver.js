@@ -86,20 +86,20 @@ CipherVer.prototype = {
 		var ctrl = self.div.find('div[name="cp_formal"] .ctrl:eq(0)');
 		var formal = new List({
 			div : ctrl,
-			type : NOTIFY_LIST.SELECT,
+			type : NOTIFY.SELECT,
 			key : 'key',
 			col : [
 					{ width : 5, label : _L('VERSION'), name : 'ver'},
 					{ width : 7, label : _L('DRAFT_NO'), name : 'draftno'}
 				]
 		}, function(evt, sel) {
-			if (evt===NOTIFY_LIST.DATA) {
+			if (evt===NOTIFY.DATA) {
 				if (d.formal) {
 					formal.show([d.formal]);
 				} else {
 					formal.show([]);
 				}
-			} else if (evt===NOTIFY_LIST.SELECT) {
+			} else if (evt===NOTIFY.SELECT) {
 				onselect(sel);
 			}
 		});
@@ -107,7 +107,7 @@ CipherVer.prototype = {
 		ctrl = self.div.find('div[name="cp_draft"] .ctrl:eq(0)');
 		var draft = new List({
 			div : ctrl,
-			type : NOTIFY_LIST.SELECT,
+			type : NOTIFY.SELECT,
 			key : 'key',
 			col : [
 				{ width : 3, label : _L('VERSION'), name : 'ver'},
@@ -115,13 +115,13 @@ CipherVer.prototype = {
 				{ width : 6, label : _L('EDITOR'), name : 'editor'}
 			]
 		}, function(evt, sel) {
-			if (evt===NOTIFY_LIST.DATA) {
+			if (evt===NOTIFY.DATA) {
 				if (self.data.draft) {
 					draft.show(self.data.draft);
 				} else {
 					draft.show([]);
 				}
-			} else if (evt===NOTIFY_LIST.SELECT) {
+			} else if (evt===NOTIFY.SELECT) {
 				onselect(sel);
 			}
 		});
@@ -129,7 +129,7 @@ CipherVer.prototype = {
 		ctrl = self.div.find('div[name="cp_history"] .ctrl:eq(0)');
 		var hist = new List( {
 			div : ctrl,
-			type : NOTIFY_LIST.SELECT,
+			type : NOTIFY.SELECT,
 			key : 'key',
 			col : [
 				{ width : 3, label : _L('VERSION'), name : 'ver'},
@@ -137,13 +137,13 @@ CipherVer.prototype = {
 				{ width : 6, label : _L('EDITOR'), name : 'editor'}
 			]
 		}, function(evt, sel) {
-			if (evt===NOTIFY_LIST.DATA) {
+			if (evt===NOTIFY.DATA) {
 				if (self.data.history) {
 					hist.show(self.data.history);
 				} else {
 					hist.show([]);
 				}
-			} else if (evt===NOTIFY_LIST.SELECT) {
+			} else if (evt===NOTIFY.SELECT) {
 				onselect(sel);
 			}
 		});

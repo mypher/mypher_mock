@@ -194,7 +194,7 @@ UserManager = {
 		var self = this;
 		var proc = function(code) {
 			if (code===NOTIFY.CANCEL) {
-				cb(code);
+				cb&&cb(code);
 			}
 			if (code===NOTIFY.COMMIT) {
 				var data = user.get();
@@ -223,17 +223,15 @@ UserManager = {
 								key : key
 							};
 						};
-						cb(NOTIFY.LOGIN);
+						cb&&cb(NOTIFY.LOGIN);
 					} else {
 						UI.alert(_L('FAILED_TO_LOGIN'));
 						return;
 					}
 				}, function(err) {
 					UI.alert(err.message);
-				}, function(fail) {
-					UI.alert(fail.message);
 				});
-				cb(code);
+				cb&&cb(code);
 			}
 		};
 		var user = new User({

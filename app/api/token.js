@@ -5,7 +5,9 @@ let cmn = require('./cmn');
 let log = require('../cmn/logger')('api.token');
 let sha256 = require('sha256');
 let dcipher = require('../db/cipher');
-let dtoken = require('../db/token')
+let dtoken = require('../db/token');
+let vtoken = require('../validator/token');
+let vcipher = require('../validator/cipher');
 
 module.exports = {
 	/*
@@ -16,13 +18,20 @@ module.exports = {
 		try {
 			let response = null;
 			await db.tx(async t=>{
-				response = await cmn.isEditable({
+				// load cipher to which task belongs
+				let cdata = await dcipher.load({
 					id : d.groupid,
 					ver : d.ver,
-					draftno : d.draftno,
-					sender : sender
-				}, t);
-				if (response!==true) {
+					draftno : d.draftno
+				});
+				// check if cipher can be edited
+				response = vcipher.isEditableVer(cdata);
+				if (response.code) {
+					return;
+				}
+				// if sender is not editor, task can't be updated
+				response = vcipher.isEditor(sender, cdata);
+				if (response.code) {
 					return;
 				}
 				if (!cmn.chkTypes([
@@ -45,6 +54,62 @@ module.exports = {
 			return response;
 		} catch (e) {
 			log.error('errored in add : ' + e);
+			throw 'system error';
+		}
+	},
+
+	/**
+	 * _commit
+	 * params sender, ini, cur
+	 */
+	_commit : async (sender, ini, cur) => {
+		let validate = async function(tx) {
+			let d = await dtoken.load(ini, tx);
+			return cmn.validate(d, ini);
+		}
+		try {
+			let response = {};
+			await db.tx(async t=>{
+				// check if data is changed while editing
+				let ret = await validate(t);
+				if (!ret) {
+					response = {code:'ALREADY_CHANGED'};
+					return;
+				}
+				// load cipher to which task belongs
+				let cdata = await dcipher.load({
+					id : ini.groupid,
+					ver : ini.ver,
+					draftno : ini.draftno
+				});
+				// check if task can be edited
+				response = vtoken.isEditable(cdata, ini, sender);
+				if (response.code) {
+					return;
+				}
+				// if sender is not editor, task can't be updated
+				response = vcipher.isEditor(sender, cdata);
+				if (response.code) {
+					return;
+				}
+				if (!cmn.chkTypes([
+					{p:cur.groupid, f:cmn.isKey},
+					{p:cur.name, f:cmn.isEmpty, r:true},
+					{p:cur.type, f:cmn.isSmallInt}
+				])) {
+					response = {code:'INVALID_PARAM'};
+					return;
+				}
+				cur = cmn.toInt(cur, ['type', 'firetype', 'noftoken', 'rewardtype', 'rcalctype', 'rquantity']);
+				// update
+				await dtoken.update(cur, t);
+			}).then(function() {
+			}).catch(function() {
+				response = {code:'INVALID_PARAM'};
+			});
+			return response;
+		} catch (e) {
+			log.error('errored in _commit : ' + e);
 			throw 'system error';
 		}
 	},

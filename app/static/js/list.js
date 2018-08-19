@@ -1,10 +1,3 @@
-NOTIFY_LIST = {
-	CREATE : 1,
-	DATA : 2,
-	SELECT : 3
-};
-
-
 function List(type, cb) {
 	this.div = type.div;
 	this.type = type.type;
@@ -26,13 +19,13 @@ List.prototype = {
 				if (self.type===MODE.NEW) {
 					var btn = $(div[0]).find('button');
 					$(btn[0]).text(_L('CREATE')).click(function() {
-						self.cb(NOTIFY_LIST.CREATE);
+						self.cb(NOTIFY.CREATE);
 					});
 				} else {
 					div.css('display', 'none');
 				}
 				resolve();
-				self.cb(NOTIFY_LIST.DATA);
+				self.cb(NOTIFY.DATA);
 			});
 		});
 	},
@@ -52,10 +45,11 @@ List.prototype = {
 		html.push('</div>');
 		root.append($(html.join('')));
 		// data
+		self.data = data;
 		for ( var i in data ) {
 			var cls = (i%2===1) ? '' : ' odd';
 			html = [
-				'<div class="row' + cls + '" key="' + data[i][key] + '">'
+				'<div class="row' + cls + '" key="' + i + '">'
 			];
 			for ( var j=0; j<col.length; j++ ) {
 				html.push('<div class="col-' + col[j].width + '"><div>');
@@ -67,7 +61,7 @@ List.prototype = {
 			root.append(row);
 			row.click(function() {
 				var val = $(this).attr('key');
-				self.cb(NOTIFY_LIST.SELECT, {id:val});
+				self.cb(NOTIFY.SELECT, data[val]);
 			});
 		}
 	}
@@ -126,9 +120,9 @@ TokenList.prototype = {
 				});
 			});
 		};
-		if (evt===NOTIFY_LIST.DATA) {
+		if (evt===NOTIFY.DATA) {
 			return refresh();
-		} else if (evt===NOTIFY_LIST.CREATE) {
+		} else if (evt===NOTIFY.CREATE) {
 			var token = new TokenRule({
 				key : {
 					groupid : this.groupid,
@@ -138,7 +132,7 @@ TokenList.prototype = {
 				mode : MODE.NEW
 			});
 			History.run(_L('TOKEN'), token);
-		} else if (evt===NOTIFY_LIST.SELECT) {
+		} else if (evt===NOTIFY.SELECT) {
 			var token = new TokenRule({
 				key : {
 					groupid : this.groupid,
@@ -213,9 +207,9 @@ TaskList.prototype = {
 				});
 			});
 		};
-		if (evt===NOTIFY_LIST.DATA) {
+		if (evt===NOTIFY.DATA) {
 			return refresh();
-		} else if (evt===NOTIFY_LIST.CREATE) {
+		} else if (evt===NOTIFY.CREATE) {
 			var task = new Task({
 				key : {
 					groupid : this.groupid,
@@ -225,7 +219,7 @@ TaskList.prototype = {
 				mode : MODE.NEW
 			});
 			History.run(_L('TASK'), task);
-		} else if (evt===NOTIFY_LIST.SELECT) {
+		} else if (evt===NOTIFY.SELECT) {
 			var task = new Task({
 				key : {
 					groupid : this.groupid,
@@ -301,9 +295,9 @@ RuleList.prototype = {
 				});
 			});
 		};
-		if (evt===NOTIFY_LIST.DATA) {
+		if (evt===NOTIFY.DATA) {
 			return refresh();
-		} else if (evt===NOTIFY_LIST.CREATE) {
+		} else if (evt===NOTIFY.CREATE) {
 			var rule = new GovRule({
 				key : {
 					groupid : this.groupid,
@@ -313,7 +307,7 @@ RuleList.prototype = {
 				mode : MODE.NEW
 			});
 			History.run(_L('GOVRULE'), rule);
-		} else if (evt===NOTIFY_LIST.SELECT) {
+		} else if (evt===NOTIFY.SELECT) {
 			var rule = new GovRule({
 				key : {
 					groupid : this.groupid,

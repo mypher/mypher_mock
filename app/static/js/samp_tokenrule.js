@@ -38,10 +38,10 @@ _ = {
 		};
 	},
 	setDefault : function() {
-		$('#groupid').val('7f861c4bc4b853bef4f14f0fe7bc336075175fbc61f977b7fd7df369964bc8bf');
+		$('#groupid').val('50e9ff3a7c7719e735f4ffc45298806ebacf4f351cc66913d262f7ac6dce82e0');
 		$('#ver').val('2');
-		$('#draft').val('3');
-		$('#tokenid').val('e17d4201da0dfe4e890982b33c09e33fafedcfe17b1b72c932d008450a67cc28');
+		$('#draft').val('1');
+		$('#tokenid').val('31554009c3bdc1e9f8666b62b220033650a3e5161cc457a7a954fb7f5a159f92');
 	}
 };
 
@@ -50,5 +50,9 @@ $(function(){
 	History.init($('#bc'));
 	_.setDefault();
 	_.prepare();
+	var div = UI.popup(400,300);
+	UserManager.login(div, function() {
+		UI.closePopup();
+	});
 });
 

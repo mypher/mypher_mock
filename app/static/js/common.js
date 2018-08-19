@@ -22,7 +22,8 @@ NOTIFY = {
 	VERSION : 8,
 	BACK : 9,
 	INIT : 10,
-	REDRAW : 11
+	REDRAW : 11,
+	DATA : 13
 }
 
 var module = {};
@@ -66,9 +67,9 @@ Rpc = {
 				contentType: "application/json"
 			}).then(ret => {
 				if (ret.error) {
-					cberr(ret.error);
+					cberr&&cberr(ret.error);
 				} else {
-					cb(ret);
+					cb&&cb(ret);
 				}
 			}, ret => {
 				retry++;
@@ -204,7 +205,8 @@ var UI = {
 	},
 	alert : function(msg) {
 		var l = _L(msg);
-		alert(l ? l : msg);
+		var div = UI.popup(400, 150);
+		div.text(l ? l : msg);
 	},
 
 	setMainDiv : function(div) {
@@ -351,12 +353,7 @@ var Util = {
 	setData : function(div, d) {
 		for ( var i in d ) {
 			var dd = d[i];
-			var elms = div.find('label[field=' + i + ']');
-			if (elms.length>0) {
-				elms.text(dd);
-				continue;
-			}
-			elms = div.find('span[field=' + i + ']');
+			var elms = div.find('label[field=' + i + '],span[field=' + i + ']');
 			if (elms.length>0) {
 				elms.text(dd);
 				continue;
@@ -404,7 +401,7 @@ var Util = {
 		}
 	},
 	getData : function(div, base) {
-		var elms = div.find('*[field]');
+		var elms = div.find('[field]:not([type="radio"])');
 		for ( var i=0; i<elms.length; i++ ) {
 			var elm = elms.eq(i);
 			var tagname = elm.prop('tagName');
@@ -414,6 +411,12 @@ var Util = {
 				base[elm.attr('field')] = elm.val();
 			}
 		}
+		elms = div.find('.active [field][type="radio"]');
+		for ( var i=0; i<elms.length; i++ ) {
+			var elm = elms.eq(i);
+			base[elm.attr('field')] = elm.val();
+		}
+
 		elms = div.find('*[subfield]');
 		for ( var i=0; i<elms.length; i++ ) {
 			var elm = elms.eq(i);

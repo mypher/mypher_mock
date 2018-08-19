@@ -1,7 +1,7 @@
 _ = {
 	prepare : function() {
 		var cb = function(type) {
-			if (type===NOTIFY_LIST.CREATE) {
+			if (type===NOTIFY.CREATE) {
 				alert('create');
 			} else {
 				var data = [

@@ -32,9 +32,10 @@ TokenRule.prototype = {
 							function(code, v) {
 								if (code===NOTIFY.SELECT) {
 									var inp = self.div.find(
-										'div[name="tr_trigger"] input[type="text"]');
+										'div[name="tr_trigger"] input[type="text"]:eq(0)');
 									UI.closePopup();
-									$(inp[0]).val(v.name).prop('tid', v.id);
+									inp.val(v.name).attr('tid', v.id);
+									return true;
 								}
 							}
 						);
@@ -47,9 +48,10 @@ TokenRule.prototype = {
 							function(code, v) {
 								if (code===NOTIFY.SELECT) {
 									var inp = self.div.find(
-										'div[name="tr_trigger"] input[type="text"]');
+										'div[name="tr_trigger"] input[type="text"]:eq(1)');
 									UI.closePopup();
-									$(inp[1]).val(v.name).prop('tid', v.id);
+									inp.val(v.name).attr('tid', v.id);
+									return true;
 								}
 							}
 						);
@@ -57,6 +59,7 @@ TokenRule.prototype = {
 				}]
 			});
 			self.div.find('select[name="reward_type"]:eq(0)').change(function() {
+				if (self.mode===MODE.REF) return;
 				var mask = [
 					[true,  true],
 					[true,  true],
@@ -161,15 +164,17 @@ TokenRule.prototype = {
 	},
 	get : function() {
 		var cur = Util.getData(this.div, {
-			groupid : this.data.groupid,
-			ver : this.data.ver,
-			draftno : this.data.draftno
+			groupid : this.key.groupid,
+			ver : this.key.ver,
+			draftno : this.key.draftno
 		});
 		return {ini:this.data, cur:cur};
 	},
 	create : function() {
+		var self = this;
+		var v = self.get();
 		return Util.promise(function(resolve, reject) {
-			Rpc.call('token._add', [v], function(res) {
+			Rpc.call('token._add', [v.cur], function(res) {
 				if (res.result.code) {
 					UI.alert(_L(res.result.code));
 					reject();

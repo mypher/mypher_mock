@@ -83,4 +83,28 @@ module.exports = {
 		}
 	},
 
+	/*
+	 * update
+	 * params :  src.id, src.ver, src.draftno, to.id, to.ver, to.draftno, to.tm, tx
+	 */
+	update : async (d, tx) => {
+		try {
+			tx = tx ? tx : db;
+			let cnt = await tx.result(
+				'update token ' +
+				'set name=$1, type=$2, firetype=$3, taskid=$4, tokenid=$5, noftoken=$6, rewardtype=$7, rcalctype=$8, rquantity=$9 ' +
+				'where groupid=$10 and ver=$11 and draftno=$12 and id=$13 ',
+				[d.name, d.type, d.firetype, d.taskid, d.tokenid, d.noftoken, d.rewardtype, d.rcalctype, d.rquantity, d.groupid, d.ver, d.draftno, d.id],
+				r=>r.rowCount
+			);
+			// check number of affected rows
+			if (1!==cnt) {
+				throw 'number of updated rows was not 1';
+			}
+		} catch (e) {
+			log.error('errored in update : ' + e);
+			throw e;
+		}
+	}
+
 };

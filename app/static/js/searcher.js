@@ -139,9 +139,9 @@ Search.prototype = {
 	},
 	onlist : function(evt, sel) {
 		var self = this;
-		if (evt===NOTIFY_LIST.DATA) {
+		if (evt===NOTIFY.DATA) {
 			self.listctrl.show(self.data);
-		} else if (evt===NOTIFY_LIST.SELECT) {
+		} else if (evt===NOTIFY.SELECT) {
 			var data = sel.id.split('_');
 			if (self.type==='1') {
 				if (data.length!==3) return;
