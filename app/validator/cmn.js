@@ -1,3 +1,8 @@
+// Copyright (C) 2018 The Mypher Authors
+//
+// SPDX-License-Identifier: LGPL-3.0+
+//
+
 // this module is used by both server and client.
 
 module.exports = {

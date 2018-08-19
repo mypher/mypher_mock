@@ -1,3 +1,8 @@
+// Copyright (C) 2018 The Mypher Authors
+//
+// SPDX-License-Identifier: LGPL-3.0+
+//
+
 // searcher.js
 
 function Search(d, cb) {
@@ -76,7 +81,6 @@ Search.prototype = {
 				{},
 				{   div : d,
 					type : MODE.REF,
-					key : 'key',
 					col : [
 						{ width : 4, label : _L('NAME1'), name : 'name' },
 						{ width : 6, label : _L('PURPOSE'), name : 'purpose' },
@@ -85,7 +89,6 @@ Search.prototype = {
 				},
 				{   div : d,
 					type : MODE.REF,
-					key : 'key',
 					col : [
 						{ width : 3, label : _L('CIPHER'), name : 'cname' },
 						{ width : 3, label : _L('TASK'), name : 'tname' },
@@ -116,13 +119,10 @@ Search.prototype = {
 					reject(res.result.code);
 					return;
 				}
-				for ( var i in res.result) {
-					var o = res.result[i];
-					if (self.d.type==='1') {
-						o.key = [o.id, o.ver, o.draftno].join('_');
+				if (self.d.type==='1' ) {
+					for ( var i in res.result) {
+						var o = res.result[i];
 						o.running = o.formal ? '✓' : '';
-					} else if (self.d.type==='2') {
-						o.key = [o.groupid, o.ver, o.draftno, o.id].join('_');
 					}
 				}
 				self.data = res.result;
@@ -142,23 +142,20 @@ Search.prototype = {
 		if (evt===NOTIFY.DATA) {
 			self.listctrl.show(self.data);
 		} else if (evt===NOTIFY.SELECT) {
-			var data = sel.id.split('_');
 			if (self.type==='1') {
-				if (data.length!==3) return;
 				self.cb(NOTIFY.SELECT, {
-					id:data[0],
-					ver:data[1],
-					draftno:data[2],
-					type:self.type
+					id : sel.id,
+					ver : sel.ver,
+					draftno : sel.draftno,
+					type : self.type
 				});
 			} else if (self.type==='2') {
-				if (data.length!==4) return;
 				self.cb(NOTIFY.SELECT, {
-					groupid:data[0],
-					ver:data[1],
-					draftno:data[2],
-					id:data[3],
-					type:self.type
+					groupid : sel.groupid,
+					ver : sel.ver,
+					draftno : sel.draftno,
+					id : sel.id,
+					type : self.type
 				});
 			}
 		}

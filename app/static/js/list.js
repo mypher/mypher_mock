@@ -1,3 +1,8 @@
+// Copyright (C) 2018 The Mypher Authors
+//
+// SPDX-License-Identifier: LGPL-3.0+
+//
+
 function List(type, cb) {
 	this.div = type.div;
 	this.type = type.type;
@@ -77,7 +82,6 @@ function TokenList(div, type, gid, ver, draftno, cb) {
 	var opt = {
 		div : div,
 		type : type,
-		key : 'id',
 		col : [
 			{
 				width : 5,
@@ -164,7 +168,6 @@ function TaskList(div, type, gid, ver, draftno, cb) {
 	var opt = {
 		div : div,
 		type : type,
-		key : 'id',
 		col : [
 			{
 				width : 5,
@@ -215,16 +218,6 @@ TaskList.prototype = {
 					groupid : this.groupid,
 					ver : this.ver,
 					draftno : this.draftno,
-				},
-				mode : MODE.NEW
-			});
-			History.run(_L('TASK'), task);
-		} else if (evt===NOTIFY.SELECT) {
-			var task = new Task({
-				key : {
-					groupid : this.groupid,
-					ver : this.ver,
-					draftno : this.draftno,
 					id : sel.id
 				},
 				mode : MODE.REF
@@ -252,7 +245,6 @@ function RuleList(div, type, gid, ver, draftno, cb) {
 	var opt = {
 		div : div,
 		type : type,
-		key : 'id',
 		col : [
 			{
 				width : 5,

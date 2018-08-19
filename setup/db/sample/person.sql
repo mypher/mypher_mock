@@ -1,3 +1,6 @@
+-- Copyright (C) 2018 The Mypher Authors
+-- SPDX-License-Identifier: LGPL-3.0+
+
 delete from person where id like 'test%';
 insert into person(id, name, profile, key) 
 values(

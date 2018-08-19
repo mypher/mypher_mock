@@ -1,3 +1,8 @@
+// Copyright (C) 2018 The Mypher Authors
+//
+// SPDX-License-Identifier: LGPL-3.0+
+//
+
 
 function GovRule(div, data, editable, hidetitle, cb) {
 	this.div = div;

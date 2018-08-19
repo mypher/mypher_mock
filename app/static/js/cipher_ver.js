@@ -1,3 +1,8 @@
+// Copyright (C) 2018 The Mypher Authors
+//
+// SPDX-License-Identifier: LGPL-3.0+
+//
+
 // cipher_ver.js
 
 function CipherVer(d, cb) {
@@ -77,9 +82,8 @@ CipherVer.prototype = {
 	set : function(d) {
 		var self = this;
 		var onselect = function(sel) {
-			if (!sel.id) return;
-			var o = sel.id.split('_');
-			self.cb(NOTIFY.SELECT, {id:o[0], ver:o[1], draftno:o[2]});
+			if (!sel.id || !sel.ver || !sel.draftno) return;
+			self.cb(NOTIFY.SELECT, {id:sel.id, ver:sel.ver, draftno:sel.draftno});
 		};
 		self.data = d;
 		// FORMAL

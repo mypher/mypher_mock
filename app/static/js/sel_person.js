@@ -1,3 +1,8 @@
+// Copyright (C) 2018 The Mypher Authors
+//
+// SPDX-License-Identifier: LGPL-3.0+
+//
+
 function SelPerson(div, cb, selected) {
 	this.div = div;
 	this.list = [];
