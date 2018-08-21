@@ -43,10 +43,10 @@ _ = {
 		};
 	},
 	setDefault : function() {
-		$('#groupid').val('7f861c4bc4b853bef4f14f0fe7bc336075175fbc61f977b7fd7df369964bc8bf');
+		$('#groupid').val('50e9ff3a7c7719e735f4ffc45298806ebacf4f351cc66913d262f7ac6dce82e0');
 		$('#ver').val('2');
-		$('#draft').val('3');
-		$('#ruleid').val('fc765414b5ab44862c43626b6041c3d71dcfdb3bb647b6beda9d9b8b0345d0d0');
+		$('#draft').val('1');
+		$('#ruleid').val('393da483908975c1ef75423809e60b953e42d9a3d9e7564364399a2c3d2cad79');
 	}
 };
 

@@ -32,9 +32,10 @@ module.exports = {
 	 * get
 	 * params : d.groupid, d.ver, d.draftno, d.id
 	 */
-	get : async d=> {
+	get : async (d, tx)=> {
 		try {
-			return await db.one(
+			tx = tx ? tx : db;
+			return await tx.one(
 				'select groupid, ver, draftno, id, name, req, auth from rule where groupid = $1 and ver = $2 and draftno = $3 and id = $4', 
 				[d.groupid, d.ver, d.draftno, d.id]
 			);

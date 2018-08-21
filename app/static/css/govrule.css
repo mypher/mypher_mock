@@ -21,29 +21,29 @@
 	clear:left;
 }
 
-.govrule .td1 {
-	display: inline-block;
-	vertical-align: middle;
-	padding: 8px;
-}
-
-.govrule .td2 {
+.govrule > .rulemain > div > div {
 	display: inline-block;
 	vertical-align: middle;
 	color:#444;
 }
+.govrule .rdata1 {
+	display: inline-block;
+	vertical-align: middle;
+	padding: 8px;
+	width:60px;
+}
 
-.govrule .td3 {
+.govrule .rdata2 {
 	display: inline-block;
 	vertical-align: middle;
 	padding: 8px;
 }
 
-.govrule .td3:after {
+.govrule .rdata2:after {
 	clear:left;
 }
 
-.govrule .td3 > div {
+.govrule .rdata2 > div {
 	background-color: #30b0f0;
 	color:#fff;
 	border-radius: 16px;

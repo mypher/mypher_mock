@@ -207,7 +207,7 @@ module.exports = {
 	},
 
 	isCipherEditable : async (sender, key) => {
-		let response = null;
+		let response = {};
 		try {
 			await db.tx(async t=>{
 				// load cipher to which task belongs

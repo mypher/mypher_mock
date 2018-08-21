@@ -252,6 +252,7 @@ var Util = {
 			var req = [];
 			var ret = {};
 			for ( var i in ids ) {
+				if (ids[i]==='') continue;
 				if (Util.N[ids[i]]) {
 					ret[ids[i]] = Util.N[ids[i]];
 				} else {
@@ -434,6 +435,13 @@ var Util = {
 			base[attr[1]] = elm.attr(attr[0]);
 		}
 		return base;
+	},
+	toInt : function(v, def) {
+		try {
+			return parseInt(v);
+		} catch (e) {
+			return def ? def : null;
+		}
 	}
 };
 

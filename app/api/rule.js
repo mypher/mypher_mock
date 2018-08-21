@@ -12,7 +12,7 @@ let sha256 = require('sha256');
 
 let drule = require('../db/rule');
 
-let vrule = require('../validator/rule')
+let vrule = require('../validator/rule');
 
 module.exports = {
 	/*
@@ -23,7 +23,7 @@ module.exports = {
 		try {
 			let response = null;
 			await db.tx(async t=>{
-				response = cmn.isCipherEditable(sender, {
+				response = await cmn.isCipherEditable(sender, {
 					id : d.groupid, 
 					ver : d.ver, 
 					draftno : d.draftno});
@@ -100,7 +100,7 @@ module.exports = {
 	 */
 	_commit  : async (sender, ini, cur) => {
 		let validate = async function(tx) {
-			let d = await drule.load(ini, tx);
+			let d = await drule.get(ini, tx);
 			return cmn.validate(d, ini);
 		}
 		try {
@@ -117,19 +117,19 @@ module.exports = {
 					response = {code:'ALREADY_CHANGED'};
 					return;
 				}
-				response = cmn.isCipherEditable(sender, {
-					id : d.groupid, 
-					ver : d.ver, 
-					draftno : d.draftno});
+				response = await cmn.isCipherEditable(sender, {
+					id : ini.groupid, 
+					ver : ini.ver, 
+					draftno : ini.draftno});
 				if (response.code) {
 					return;
 				}
 				if (!cmn.chkTypes([
-					{ p:d.groupid, f:cmn.isKey},
-					{ p:d.ver, f:cmn.isSmallInt},
-					{ p:d.draftno, f:cmn.isSmallInt},
-					{ p:d.name, f:cmn.isEmpty, r:true},
-					{ p:d.req, f:cmn.isSmallInt}
+					{ p:cur.groupid, f:cmn.isKey},
+					{ p:cur.ver, f:cmn.isSmallInt},
+					{ p:cur.draftno, f:cmn.isSmallInt},
+					{ p:cur.name, f:cmn.isEmpty, r:true},
+					{ p:cur.req, f:cmn.isSmallInt}
 				])) {
 					response = {code:'INVALID_PARAM'};
 					return;

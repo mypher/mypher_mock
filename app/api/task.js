@@ -25,7 +25,7 @@ module.exports = {
 		try {
 			let response = null;
 			await db.tx(async t=>{
-				response = cmn.isCipherEditable(sender, {
+				response = await cmn.isCipherEditable(sender, {
 					id : d.groupid, 
 					ver : d.ver, 
 					draftno : d.draftno});
@@ -115,7 +115,7 @@ module.exports = {
 					response = {code:'ALREADY_CHANGED'};
 					return;
 				}
-				response = cmn.isCipherEditable(sender, {
+				response = await cmn.isCipherEditable(sender, {
 					id : d.groupid, 
 					ver : d.ver, 
 					draftno : d.draftno});
