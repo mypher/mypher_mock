@@ -3,7 +3,175 @@
 // SPDX-License-Identifier: LGPL-3.0+
 //
 
+function GovRule(d, cb) {
+	this.div = (d.div===undefined) ? UI.getMainDiv() : d.div;
+	this.mode = d.mode; // REF : display title, REF2 : hide title
+	this.key = d.key;
+	this.cipher = d.cipher;
+	this.hidetitle = d.hidetitle;
+	this.cb = cb;
+}
 
+GovRule.prototype = {
+	draw : function() {
+		var self = this;
+		return self.layout().then(function() {
+			return self.load().then(function() {
+				return Util.promise(function(resolve) {
+					resolve();
+				});
+			});
+		});
+	},
+
+	layout : function() {
+		var self = this;
+		return Util.load(self.div, 'parts/govrule.html', function(resolve) {
+			Util.initDiv(self.div, self.mode, {
+			});
+			resolve();
+		});
+	},
+
+	load : function() {
+		var self = this;
+		return Util.promise(function(resolve, reject) {
+			Rpc.call('rule.get', [{
+					groupid : self.key.groupid, 
+					ver : self.key.ver, 
+					draftno : self.key.draftno,
+					id : self.key.id
+			}], function(res) {
+				self.set(res.result);
+				resolve();
+			}, function(err) {
+				reject(err.message);
+			});
+		});
+	},
+
+	set : function(data) {
+		var self = this;
+		self.data = data;
+		Util.setData(self.div, data);
+		var user = UserManager.isLogin() ? UserManager.user.id : '';
+		var btns = [];
+		// BUTTON
+		switch (self.mode) {
+		case MODE.NEW:
+			btns.push({
+				text : 'CREATE',
+				click : function() {
+					self.create();
+				}
+			});
+			btns.push({
+				text : 'CANCEL',
+				click : function() {
+					self.cancel();
+				}
+			});
+			break;
+		case MODE.EDIT:
+			btns.push({
+				text : 'COMMIT',
+				click : function() {
+					self.commit();
+				}
+			});
+			btns.push({
+				text : 'CANCEL',
+				click : function() {
+					self.cancel();
+				}
+			});
+			break;
+		case MODE.REF:
+			btns.push({
+				text : 'BACK',
+				click : function() {
+					History.back();
+				}
+			});
+			break;
+		}
+		Util.initButton(self.div.find('div[name="bottom"] button'), btns);
+		var td = self.div.find('[class^=rdata]');
+		td.eq(0).empty().append(
+			$('<div>', {text:(self.data.req===0 ? _L('ALL_MEMBER') : self.data.req )})
+		).attr('val', self.data.req).click(function() {
+		});
+		var base = td.eq(1);
+		var auth = {
+			true : {},
+			false : {class: self.data.class}
+		}[self.data.class===undefined];
+		for ( var i in self.data.auth) {
+			auth.text = self.data.auth[i];
+			td.append($('<div>', auth));
+		}
+		if (td.children().length===0) {
+			auth.text = _L('NOT_SET');
+			td.append($('<div>', auth));
+		}
+
+	},
+
+	get : function() {
+		var cur = Util.getData(this.div, {
+			groupid : this.key.groupid,
+			ver : this.key.ver,
+			draftno : this.key.draftno,
+		});
+		return {ini:this.data, cur:cur};
+	},
+
+	cancel : function() {
+		this.mode = MODE.REF;
+		this.draw();
+	},
+
+	create : function() {
+		var self = this;
+		var v = self.get();
+		return Util.promise(function(resolve, reject) {
+			Rpc.call('rule._add', [v.cur], function(res) {
+				if (res.result.code) {
+					UI.alert(_L(res.result.code));
+					return;
+				}
+				self.key.id = res.result;
+				self.mode = MODE.REF;
+				self.draw();
+				resolve();
+			}, function(err) {
+				UI.alert(err.message);
+				reject(err.message);
+			});
+		});
+	},
+
+	commit : function() {
+		var self = this;
+		var v = self.get();
+		return Util.promise(function(resolve, reject) {
+			Rpc.call('rule._commit', [v.ini, v.cur], function(res) {
+				if (res.result.code) {
+					UI.alert(_L(res.result.code));
+					return;
+				}
+				self.mode = MODE.REF;
+				self.draw();
+				resolve();
+			}, function(err) {
+				UI.alert(err.message);
+				reject(err.message);
+			});
+		});
+	}
+};
+
+/*
 function GovRule(div, data, editable, hidetitle, cb) {
 	this.div = div;
 	this.editable = editable;
@@ -123,7 +291,8 @@ GovRuleManager = {
 				reject(err.message);
 			});
 		});*/
-		alert('!!!');
+/*		alert('!!!');
+
 	}
 }
 
@@ -258,3 +427,4 @@ GovRule.prototype = {
 		return ret;
 	}
 };
+*/

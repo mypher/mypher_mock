@@ -296,9 +296,9 @@ Task.prototype = {
 
 	create : function() {
 		var self = this;
-		var data = self.get();
+		var v = self.get();
 		return Util.promise(function(resolve, reject) {
-			Rpc.call('task._add', [data.cur], function(res) {
+			Rpc.call('task._add', [v.cur], function(res) {
 				if (res.result.code) {
 					UI.alert(_L(res.result.code));
 					reject();

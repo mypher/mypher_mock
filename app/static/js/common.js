@@ -327,6 +327,10 @@ var Util = {
 			div.find('*[disable_on*=ref]').prop('disabled', true);
 			div.find('*[hide_on*=ref]').css('display', 'none');
 			break;
+		case MODE.REF2:
+			div.find('*[disable_on*=rf2]').prop('disabled', true);
+			div.find('*[hide_on*=rf2]').css('display', 'none');
+			break;
 		}
 		var l = div.find('*[ltext]');
 		for ( var i=0; i<l.length; i++ ) {

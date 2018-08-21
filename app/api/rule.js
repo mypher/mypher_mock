@@ -10,8 +10,9 @@ let cmn = require('./cmn');
 let log = require('../cmn/logger')('api.rule');
 let sha256 = require('sha256');
 
-let dcipher = require('../db/cipher');
 let drule = require('../db/rule');
+
+let vrule = require('../validator/rule')
 
 module.exports = {
 	/*
@@ -22,13 +23,11 @@ module.exports = {
 		try {
 			let response = null;
 			await db.tx(async t=>{
-				response = await cmn.isEditable({
-					id : d.groupid,
-					ver : d.ver,
-					draftno : d.draftno,
-					sender : sender
-				}, t);
-				if (response!==true) {
+				response = cmn.isCipherEditable(sender, {
+					id : d.groupid, 
+					ver : d.ver, 
+					draftno : d.draftno});
+				if (response.code) {
 					return;
 				}
 				if (!cmn.chkTypes([
@@ -96,14 +95,54 @@ module.exports = {
 
 
 	/*
-	 * update
-	 * param : grp - group id
-	 *         id - rule id
-	 *         name - name
-	 *         req - required number of approvals
-	 *         auth - list of authorizers
+	 * _commit
+	 * param : sender, ini, cur
 	 */
-	update  : async (grp, id, name, req, auth) => {
-		return id;
+	_commit  : async (sender, ini, cur) => {
+		let validate = async function(tx) {
+			let d = await drule.load(ini, tx);
+			return cmn.validate(d, ini);
+		}
+		try {
+			let response = {};
+			await db.tx(async t=>{
+				// check keys
+				if (!cmn.compare(ini, cur, ['groupid', 'ver', 'draftno', 'id'])) {
+					respnse = {code:'INVALID_PARAM'};
+					return;
+				}
+				// check if data is changed while editing
+				let ret = await validate(t);
+				if (!ret) {
+					response = {code:'ALREADY_CHANGED'};
+					return;
+				}
+				response = cmn.isCipherEditable(sender, {
+					id : d.groupid, 
+					ver : d.ver, 
+					draftno : d.draftno});
+				if (response.code) {
+					return;
+				}
+				if (!cmn.chkTypes([
+					{ p:d.groupid, f:cmn.isKey},
+					{ p:d.ver, f:cmn.isSmallInt},
+					{ p:d.draftno, f:cmn.isSmallInt},
+					{ p:d.name, f:cmn.isEmpty, r:true},
+					{ p:d.req, f:cmn.isSmallInt}
+				])) {
+					response = {code:'INVALID_PARAM'};
+					return;
+				}
+				await drule.update(cur, t);	
+			}).then(function() {
+			}).catch(function() {
+				response = {code:'INVALID_PARAM'};
+			});
+			return response;
+		} catch (e) {
+			log.error('errored in _commit : ' + e);
+			throw 'system error';
+		}
 	}
 };

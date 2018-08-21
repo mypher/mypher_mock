@@ -105,26 +105,23 @@ module.exports = {
 	 *         req - required number of approvals
 	 *         auth - list of authorizers
 	 */
-	update  : async (grp, id, name, req, auth) => {
-		return id;
-	/*	try {
-			let tm = cmn.d2st(cmn.stdtm());
-			await db.none(
-				'update rule set req = $1, auth = $2, tm = $3 where groupid = $4 and id = $5', 
-				[req, auth ,tm, auth, tm]
+	update  : async (d, tx) => {
+		try {
+			tx = tx ? tx : db;
+			let cnt = await tx.result(
+				'update rule ' +
+				'set name=$1, req=$2, auth=$3 ' +
+				'where groupid=$4 and ver=$5 and draftno=$6 and id=$7 ',
+				[d.name, d.req, d.auth, d.groupid, d.ver, d.draftno, d.id],
+				r=>r.rowCount
 			);
-			if (data.code) {
-				if (data.code===db.NODATA) {
-					return {};
-				} 
-				throw 'data duplicate ' + grp + ',' + id;
+			// check number of affected rows
+			if (1!==cnt) {
+				throw 'number of updated rows was not 1';
 			}
-			return data;
 		} catch (e) {
-			log.error('errored in get : ' + e);
-			throw 'system error';
+			log.error('errored in update : ' + e);
+			throw e;
 		}
-		return {};*/
-
 	}
 };

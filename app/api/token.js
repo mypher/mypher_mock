@@ -23,19 +23,10 @@ module.exports = {
 		try {
 			let response = null;
 			await db.tx(async t=>{
-				// load cipher to which task belongs
-				let cdata = await dcipher.load({
-					id : d.groupid,
-					ver : d.ver,
-					draftno : d.draftno
-				});
-				// check if cipher can be edited
-				response = vcipher.isEditableVer(cdata);
-				if (response.code) {
-					return;
-				}
-				// if sender is not editor, task can't be updated
-				response = vcipher.isEditor(sender, cdata);
+				response = cmn.isCipherEditable(sender, {
+					id : d.groupid, 
+					ver : d.ver, 
+					draftno : d.draftno});
 				if (response.code) {
 					return;
 				}
@@ -75,25 +66,21 @@ module.exports = {
 		try {
 			let response = {};
 			await db.tx(async t=>{
+				// check keys
+				if (!cmn.compare(ini, cur, ['groupid', 'ver', 'draftno', 'id'])) {
+					respnse = {code:'INVALID_PARAM'};
+					return;
+				}
 				// check if data is changed while editing
 				let ret = await validate(t);
 				if (!ret) {
 					response = {code:'ALREADY_CHANGED'};
 					return;
 				}
-				// load cipher to which task belongs
-				let cdata = await dcipher.load({
-					id : ini.groupid,
-					ver : ini.ver,
-					draftno : ini.draftno
-				});
-				// check if task can be edited
-				response = vtoken.isEditable(cdata, ini, sender);
-				if (response.code) {
-					return;
-				}
-				// if sender is not editor, task can't be updated
-				response = vcipher.isEditor(sender, cdata);
+				response = cmn.isCipherEditable(sender, {
+					id : d.groupid, 
+					ver : d.ver, 
+					draftno : d.draftno});
 				if (response.code) {
 					return;
 				}

@@ -84,7 +84,11 @@ module.exports = {
 		try {
 			let response = {};
 			await db.tx(async t=>{
-				// check if data is changed while editing
+				// check keys
+				if (!cmn.compare(ini, cur, ['id', 'ver', 'draftno'])) {
+					respnse = {code:'INVALID_PARAM'};
+					return;
+				}				// check if data is changed while editing
 				let ret = await validate(t);
 				if (!ret) {
 					resoponse = {code:'ALREADY_CHANGED'};

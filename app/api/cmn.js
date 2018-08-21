@@ -6,8 +6,8 @@
 'use_strict'
 
 let db = require('../db/db');
-//let cryptico = require('cryptico');
 let dcipher = require('../db/cipher');
+let vcipher = require('../validator/cipher');
 
 let an = /^[abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ_]*$/;
 module.exports = {
@@ -205,43 +205,41 @@ module.exports = {
 	chkStrLen : (v,min, max) => {
 		return (typeof(v)==='string'&&v.length<=max&&v.length>=min);
 	},
-	
-	decrypt : (data, key) => {
-		// let rsa = new NodeRSA({b: 1024});
-		// key = '-----BEGIN RSA PUBLIC KEY-----\n' + 
-		// key = key.substring(  0, 64) + '\n' +
-		// key.substring( 64,128) + '\n' +
-		// key.substring(128) + '\n' +
-		// '¥n-----END RSA PUBLIC KEY-----\n';
-		// rsa.importKey(key, 'pkcs1-public-pem');
-		// let rsa = new NodeRSA(key, 'pkcs1-public');
-		// return rsa.decryptPublic(data, 'buffer');
-		//return cryptico.decrypt(data,)
-	},
 
-/*	isEditable : async (d, tx) => {
-		// check if draft can editable
-		let result = await dcipher.isEditable(d, tx);
-		switch (result) {
-		case dcipher.NOT_EXIST:
-			return {code:'NOT_EXIST'};
-		case dcipher.NOT_EDITABLE:
-			return {code:'NOT_EDITABLE'};
-		default:
-			break;
-		}
-		// check if sender can edit
-		let ret = await dcipher.isEditor(d, tx);
-		if (!ret) {
-			return {code:'NOT_HAVE_UPDATE_AUTH'};
+	isCipherEditable : async (sender, key) => {
+		let response = null;
+		try {
+			await db.tx(async t=>{
+				// load cipher to which task belongs
+				let cdata = await dcipher.load({
+					id : key.id,
+					ver : key.ver,
+					draftno : key.draftno
+				});
+				// check if cipher can be edited
+				response = vcipher.isEditableVer(cdata);
+					if (response.code) {
+					return;
+				}
+				// if sender is not editor, task can't be updated
+				response = vcipher.isEditor(sender, cdata);
+				if (response.code) {
+					return;
+				}
+			});
+			return response;
+		} catch (e) {
+			log.error('errored in _add : ' + e);
+			throw 'system error';		
+		}	
+	},
+	compare : (p1, p2, names) => {
+		for (var i in names) {
+			if (p1[i]!==p2[i]) return false;
 		}
 		return true;
-	},*/
+	}
 
-	/*isCurrent : async (d, tx) => {
-		let result = await dcipher.getCurrent(d, tx);
-		return (d.ver===result.ver && d.draftno===result.draftno);
-	}*/
 	
 };
 
