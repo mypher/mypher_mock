@@ -137,10 +137,11 @@ module.exports = {
 			return false;
 		}
 	},
-	chkMember : async list => {
+	chkMember : async (list, tx) => {
 		try {
-			list = list.split(',');
-			let cnt = await db.one(
+			tx = tx ? tx : db;
+			list = (apicmn.isEmpty(list)) ? [] : list.split(',');
+			let cnt = await tx.one(
 				'select count(id) from person where id in ($1:csv)', [list]
 			);
 			let dbcnt = parseInt(cnt.count);
@@ -243,4 +244,4 @@ module.exports = {
 	
 };
 
-
+var apicmn = module.exports;

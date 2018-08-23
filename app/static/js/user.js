@@ -233,8 +233,6 @@ UserManager = {
 						UI.alert(_L('FAILED_TO_LOGIN'));
 						return;
 					}
-				}, function(err) {
-					UI.alert(err.message);
 				});
 				cb&&cb(code);
 			}

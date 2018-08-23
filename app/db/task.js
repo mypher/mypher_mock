@@ -241,6 +241,7 @@ module.exports = {
 	listbywords : async (d, tx) => {
 		try {
 			tx = tx ? tx : db;
+			d = cmn.sanitizeForLike(d);
 			// get history
 			return await tx.any(
 				'select t.groupid, t.ver, t.draftno, t.id, t.name tname, t.description, c.name cname, c.formal ' +

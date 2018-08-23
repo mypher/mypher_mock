@@ -26,10 +26,6 @@ GovRuleList.prototype = {
 				draftno : self.data.draftno
 			}], function(res) {
 				resolve(res.result);
-			}, function(err) {
-				reject(err.message);
-			}, function(fail) {
-				reject(err.message);
 			});
 		}).then(function(data) {
 			self.data = data;

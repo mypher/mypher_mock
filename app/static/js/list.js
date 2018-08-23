@@ -117,10 +117,6 @@ TokenList.prototype = {
 					self.data = res.result;
 					self.list.show(res.result);
 					resolve();
-				}, function(err) {
-					reject(err.message);
-				}, function(err) {
-					reject(err.message);
 				});
 			});
 		};
@@ -203,16 +199,22 @@ TaskList.prototype = {
 					self.data = res.result;
 					self.list.show(res.result);
 					resolve();
-				}, function(err) {
-					reject(err.message);
-				}, function(err) {
-					reject(err.message);
 				});
 			});
 		};
 		if (evt===NOTIFY.DATA) {
 			return refresh();
 		} else if (evt===NOTIFY.CREATE) {
+			var task = new Task({
+				key : {
+					groupid : this.groupid,
+					ver : this.ver,
+					draftno : this.draftno,
+				},
+				mode : MODE.NEW
+			});
+			History.run(_L('TASK'), task);
+		} else if (evt===NOTIFY.SELECT) {
 			var task = new Task({
 				key : {
 					groupid : this.groupid,
@@ -280,10 +282,6 @@ RuleList.prototype = {
 					self.data = res.result;
 					self.list.show(res.result);
 					resolve();
-				}, function(err) {
-					reject(err.message);
-				}, function(err) {
-					reject(err.message);
 				});
 			});
 		};

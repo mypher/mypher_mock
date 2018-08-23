@@ -68,10 +68,6 @@ SelPerson.prototype = {
 		Rpc.call('person.list_fast', [p], function(res) {
 			self.list = res.result;
 			self.refresh();
-		}, function(err) {
-			self.err = err.message;
-		}, function(fail) {
-			self.err = err.message;
 		});
 	},
 

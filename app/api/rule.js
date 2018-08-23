@@ -11,6 +11,7 @@ let log = require('../cmn/logger')('api.rule');
 let sha256 = require('sha256');
 
 let drule = require('../db/rule');
+let dperson = require('../db/person');
 
 let vrule = require('../validator/rule');
 
@@ -30,6 +31,10 @@ module.exports = {
 				if (response.code) {
 					return;
 				}
+				response = vrule.validateRule(d);
+				if (response.code) {
+					return;
+				}
 				if (!cmn.chkTypes([
 					{ p:d.groupid, f:cmn.isKey},
 					{ p:d.ver, f:cmn.isSmallInt},
@@ -37,6 +42,11 @@ module.exports = {
 					{ p:d.name, f:cmn.isEmpty, r:true},
 					{ p:d.req, f:cmn.isSmallInt}
 				])) {
+					response = {code:'INVALID_PARAM'};
+					return;
+				}
+				let v = await cmn.chkMember(d.auth, t);
+				if (!v) {
 					response = {code:'INVALID_PARAM'};
 					return;
 				}
@@ -124,6 +134,10 @@ module.exports = {
 				if (response.code) {
 					return;
 				}
+				response = vrule.validateRule(cur);
+				if (response.code) {
+					return;
+				}
 				if (!cmn.chkTypes([
 					{ p:cur.groupid, f:cmn.isKey},
 					{ p:cur.ver, f:cmn.isSmallInt},
@@ -131,6 +145,11 @@ module.exports = {
 					{ p:cur.name, f:cmn.isEmpty, r:true},
 					{ p:cur.req, f:cmn.isSmallInt}
 				])) {
+					response = {code:'INVALID_PARAM'};
+					return;
+				}
+				let v = await cmn.chkMember(cur.auth, t);
+				if (!v) {
 					response = {code:'INVALID_PARAM'};
 					return;
 				}

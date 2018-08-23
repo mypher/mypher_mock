@@ -106,6 +106,6 @@ module.exports = {
 			log.error('errored in name : ' + e);
 			throw e;
 		}
-	},	
+	}
 }
 

@@ -228,6 +228,7 @@ module.exports = {
 	listbywords : async (d, tx) => {
 		try {
 			tx = tx ? tx : db;
+			d = cmn.sanitizeForLike(d);
 			// get history
 			return await tx.any(
 				'select * from cipher_current where name like $1 or purpose like $1',

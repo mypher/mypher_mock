@@ -31,12 +31,14 @@
 	vertical-align: middle;
 	padding: 8px;
 	width:60px;
+	border: 1px solid #fff;
 }
 
 .govrule .rdata2 {
 	display: inline-block;
 	vertical-align: middle;
 	padding: 8px;
+	border: 1px solid #fff;
 }
 
 .govrule .rdata2:after {
@@ -54,5 +56,10 @@
 	margin:2px;
 	font-size:12px;
 	box-shadow: 1px 1px 1px 0px #666;
+}
+
+.govrule .redit {
+	border: 1px dashed #30b0f0;
+	background-color: #ffe;
 }
 

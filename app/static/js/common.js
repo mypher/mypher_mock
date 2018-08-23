@@ -31,6 +31,9 @@ NOTIFY = {
 	DATA : 13
 }
 
+var _C = function(v) {
+	return !v.code;
+}
 var module = {};
 
 Rpc = {
@@ -60,6 +63,7 @@ Rpc = {
 		if (!cberr) {
 			cberr = function(msg) {
 				UI.alert(msg);
+				throw msg;
 			}
 		}
 		var retry = 0;

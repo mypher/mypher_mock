@@ -161,10 +161,6 @@ PersonSelList.prototype = {
 			Rpc.call('person.list_fast', [sel], function(res) {
 				self.list.show(res.result);
 				resolve();
-			}, function(err) {
-				reject(err.message);
-			}, function(err) {
-				reject(err.message);
 			});
 		});
 	}
@@ -205,10 +201,6 @@ TaskSelList.prototype = {
 			Rpc.call('task.list_fast', [self.gpid, sel], function(res) {
 				self.list.show(res.result);
 				resolve();
-			}, function(err) {
-				reject(err.message);
-			}, function(err) {
-				reject(err.message);
 			});
 		});
 	}
@@ -249,10 +241,6 @@ TokenSelList.prototype = {
 			Rpc.call('token.list_fast', [self.gpid, sel], function(res) {
 				self.list.show(res.result);
 				resolve();
-			}, function(err) {
-				reject(err.message);
-			}, function(err) {
-				reject(err.message);
 			});
 		});
 	}

@@ -113,6 +113,9 @@ var $L = {
 		'CIPHER_NOT_FORMAL_YET' : 'CIPHERはまだ正式となっていません。',
 		'PIC_NOT_APPROVED' : '担当者が承認されていません。',
 		'USER_NOT_LOGIN' : 'ログインしていません。',
+		'REQ_BIGGER_THAN_AUTH' : '必要承認数が大きすぎます。',
+		'AUTH_NOT_SET' : '承認者が設定されていません。',
+		'SEARCH_TARGET_NOT_SET' : '検索対象が設定されていません。',
 		'@' : ''
 	}
 };
